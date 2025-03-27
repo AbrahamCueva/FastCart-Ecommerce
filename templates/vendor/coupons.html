@@ -1,0 +1,129 @@
+{% extends 'partials/base.html' %}
+{% load humanize %}
+{% load static %}
+
+{% block content %}
+<main class="main pages">
+    <div class="page-header breadcrumb-wrap">
+        <div class="container">
+            <div class="breadcrumb">
+                <a href="/" rel="nofollow"><i class="fas fa-home me-1"></i>Inicio</a>
+                <span></span> Dashboard
+            </div>
+        </div>
+    </div>
+
+    <div class="page-content pt-50 pb-50">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-10 m-auto">
+                    <div class="row">
+                        {% include 'vendor/sidebar.html' %}
+
+                        <div class="col-md-9">
+                            <div class="card mt-3">
+                                <div class="card-header d-flex justify-content-between align-items-center">
+                                    <h3 class="mb-0">Cupones ({{ coupons.paginator.count }})</h3>
+                                    <a href="#" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addCouponModal">+ Agregar Cupón</a>
+                                </div>
+
+                                <div class="card-body">
+                                    {% for coupon in coupons %}
+                                    <div class="coupon-card p-3 border rounded mb-3 shadow-sm">
+                                        <h5 class="fw-bold">{{ coupon.code }}</h5>
+                                        <p><strong>Descuento:</strong> {{ coupon.discount }}% de descuento</p>
+
+                                        <form method="POST" action="{% url 'vendor:update_coupon' coupon.id %}" class="input-group mt-2">
+                                            {% csrf_token %}
+                                            <input type="text" name="coupon_code" class="form-control" value="{{ coupon.code }}" required>
+                                            <button type="submit" class="btn btn-primary btn-sm"><i class="fas fa-edit"></i></button>
+                                            <a href="{% url 'vendor:delete_coupon' coupon.id %}" class="btn btn-danger btn-sm"><i class="fas fa-trash"></i></a>
+                                        </form>
+                                    </div>
+                                    {% endfor %}
+                                    
+                                    {% if not coupons %}
+                                        <p>No hay cupones</p>
+                                    {% endif %}
+                                        
+                                </div>
+
+                                <!-- Add Coupon Modal -->
+                                <div class="modal fade" id="addCouponModal" tabindex="-1" aria-labelledby="addCouponModalLabel" aria-hidden="true">
+                                    <div class="modal-dialog">
+                                        <div class="modal-content">
+                                            <form method="POST" action="{% url 'vendor:coupon_create' %}">
+                                                {% csrf_token %}
+                                                <div class="modal-header">
+                                                    <h5 class="modal-title" id="addCouponModalLabel">Agregar Nuevo Cupón</h5>
+                                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                                                </div>
+                                                <div class="modal-body">
+                                                    <div class="mb-3">
+                                                        <label for="coupon_code" class="form-label">Código de Cupón</label>
+                                                        <input type="text" class="form-control" name="coupon_code" required>
+                                                    </div>
+                                                    <div class="mb-3">
+                                                        <label for="discount" class="form-label">Descuento (%)</label>
+                                                        <input type="number" class="form-control" name="discount" min="1" max="100" required>
+                                                    </div>
+                                                </div>
+                                                <div class="modal-footer">
+                                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                                                    <button type="submit" class="btn btn-primary">Crear Cupón</button>
+                                                </div>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Pagination -->
+                                <div class="pagination-area mt-20 mb-20">
+                                    <nav aria-label="Page navigation example">
+                                        <ul class="pagination justify-content-start">
+                                            {% if coupons.has_previous %}
+                                                <li class="page-item">
+                                                    <a class="page-link" href="?page={{ coupons.previous_page_number }}">
+                                                        <i class="fi-rs-arrow-small-left"></i>
+                                                    </a>
+                                                </li>
+                                            {% endif %}
+
+                                            {% for num in coupons.paginator.page_range %}
+                                                {% if num == coupons.number %}
+                                                    <li class="page-item active">
+                                                        <a class="page-link" href="#">{{ num }}</a>
+                                                    </li>
+                                                {% elif num >= coupons.number|add:-1 and num <= coupons.number|add:1 %}
+                                                    <li class="page-item">
+                                                        <a class="page-link" href="?page={{ num }}">{{ num }}</a>
+                                                    </li>
+                                                {% elif num == 1 or num == coupons.paginator.num_pages %}
+                                                    <li class="page-item">
+                                                        <a class="page-link" href="?page={{ num }}">{{ num }}</a>
+                                                    </li>
+                                                {% elif num == coupons.number|add:2 %}
+                                                    <li class="page-item"><a class="page-link dot" href="#">...</a></li>
+                                                {% endif %}
+                                            {% endfor %}
+
+                                            {% if coupons.has_next %}
+                                                <li class="page-item">
+                                                    <a class="page-link" href="?page={{ coupons.next_page_number }}">
+                                                        <i class="fi-rs-arrow-small-right"></i>
+                                                    </a>
+                                                </li>
+                                            {% endif %}
+                                        </ul>
+                                    </nav>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+{% endblock content %}
