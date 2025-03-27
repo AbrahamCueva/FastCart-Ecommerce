@@ -1,0 +1,125 @@
+{% extends 'partials/base.html' %}
+{% load humanize %}
+{% load static %}
+
+{% block content %}
+<main class="main pages">
+    <div class="page-header breadcrumb-wrap">
+        <div class="container">
+            <div class="breadcrumb">
+                <a href="/" rel="nofollow"><i class="fi-rs-home mr-5"></i>Inicio</a>
+                <span></span> Tus pedidos
+            </div>
+        </div>
+    </div>
+    <div class="page-content pt-150 pb-150">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-10 m-auto">
+                    <div class="row">
+                        <div class="col-md-9">
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <a href="{% url 'vendor:order_detail' order.order_id %}" class="btn btn-sm btn-primary mb-3"><i class="fas fa-arrow-left"></i> Volver</a>
+                            </div>
+                            <div class="card">
+                                <div class="card-body">
+                                    <h4 class="card-title mb-4">Número de pedido: #{{order.order_id}}</h4>
+                                    {% for item in order.order_items.all %}
+                                        <div class="row mb-4">
+                                            <div class="col-md-6">
+                                                <div class="d-flex align-items-center">
+                                                    <img src="{{item.product.image.url}}" alt="" width="75" class="img-fluid rounded">
+                                                    <div class="ms-3">
+                                                        <p class="mb-2"><strong>{{item.product.name}}</strong></p>
+                                                        <p class="mb-2">Vendor: {{item.product.vendor.profile.full_name}}</p>
+                                                        {% if item.color %}
+                                                            <p class="mb-2">Color: {{item.color}}</p>
+                                                        {% endif %}
+                                                        {% if item.size %}
+                                                            <p class="mb-2">Size: {{item.size}}</p>
+                                                        {% endif %}
+                                                        <p class="mb-0">S/. {{item.price}}</p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <p class="mb-2">Status:
+                                                    {% if order.order_status == 'Pending' %}
+                                                        <span class="badge bg-warning text-dark">Pendiente</span>
+                                                    {% elif order.order_status == 'Processing' %}
+                                                        <span class="badge bg-secondary text-dark">En proceso</span>
+                                                    {% elif order.order_status == 'Shipped' %}
+                                                        <span class="badge bg-info text-dark">Enviado</span>
+                                                    {% elif order.order_status == 'Fullfiled' %}
+                                                        <span class="badge bg-success text-dark">Entregado</span>
+                                                    {% elif order.order_status == 'Cancelled' %}
+                                                        <span class="badge bg-danger text-dark">Cancelado</span>
+                                                    {% endif %}
+                                                </p>
+                                                <p class="mb-2">Payment Status:
+                                                    {% if order.payment_status == 'Paid' %}
+                                                        <span class="badge bg-success text-dark">Paid</span>
+                                                    {% elif order.payment_status == 'Processing' %}
+                                                        <span class="badge bg-info text-dark">Processing</span>
+                                                    {% elif order.payment_status == 'Failed' %}
+                                                        <span class="badge bg-danger text-dark">Failed</span>
+                                                    {% endif %}
+                                                </p>
+                                                <p class="mb-2">Order Date: {{order.date}}</p>
+                                            </div>
+                                        </div>
+                                        <hr>
+                                        <div class="d-flex justify-content-between align-items-center mb-3">
+                                            <div></div>
+                                            <div><strong>Total: S/. {{order.total|floatformat:2}}</strong></div>
+                                        </div>
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <p class="mb-0">Payment Method: {{order.payment_method}}</p>
+                                        </div>
+                                        <hr>
+                                    {% endfor %}
+                                </div>
+                            </div>
+
+                            <div class="card mt-4">
+                                <div class="card-body">
+                                    <form action="{% url 'vendor:update_order_item_status' order.order_id item.item_id %}" method="POST">
+                                        {% csrf_token %}
+                                        <h4 class="card-title mb-4">Estado de envío</h4>
+                                        <div class="mb-3">
+                                            <label for="order_status" class="form-label">Estado de envío</label>
+                                            <select name="order_status" class="form-select" id="order_status">
+                                                <option value="Pending" {% if order.order_status == 'Pending' %}selected{% endif %}>Pendiente</option>
+                                                <option value="Processing" {% if order.order_status == 'Processing' %}selected{% endif %}>En proceso</option>
+                                                <option value="Shipped" {% if order.order_status == 'Shipped' %}selected{% endif %}>Enviado</option>
+                                                <option value="Fulfilled" {% if order.order_status == 'Fulfilled' %}selected{% endif %}>Entregado</option>
+                                                <option value="Cancelled" {% if order.order_status == 'Cancelled' %}selected{% endif %}>Cancelado</option>
+                                            </select>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="shipping_service" class="form-label">Servicio de envío</label>
+                                            <select name="shipping_service" class="form-select" id="shipping_service">
+                                                <option value="DHL" {% if item.shipping_service == 'DHL' %}selected{% endif %}>DHL</option>
+                                                <option value="FedEx" {% if item.shipping_service == 'FedEx' %}selected{% endif %}>FedEx</option>
+                                                <option value="UPS" {% if item.shipping_service == 'UPS' %}selected{% endif %}>UPS</option>
+                                                <option value="GIG Logistics" {% if item.shipping_service == 'GIG Logistics' %}selected{% endif %}>GIG Logistics</option>
+                                            </select>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="tracking_id" class="form-label">ID de seguimiento</label>
+                                            <input type="text" class="form-control" id="tracking_id" name="tracking_id" value="{{ item.tracking_id }}">
+                                        </div>
+                                    
+                                        <button type="submit" class="btn btn-primary">Guardar información de envío</button>
+                                    
+                                    </form>
+                                    
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock content %}

@@ -19,7 +19,7 @@
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="#">
+                        <a class="nav-link {% if request.resolver_match.url_name == 'orders' %}active{% endif %}" href="{% url 'vendor:orders' %}">
                             <i class="fas fa-shopping-cart me-2"></i> Pedidos
                         </a>
                     </li>
