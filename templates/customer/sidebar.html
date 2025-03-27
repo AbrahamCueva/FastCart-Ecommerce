@@ -1,0 +1,77 @@
+<div class="col-md-3">
+    <div class="card mb-3">
+        <div class="card-body text-center">
+            <img src="{{ request.user.profile.image.url }}" alt="Profile" class="rounded-circle img-thumbnail" width="100">
+            <h5 class="card-title mt-3">{{ request.user.profile.full_name }}</h5>
+            <p class="card-text text-muted">Cliente ID: #{{ request.user.id }}</p>
+        </div>
+    </div>
+
+    <div class="dashboard-menu">
+        <ul class="nav flex-column">
+            <!-- Dashboard -->
+            <li class="nav-item">
+                <a class="nav-link {% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}" href="{% url 'customer:dashboard' %}">
+                    <i class="fi-rs-home mr-10"></i>
+                    Dashboard
+                </a>
+            </li>
+
+            <!-- Pedidos (incluye order_detail y order_item_detail) -->
+            <li class="nav-item">
+                <a class="nav-link {% if request.resolver_match.url_name in 'orders,order_detail,order_item_detail' %}active{% endif %}" href="{% url 'customer:orders' %}">
+                    <i class="fi-rs-shopping-cart mr-10"></i>
+                    Pedidos
+                </a>
+            </li>
+
+            <!-- Favoritos (corrige el error de "whislist" a "wishlist") -->
+            <li class="nav-item">
+                <a class="nav-link {% if request.resolver_match.url_name == 'wishlist' %}active{% endif %}" href="{% url 'customer:wishlist' %}">
+                    <i class="fi-rs-heart mr-10"></i>
+                    Favoritos
+                </a>
+            </li>
+
+            <!-- Notificaciones -->
+            <li class="nav-item">
+                <a class="nav-link {% if request.resolver_match.url_name == 'notis' %}active{% endif %}" href="{% url 'customer:notis' %}">
+                    <i class="fi-rs-bell mr-10"></i>
+                    Notificaciones
+                </a>
+            </li>
+
+            <!-- Mis Direcciones (incluye address_detail, address_create, delete_addresses) -->
+            <li class="nav-item">
+                <a class="nav-link {% if request.resolver_match.url_name in 'addresses,address_detail,address_create,delete_addresses' %}active{% endif %}" href="{% url 'customer:addresses' %}">
+                    <i class="fi-rs-marker mr-10"></i>
+                    Mis Direcciones
+                </a>
+            </li>
+
+            <!-- Detalles de la Cuenta -->
+            <li class="nav-item">
+                <a class="nav-link {% if request.resolver_match.url_name == 'profile' %}active{% endif %}" href="{% url 'customer:profile' %}">
+                    <i class="fi-rs-user mr-10"></i>
+                    Detalles de la Cuenta
+                </a>
+            </li>
+
+            <!-- Cambiar Contraseña -->
+            <li class="nav-item">
+                <a class="nav-link {% if request.resolver_match.url_name == 'change_password' %}active{% endif %}" href="{% url 'customer:change_password' %}">
+                    <i class="fi-rs-lock mr-10"></i>
+                    Cambiar contraseña
+                </a>
+            </li>
+
+            <!-- Cerrar Sesión -->
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'userauths:sign-out' %}">
+                    <i class="fi-rs-sign-out mr-10"></i>
+                    Cerrar sesión
+                </a>
+            </li>
+        </ul>
+    </div>
+</div>

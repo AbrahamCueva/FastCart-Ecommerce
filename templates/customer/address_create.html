@@ -1,0 +1,82 @@
+{% extends 'partials/base.html' %}
+{% load humanize %}
+{% load static %}
+{% block content %}
+<main class="main pages">
+  <div class="page-header breadcrumb-wrap">
+    <div class="container">
+      <div class="breadcrumb">
+        <a href="/" rel="nofollow"><i class="fi-rs-home mr-5"></i>Inicio</a>
+        <span></span> Actualizar Dirección
+      </div>
+    </div>
+  </div>
+
+  <div class="page-content pt-150 pb-150">
+    <div class="container">
+      <div class="row">
+        <div class="col-lg-10 m-auto">
+          <div class="row">
+            {% include 'customer/sidebar.html' %}
+            <div class="col-md-9">
+              <div class="tab-content account orders-content pl-50">
+                <div class="tab-pane fade active show" id="address" role="tabpanel" aria-labelledby="address-tab">
+                  <h3 class="mb-4">Agregar Dirección</h3>
+
+                  <form method="POST">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                      <label for="full_name" class="form-label">Nombres y Apellidos</label>
+                      <input type="text" class="form-control" placeholder="Nombres y Apellidos" id="full_name" name="full_name" value="{{ address.full_name }}" required>
+                    </div>
+
+                    <div class="mb-3">
+                      <label for="email" class="form-label">Correo Electrónico</label>
+                      <input type="email" class="form-control" placeholder="Correo Electrónico" id="email" name="email" value="{{ address.email }}" required>
+                    </div>
+
+                    <div class="mb-3">
+                      <label for="mobile" class="form-label">Número de Celular</label>
+                      <input type="text" class="form-control" placeholder="Número de celular" id="mobile" name="mobile" value="{{ address.mobile }}" required>
+                    </div>
+
+                    <div class="mb-3">
+                      <label for="address" class="form-label">Dirección</label>
+                      <input type="text" class="form-control" placeholder="Dirección" id="address" name="address" value="{{ address.address }}" required>
+                    </div>
+
+                    <div class="mb-3">
+                      <label for="city" class="form-label">Ciudad</label>
+                      <input type="text" class="form-control" placeholder="Ciudad" id="city" name="city" value="{{ address.city }}" required>
+                    </div>
+
+                    <div class="mb-3">
+                      <label for="state" class="form-label">Provincia</label>
+                      <input type="text" class="form-control" placeholder="Provincia" id="state" name="state" value="{{ address.state }}" required>
+                    </div>
+
+                    <div class="mb-4">
+                      <label for="country" class="form-label">País</label>
+                      <input type="text" class="form-control" placeholder="País" id="country" name="country" value="{{ address.country }}" required>
+                    </div>
+
+                    <div class="mb-4">
+                        <label for="zip_code" class="form-label">Código de postal</label>
+                        <input type="text" class="form-control" placeholder="Código de postal" id="zip_code" name="zip_code" value="{{ address.zip_code }}" required>
+                      </div>
+
+                    <div class="d-flex gap-3">
+                      <button type="submit" class="btn btn-primary">Crear</button>
+                    </div>
+                  </form>
+
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+{% endblock content %}

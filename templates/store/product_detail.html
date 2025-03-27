@@ -1,0 +1,333 @@
+{% extends 'partials/base.html' %}
+{% load static %}
+{% block content %} 
+<style>
+    .color-radio {
+        display: none; /* Oculta el input de radio */
+    }
+
+    .color-label {
+        display: inline-block;
+        width: 30px; /* Tamaño del círculo */
+        height: 30px;
+        border-radius: 50%; /* Hace el círculo */
+        border: 2px solid #ccc; /* Borde opcional */
+        margin-right: 10px;
+        cursor: pointer;
+    }
+
+    /* Destacar el color seleccionado */
+    .color-radio:checked + .color-label {
+        border: 3px solid #000; /* Borde más grueso al seleccionar */
+    }
+
+    .sr-only {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        padding: 0;
+        margin: -1px;
+        overflow: hidden;
+        clip: rect(0, 0, 0, 0);
+        border: 0;
+    }
+
+    /* Ocultar los radios originales */
+    .capacity-radio {
+        display: none;
+    }
+
+    /* Estilos del label que actúa como botón */
+    .capacity-label {
+        display: inline-block;
+        padding: 8px 12px;
+        border: 2px solid #ccc;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: all 0.3s;
+        text-decoration: none;
+        color: #333;
+    }
+
+    /* Cuando el radio está seleccionado, resaltar la opción */
+    .capacity-radio:checked + .capacity-label {
+        border-color: #3BB77E;
+        background-color: #3BB77E;
+        color: white;
+        font-weight: bold;
+    }
+
+    /* Estilo activo como en el ejemplo de Size/Weight */
+    .capacity-label:hover {
+        border-color: #555;
+    }
+</style>
+<main class="main">
+    <div class="page-header breadcrumb-wrap">
+        <div class="container">
+            <div class="breadcrumb">
+                <a href="/" rel="nofollow"><i class="fi-rs-home mr-5"></i>Inicio</a>
+                <span></span> 
+                <a href="javascript:;">{{ product.category.title }}</a> 
+                <span></span> {{ product.name }}
+            </div>
+        </div>
+    </div>
+    <div class="container mb-30">
+        <div class="row">
+            <div class="col-xl-10 col-lg-12 m-auto">
+                <div class="product-detail accordion-detail">
+                    <div class="row mb-50 mt-30">
+                        <div class="col-md-6 col-sm-12 col-xs-12 mb-md-0 mb-sm-5">
+                            <div class="detail-gallery">
+                                <span class="zoom-icon"><i class="fi-rs-search"></i></span>
+                                <div class="product-image-slider">
+                                    <figure class="border-radius-10">
+                                        <img id="main-img" src="{{ product.image.url }}" alt="{{ product.name }}" style="width: 645px; height: 645px;" />
+                                    </figure>
+                                    {% for image in product.gallery.all %}
+                                        <figure class="border-radius-10">
+                                            <img src="{{ image.image.url }}" alt="{{ image.image.name }}" style="width: 645px; height: 645px;" />
+                                        </figure>
+                                    {% endfor %}
+                                </div>
+                                <div class="slider-nav-thumbnails">
+                                    <div>
+                                        <img src="{{ product.image.url }}" alt="{{ product.name }}" style="width: 147px; height: 147px;" />
+                                    </div>
+                                    {% for image in product.gallery.all %}
+                                        <div>
+                                            <img src="{{ image.image.url }}" alt="{{ image.image.name }}" style="width: 147px; height: 147px;" />
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        </div>                     
+                        <div class="col-md-6 col-sm-12 col-xs-12">
+                            <div class="detail-info pr-30 pl-30">
+                                <h2 class="title-detail">{{ product.name }}</h2>
+                                <div class="product-detail-rating">
+                                    <div class="product-rate-cover text-end">
+                                        <div class="product-rate d-inline-block">
+                                            {% if product.average_rating is not None %}
+                                                <div class="product-rating" style="width: {% widthratio product.average_rating 5 100 %}%"></div>
+                                            {% else %}
+                                                <div class="product-rating" style="width: 0%"></div>
+                                            {% endif %}
+                                        </div>
+                                        <span class="font-small ml-5 text-muted"> ({{ product.reviews.all.count|default:"0" }} reseñas)</span>
+                                    </div>
+                                </div>
+                                <div class="clearfix product-price-cover">
+                                    <div class="product-price primary-color float-left">
+                                        <span class="current-price text-brand">S/. {{ product.price }}</span>
+                                        <span>
+                                            <!-- <span class="save-price font-md color3 ml-15">26% Off</span> -->
+                                            <span class="old-price font-md ml-15">S/. {{ product.regular_price }}</span>
+                                        </span>
+                                    </div>
+                                </div>
+                                <div class="list-group-item mb-10 mt-10">
+                                    <label class="fw-900">Color: </label>
+                                    <div class="custome-checkbox">
+                                        {% with product.variants.all as variants %}
+                                            {% for variant in variants %}
+                                                {% if variant.name == "Color" %}
+                                                    {% for c in variant.items.all %}
+                                                        <input class="form-check-input color-radio" value="{{ c.title }}" type="radio" name="color" id="color-{{ forloop.counter }}">
+                                                        <label class="form-option-label color-label" for="color-{{ forloop.counter }}" style="background-color: {{ c.content }};">
+                                                            <span class="sr-only">{{ c.title }}</span>
+                                                        </label>
+                                                    {% endfor %}
+                                                {% endif %}
+                                            {% endfor %}
+                                        {% endwith %}
+                                    </div>
+                                </div>
+                                
+                                <div class="attr-detail attr-size mb-30">
+                                    <strong class="mr-10">Capacidad: </strong>
+                                    <ul class="list-filter size-filter font-small">
+                                        {% for variant in product.variants.all %}
+                                            {% if variant.name == "Capacidad" %}
+                                                {% for s in variant.items.all %}
+                                                    <li>
+                                                        <input type="radio" id="capacidad-{{ forloop.counter }}" name="size" value="{{ s.title }}" class="capacity-radio">
+                                                        <label for="capacidad-{{ forloop.counter }}" class="capacity-label">
+                                                            {{ s.title }}
+                                                        </label>
+                                                    </li>
+                                                {% endfor %}
+                                            {% endif %}
+                                        {% endfor %}
+                                    </ul>
+                                </div>
+                                
+                                <div class="detail-extralink mb-50">
+                                    <div class="action-btn hover-up" style="margin-right: 10px;">
+                                        <select class="form-select quantity" id="quantity" name="quantity">
+                                            {% for qty in product_stock_range %}
+                                                <option class="stock-{{qty}} quantity" value="{{ qty }}">{{ qty }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                    <div class="product-extra-link2">
+                                        <a class="action-btn hover-up add_to_cart" data-id="{{ product.id }}" href="#">
+                                            <i class="fi-rs-shopping-cart"></i>
+                                        </a>
+                                        <a aria-label="Agregar a favoritos" class="action-btn hover-up" href="shop-wishlist.html">
+                                            <i class="fi-rs-heart"></i>
+                                        </a>
+                                    </div>
+                                </div>
+                                <div class="font-xs">
+                                    <ul class="mr-50 float-start">
+                                        <li class="mb-5">SKU: <a href="javascript:;">{{ product.sku }}</a></li>
+                                    </ul>
+                                    <ul class="float-start">
+                                        <li>Stock:<span class="in-stock text-brand ml-5">
+                                            {% if product.stock > 0 %}
+                                                <span class="text-brand">En Stock ({{ product.stock }})</span>
+                                            {% else %}
+                                                <span class="text-danger">No hay stock</span>
+                                            {% endif %}
+                                        </span></li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="product-info">
+                        <div class="tab-style3">
+                            <ul class="nav nav-tabs text-uppercase">
+                                <li class="nav-item">
+                                    <a class="nav-link active" id="Description-tab" data-bs-toggle="tab" href="#Description">Descripción</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" id="Reviews-tab" data-bs-toggle="tab" href="#Reviews">Reseñas</a>
+                                </li>
+                            </ul>
+                            <div class="tab-content shop_info_tab entry-main-content">
+                                <div class="tab-pane fade show active" id="Description">
+                                    <div class="">
+                                        {{ product.description|safe }}
+                                    </div>
+                                </div>
+                                <div class="tab-pane fade" id="Reviews">
+                                    <div class="comments-area">
+                                        <div class="row">
+                                            <div class="col-lg-12">
+                                                <h4 class="mb-30">Consultas y respuestas de clientes</h4>
+                                                <div class="comment-list">
+                                                    {% for r in product.reviews.all %}
+                                                        <div class="single-comment justify-content-between d-flex mb-30">
+                                                            <div class="user justify-content-between d-flex">
+                                                                <div class="thumb text-center">
+                                                                    <a href="javascript:;" class="font-heading text-brand">{{ r.user.username|title }}</a>
+                                                                </div>
+                                                                <div class="desc">
+                                                                    <div class="d-flex justify-content-between mb-10">
+                                                                        <div class="d-flex align-items-center">
+                                                                            <span class="font-xs text-muted">{{r.date|date:"d M, Y"}}</span>
+                                                                        </div>
+                                                                            <div class="product-rate d-inline-block">
+                                                                                {% if product.average_rating is not None %}
+                                                                                    <div class="product-rating" style="width: {% widthratio product.average_rating 5 100 %}%"></div>
+                                                                                {% else %}
+                                                                                    <div class="product-rating" style="width: 0%"></div>
+                                                                                {% endif %}
+                                                                            </div>
+                                                                    </div>
+                                                                    <p class="mb-10">
+                                                                        {{ r.review }}
+                                                                    </p>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    {% endfor %}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row mt-60">
+                        <div class="col-12">
+                            <h2 class="section-title style-1 mb-30">Productos relacionados</h2>
+                        </div>
+                        <div class="col-12">
+                            <div class="row related-products">
+                                {% for p in related_products %}
+                                        <div class="col-lg-1-5 col-md-4 col-12 col-sm-6">
+                                            <div class="product-cart-wrap mb-30 wow animate__animated animate__fadeIn" data-wow-delay=".1s">
+                                                <div class="product-img-action-wrap">
+                                                    <div class="product-img product-img-zoom">
+                                                        <a href="{% url 'store:product_detail' p.slug %}">
+                                                            <img class="default-img" src="{{p.image.url}}" alt="" />
+                                                        </a>
+                                                    </div>
+                                                    <div class="product-action-1">
+                                                        <a aria-label="Add To Wishlist" class="action-btn" href="shop-wishlist.html"><i class="fi-rs-heart"></i></a>
+                                                    </div>
+                                                </div>
+                                                <div class="product-content-wrap">
+                                                    <div class="product-category">
+                                                        <a href="javascript:;">{{p.category.title}}</a>
+                                                    </div>
+                                                    <h2 class="product-title"><a href="{% url 'store:product_detail' p.slug %}">{{p.name}}</a></h2>
+                                                    <div class="product-rate-cover">
+                                                        <div class="product-rate d-inline-block">
+                                                            {% if p.average_rating is not None %}
+                                                                <div class="product-rating" style="width: {% widthratio p.average_rating 5 100 %}%"></div>
+                                                            {% else %}
+                                                                <div class="product-rating" style="width: 0%"></div>
+                                                            {% endif %}
+                                                        </div>
+                                                        <span class="font-small ml-5 text-muted"> ({{ p.average_rating|floatformat:1|default:0 }})</span>
+                                                    </div>
+                                                    <div class="product-card-bottom">
+                                                        <div class="product-price">
+                                                            <span>S/. {{p.price}}</span>
+                                                            <span class="old-price">S/. {{p.regular_price}}</span>
+                                                        </div>
+                                                        <div class="add-cart">
+                                                            <a class="add" href="shop-cart.html"><i class="fi-rs-shopping-cart mr-5"></i>Cesto </a>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    {% endfor %}
+                            </div>
+                        </div>
+                        
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+<script>
+    $(document).ready(function () {
+        // Carrusel principal
+        $(".product-image-slider").slick({
+            slidesToShow: 1,
+            slidesToScroll: 1,
+            arrows: false,
+            fade: true,
+            asNavFor: ".slider-nav-thumbnails"
+        });
+
+        // Miniaturas
+        $(".slider-nav-thumbnails").slick({
+            slidesToShow: 4,
+            slidesToScroll: 1,
+            asNavFor: ".product-image-slider",
+            focusOnSelect: true,
+            arrows: true
+        });
+    });
+</script>
+{% endblock content %}

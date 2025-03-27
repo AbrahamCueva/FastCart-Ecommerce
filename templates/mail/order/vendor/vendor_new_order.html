@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>¡Nueva Orden!</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f8f9fa;
+            font-family: Arial, sans-serif;
+            padding: 20px;
+        }
+
+        .header {
+            background-color: #d4b5d6;
+            color: #6d0f76;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .content {
+            max-width: 800px;
+            margin: auto;
+        }
+
+        table th, table td {
+            text-align: center;
+            vertical-align: middle;
+        }
+
+        .bio-data p {
+            margin: 0;
+        }
+
+        .footer {
+            margin-top: 30px;
+        }
+
+        .summary-table {
+            width: 50%;
+            margin-left: auto;
+        }
+
+    </style>
+</head>
+
+<body>
+    <div class="content">
+
+        <!-- Encabezado -->
+        <div class="header">
+            <h2>¡Nueva Orden!</h2>
+        </div>
+
+        <!-- Saludo -->
+        <p><strong>¡Hola, {{ item.vendor.username }}!</strong></p>
+        <p>Gracias por confiar en Desphius.<br>El ID de tu orden es <strong>#{{ order.order_id }}</strong>.</p>
+
+        <!-- Artículos de la Orden -->
+        <table class="table table-bordered mt-4">
+            <thead class="table-light">
+                <tr>
+                    <th>Producto</th>
+                    <th>Cantidad</th>
+                    <th>Subtotal</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in order.items %}
+                <tr>
+                    <td>{{ item.product_name }}</td>
+                    <td>{{ item.qty }}</td>
+                    <td>S/. {{ item.sub_total }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <!-- Resumen de la Orden -->
+        <table class="table table-bordered summary-table">
+            <tbody>
+                <tr>
+                    <td><strong>Subtotal:</strong></td>
+                    <td>S/. {{ order.sub_total }}</td>
+                </tr>
+                <tr>
+                    <td><strong>Costo de Envío:</strong></td>
+                    <td>S/. {{ order.shipping }}</td>
+                </tr>
+                <tr>
+                    <td><strong>Impuestos:</strong></td>
+                    <td>S/. {{ order.tax }}</td>
+                </tr>
+                <tr>
+                    <td><strong>Total:</strong></td>
+                    <td>S/. {{ order.total }}</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <!-- Datos del Cliente -->
+        <div class="bio-data mt-4">
+            <h4>Datos del Cliente</h4>
+            <p><strong>Nombre Completo:</strong> {{ order.address.full_name }}</p>
+            <p><strong>Correo Electrónico:</strong> {{ order.address.email }}</p>
+            <p><strong>Teléfono:</strong> {{ order.address.phone }}</p>
+            <p><strong>Dirección:</strong> {{ order.address.address }}</p>
+            <p><strong>Ciudad:</strong> {{ order.address.city }}</p>
+            <p><strong>Estado:</strong> {{ order.address.state }}</p>
+            <p><strong>País:</strong> {{ order.address.country }}</p>
+        </div>
+
+        <!-- Pie de Página -->
+        <div class="footer">
+            <p>No dudes en contactarnos si tienes alguna pregunta.<br>Atentamente,<br><strong>Equipo Desphius</strong></p>
+        </div>
+
+    </div>
+</body>
+
+</html>

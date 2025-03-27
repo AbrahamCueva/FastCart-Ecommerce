@@ -1,0 +1,77 @@
+{% extends 'partials/base.html' %}
+{% load static %}
+
+{% block content %}
+<main class="main pages">
+    <div class="page-header breadcrumb-wrap">
+        <div class="container">
+            <div class="breadcrumb">
+                <a href="/"><i class="fi-rs-home mr-5"></i>Inicio</a>
+                <span></span> Inicio de sesión
+            </div>
+        </div>
+    </div>
+    <div class="page-content pt-150 pb-150">
+        <div class="container">
+            <div class="row">
+                <div class="col-xl-8 col-lg-10 col-md-12 m-auto">
+                    <div class="row">
+                        <div class="col-lg-6 pr-30 d-none d-lg-block">
+                            <img class="border-radius-15" src="{% static 'assets/imgs/page/login-1.png' %}" alt="" />
+                        </div>
+                        <div class="col-lg-6 col-md-8">
+                            <div class="login_wrap widget-taber-content background-white">
+                                <div class="padding_eight_all bg-white">
+                                    <div class="heading_s1">
+                                        <h1 class="mb-5">Inicio de sesión</h1>
+                                        <p class="mb-30">¿No tienes cuenta? <a href="{% url 'userauths:sign-up' %}">Crea una aquí</a></p>
+                                    </div>
+                                    <form method="POST">
+                                        {% csrf_token %}
+                                        {% if form.errors %}
+                                            <div class="alert alert-danger">
+                                                Por favor, corrige los siguientes errores:
+                                                <ul>
+                                                    {% for field, errors in form.errors.items %}
+                                                        {% for error in errors %}
+                                                            <li><strong>{{ field|capfirst }}:</strong> {{ error }}</li>
+                                                        {% endfor %}
+                                                    {% endfor %}
+                                                </ul>
+                                            </div>
+                                        {% endif %}
+                                        <div class="form-group">
+                                            {{form.email}}
+                                            {% if form.email.errors %}
+                                                <span class="text-danger">{{ form.email.errors|striptags }}</span>
+                                            {% endif %}
+                                        </div>
+                                        <div class="form-group">
+                                            {{form.password}}
+                                            {% if form.password.errors %}
+                                                <span class="text-danger">{{ form.password.errors|striptags }}</span>
+                                            {% endif %}
+                                        </div>
+                                        <div class="form-group">
+                                            {{form.captcha}}
+                                            {% if form.captcha.errors %}
+                                                <span class="text-danger">{{ form.captcha.errors|striptags }}</span>
+                                            {% endif %}
+                                        </div>
+                                        <div class="login_footer form-group mb-50">
+                                            <a class="text-muted" href="#">¿Olvidaste tu contraseña?</a>
+                                        </div>
+                                        <div class="form-group">
+                                            <button type="submit" class="btn btn-heading btn-block hover-up" name="login">Entrar</button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+{% endblock content %}

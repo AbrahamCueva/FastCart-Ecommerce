@@ -1,0 +1,179 @@
+{% extends 'partials/base.html' %}
+{% load humanize %}
+{% load static %}
+
+{% block content %} 
+<style>
+    .custom-radio {
+        display: flex;
+        align-items: center; 
+        gap: 8px; 
+    }
+
+    .custom-radio .form-check-input {
+        width: 18px; 
+        height: 18px; 
+        cursor: pointer;
+    }
+
+    .custom-radio .form-check-label {
+        margin-bottom: 0; 
+        cursor: pointer; 
+    }
+</style>
+<main class="main">
+    <div class="page-header breadcrumb-wrap">
+        <div class="container">
+            <div class="breadcrumb">
+                <a href="/" rel="nofollow"><i class="fi-rs-home mr-5"></i>Inicio</a>
+                <span></span> Cesto
+            </div>
+        </div>
+    </div>
+    <div class="container mb-80 mt-50">
+        <div class="row">
+            <div class="col-lg-8 mb-40">
+                <h1 class="heading-2 mb-10">Tu cesto</h1>
+            </div>
+        </div>
+        <form action="{% url 'store:create_order' %}" method="post">
+            {% csrf_token %}
+            <div class="row">
+                <div class="col-lg-9">
+                    <div class="table-responsive shopping-summery">
+                        <table class="table table-wishlist">
+                            <thead>
+                                <tr class="main-heading">
+                                    <th scope="col" class="start pl-30" colspan="2">Producto</th>
+                                    <th scope="col">Precio</th>
+                                    <th scope="col">Cantidad</th>
+                                    <th scope="col">Subtotal</th>
+                                    <th scope="col" class="end">Quitar</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for item in items %}
+                                        <tr class="pt-30 item_div_{{item.id}}">
+                                            <td class="image product-thumbnail pt-40 start pl-30">
+                                                <img style="width: 120px; height: 120px;" src="{{item.product.image.url}}" alt="{{item.product.name}}">
+                                            </td>
+                                            <td class="product-des product-name">
+                                                <h6 class="mb-5">
+                                                    <a class="product-name mb-10 text-heading" href="{% url 'store:product_detail' item.product.slug %}">
+                                                        {{item.product.name}}
+                                                    </a>
+                                                </h6>
+                                            </td>
+                                            <td class="price" data-title="Price">
+                                                <h4 class="text-body">S/. {{ item.price|intcomma }} </h4>
+                                            </td>
+                                            <td class="text-center detail-info">
+                                                <div class="d-flex align-items-center justify-content-center">
+                                                    <button type="button" class="btn btn-primary text-white btn-sm px-2 update_cart_qty" 
+                                                        data-update_type="decrease" 
+                                                        data-item_id="{{item.id}}" 
+                                                        data-product_id="{{item.product.id}}">-</button>
+                                            
+                                                    <input type="text" name="" id="" 
+                                                        class="form-control form-control-sm mx-2 item-qty-{{item.id}}" 
+                                                        style="min-width: 45px; max-width: 60px; text-align: center;" 
+                                                        value="{{item.qty}}" />
+                                            
+                                                    <button type="button" class="btn btn-primary text-white btn-sm px-2 update_cart_qty" 
+                                                        data-update_type="increase" 
+                                                        data-item_id="{{item.id}}" 
+                                                        data-product_id="{{item.product.id}}">+</button>
+                                                </div> 
+                                            </td>                                        
+                                            <td class="price" data-title="Price">
+                                                <h4 class="text-brand">S/. <span class="item_sub_total_{{item.id}}">{{ item.sub_total|floatformat:2 }}</span> </h4>
+                                            </td>
+                                            <td class="action text-center" data-title="Remove" >
+                                                <a class="text-body delete_cart_item" data-item_id="{{item.id}}" data-product_id="{{item.product.id}}">
+                                                    <i class="fi-rs-trash"></i>
+                                                </a>
+                                            </td>
+                                        </tr>
+                                {% endfor %} 
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="divider-2 mb-30"></div>
+                    <div class="row mt-50">
+                        {% for address in addresses %}
+                            <div class="col-lg-4 mb-4">
+                                <div class="card shadow-sm border-0">
+                                    <div class="card-body p-4">
+                                        <h5 class="card-title mb-3 fw-bold">Dirección de envío</h5>
+                                        <hr>
+                                        <p class="mb-1"><strong>Nombres y apellidos:</strong> {{ address.full_name }}</p>
+                                        <p class="mb-1"><strong>Correo electrónico:</strong> {{ address.email }}</p>
+                                        <p class="mb-1"><strong>Teléfono:</strong> {{ address.mobile }}</p>
+                                        <p class="mb-1"><strong>Dirección:</strong> {{ address.address }}</p>
+                                        <p class="mb-1"><strong>Ciudad:</strong> {{ address.city }}</p>
+                                        <p class="mb-1"><strong>Provincia:</strong> {{ address.state }}</p>
+                                        <p class="mb-3"><strong>País:</strong> {{ address.country }}</p>
+                                        <div class="form-check custom-radio">
+                                            <input class="form-check-input" type="radio" name="address" id="address{{ address.id }}" value="{{ address.id }}">
+                                            <label class="form-check-label" for="address{{ address.id }}">
+                                                Seleccionar esta dirección
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>                        
+                        {% endfor %}
+                    </div>
+                </div>
+                <div class="col-lg-3">
+                    <div class="border p-md-4 cart-totals ml-30">
+                        <div class="table-responsive">
+                            <table class="table no-border">
+                                <tbody>
+                                    <tr>
+                                        <td class="cart_total_label">
+                                            <h6 class="text-muted">Subtotal</h6>
+                                        </td>
+                                        <td class="cart_total_amount">
+                                            <h4 class="text-brand text-end">S/. <span class="cart_sub_total">{{ cart_sub_total|floatformat:2 }}</span></h4>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td scope="col" colspan="2">
+                                            <div class="divider-2 mt-10 mb-10"></div>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="cart_total_label">
+                                            <h6 class="text-muted">Envío</h6>
+                                        </td>
+                                        <td class="cart_total_amount">
+                                            <h5 class="text-heading text-end">S/. 0.00</h4</td> </tr> <tr>
+                                        <td class="cart_total_label">
+                                            <h6 class="text-muted">Estimado</h6>
+                                        </td>
+                                        <td class="cart_total_amount">
+                                            <h5 class="text-heading text-end">S/. 0.00</h4</td> </tr> <tr>
+                                        <td scope="col" colspan="2">
+                                            <div class="divider-2 mt-10 mb-10"></div>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="cart_total_label">
+                                            <h6 class="text-muted">Total</h6>
+                                        </td>
+                                        <td class="cart_total_amount">
+                                            <h4 class="text-brand text-end">S/. <span class="cart_sub_total">{{ cart_sub_total|floatformat:2 }}</span></h4>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <button type="submit" class="btn mb-20 w-100">Ir a pagar <i class="fi-rs-sign-out ml-15"></i></button>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</main>
+{% endblock content %}

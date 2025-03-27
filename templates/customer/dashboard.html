@@ -1,0 +1,136 @@
+{% extends 'partials/base.html' %}
+{% load humanize %}
+{% load static %}
+
+{% block content %}
+<main class="main pages">
+    <div class="page-header breadcrumb-wrap">
+        <div class="container">
+            <div class="breadcrumb">
+                <a href="/" rel="nofollow"><i class="fi-rs-home mr-5"></i>Inicio</a>
+                <span></span> Dashboard
+            </div>
+        </div>
+    </div>
+    <div class="page-content pt-150 pb-150">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-10 m-auto">
+                    <div class="row">
+                        {% include 'customer/sidebar.html' %}
+                        <div class="col-md-9">
+                            <div class="tab-content account dashboard-content pl-50">
+                                <div class="tab-pane fade active show" id="dashboard" role="tabpanel" aria-labelledby="dashboard-tab">
+                                    <div class="card">
+                                        <div class="card-header">
+                                            <h3 class="mb-0">Tus Dashboard</h3>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-4">
+                                            <div class="card">
+                                                <div class="card-body">
+                                                    <p class="text-muted mb-0">
+                                                        <i class="fi-rs-shopping-cart text-success"></i> 
+                                                        <strong>{{orders.count}} Pedidos</strong>
+                                                    </p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="card">
+                                                <div class="card-body">
+                                                    <p class="text-muted mb-0">
+                                                        <i class="fi-rs-dollar text-warning"></i> <strong>S/. {{ total_spent|floatformat:2 }} Total gastado</strong>
+                                                    </p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="card">
+                                                <div class="card-body">
+                                                    <p class="text-muted mb-0">
+                                                        <i class="fi-rs-bell text-info"></i> <strong>{{notis.count}} Notificaciones</strong>
+                                                    </p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    {% for order in orders %}
+                                        <div class="card mt-3">
+                                            <div class="card-body">
+                                                <h5 class="card-title">Número de pedido #{{order.order_id}}</h5>
+                                                {% for item in order.order_items.all %}
+                                                    <div class="row">
+                                                        <div class="col-md-6">
+                                                            <div>
+                                                                <img src="{{item.product.image.url}}" alt="" width="75" class="img-fluid rounded">
+                                                            </div>
+                                                            <p class="mb-2"><strong>{{item.product.name}}</strong></p>
+                                                            <p class="mb-2">Proveedor: {{item.product.vendor.profile.full_name}}</p>
+                                                            
+                                                            {% if item.color %}
+                                                                <p class="mb-2">Color: {{item.color}}</p>
+                                                            {% endif %}
+                                                            
+                                                            {% if item.size %}
+                                                                <p class="mb-2">Tamaño: {{item.size}}</p>
+                                                            {% endif %}
+                                                            <p class="mb-0">S/. {{item.price}}</p>
+                                                        </div>
+                                                        <div class="col-md-6">
+                                                            <p class="mb-2">Estado: 
+                                                                {% if order.order_status == 'Pending' %}
+                                                                    <span class="badge bg-warning text-dark">Pendiente</span>
+                                                                {% endif %}
+                                                                {% if order.order_status == 'Fullfiled' %}
+                                                                    <span class="badge bg-success text-dark">Entregado</span>
+                                                                {% endif %}
+                                                                {% if order.order_status == 'Cancelled' %}
+                                                                    <span class="badge bg-danger text-dark">Cancelado</span>
+                                                                {% endif %}
+                                                                {% if order.order_status == 'Shipped' %}
+                                                                    <span class="badge bg-info text-dark">Enviado</span>
+                                                                {% endif %}
+                                                                {% if order.order_status == 'Processing' %}
+                                                                    <span class="badge bg-secondary text-dark">En proceso</span>
+                                                                {% endif %}
+                                                            </p>
+                                                            <p class="mb-2">Estado de pago:
+                                                                {% if order.payment_status == 'Paid' %}
+                                                                <span class="badge bg-success text-dark">Pagado</span>
+                                                                {% endif %}
+                                                                {% if order.payment_status == 'Processing' %}
+                                                                    <span class="badge bg-info text-dark">En proceso</span>
+                                                                {% endif %}
+                                                                {% if order.payment_status == 'Failed' %}
+                                                                    <span class="badge bg-danger text-dark">Fallido</span>
+                                                                {% endif %}
+                                                            </p>
+                                                            <p class="mb-2">Fecha de pedido: {{order.date}}</p>
+                                                        </div>
+                                                    </div>
+                                                    <hr>
+                                                    <p class="mb-0">Se pago usando {{order.payment_method}}</p>
+                                                    <div class="d-flex justify-content-between">
+                                                        <div></div>
+                                                        <div><strong>Total: S/. {{order.total|floatformat:2}}</strong></div>
+                                                    </div>
+                                                {% endfor %}
+                                                    
+                                                <div class="mt-3">
+                                                    <a href="{% url 'customer:order_detail' order.order_id %}" class="btn btn-primary">Ver pedido</a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    {% endfor %}                                        
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+{% endblock content %}

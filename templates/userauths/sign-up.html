@@ -1,0 +1,95 @@
+{% extends 'partials/base.html' %}
+{% load static %}
+
+{% block content %} 
+<main class="main pages">
+    <div class="page-header breadcrumb-wrap">
+        <div class="container">
+            <div class="breadcrumb">
+                <a href="/"><i class="fi-rs-home mr-5"></i> Inicio</a>
+                <span></span> Crear una cuenta
+            </div>
+        </div>
+    </div>
+    <div class="page-content pt-150 pb-150">
+        <div class="container">
+            <div class="row">
+                <div class="col-xl-8 col-lg-10 col-md-12 m-auto">
+                    <div class="row">
+                        <div class="col-lg-12 col-md-8">
+                            <div class="login_wrap widget-taber-content background-white">
+                                <div class="padding_eight_all bg-white">
+                                    <div class="heading_s1">
+                                        <h1 class="mb-5">Crear una cuenta</h1>
+                                        <p class="mb-30">¿Ya tienes cuenta? <a href="{% url 'userauths:sign-in' %}">Inicia sesión</a></p>
+                                    </div>
+                                    <form method="POST">
+                                        {% csrf_token %}
+                                        {% if form.errors %}
+                                            <div class="alert alert-danger">
+                                                Por favor, corrige los siguientes errores:
+                                                <ul>
+                                                    {% for field, errors in form.errors.items %}
+                                                        {% for error in errors %}
+                                                            <li><strong>{{ field|capfirst }}:</strong> {{ error }}</li>
+                                                        {% endfor %}
+                                                    {% endfor %}
+                                                </ul>
+                                            </div>
+                                        {% endif %}
+                                        <div class="form-group">
+                                            {{form.full_name}}
+                                            {% if form.full_name.errors %}
+                                                <span class="text-danger">{{ form.full_name.errors|striptags }}</span>
+                                            {% endif %}
+                                        </div>
+                                        <div class="form-group">
+                                            {{form.mobile}}
+                                            {% if form.mobile.errors %}
+                                                <span class="text-danger">{{ form.mobile.errors|striptags }}</span>
+                                            {% endif %}
+                                        </div>
+                                        <div class="form-group">
+                                            {{form.email}}
+                                            {% if form.email.errors %}
+                                                <span class="text-danger">{{ form.email.errors|striptags }}</span>
+                                            {% endif %}
+                                        </div>
+                                        <div class="form-group">
+                                            {{form.password1}}
+                                            {% if form.password1.errors %}
+                                                <span class="text-danger">{{ form.password1.errors|striptags }}</span>
+                                            {% endif %}
+                                        </div>
+                                        <div class="form-group">
+                                            {{form.password2}}
+                                            {% if form.password2.errors %}
+                                                <span class="text-danger">{{ form.password2.errors|striptags }}</span>
+                                            {% endif %}
+                                        </div>
+                                        <div class="form-group">
+                                            {{form.user_type}}
+                                            {% if form.user_type.errors %}
+                                                <span class="text-danger">{{ form.user_type.errors|striptags }}</span>
+                                            {% endif %}
+                                        </div>
+                                        <div class="form-group">
+                                            {{form.captcha}}
+                                            {% if form.captcha.errors %}
+                                                <span class="text-danger">{{ form.captcha.errors|striptags }}</span>
+                                            {% endif %}
+                                        </div>
+                                        <div class="form-group mb-30">
+                                            <button type="submit" class="btn btn-fill-out btn-block hover-up font-weight-bold">Registrarse</button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+{% endblock content %}

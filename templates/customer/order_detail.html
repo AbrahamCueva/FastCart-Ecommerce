@@ -1,0 +1,152 @@
+{% extends 'partials/base.html' %}
+{% load humanize %}
+{% load static %}
+
+{% block content %}
+<main class="main pages">
+    <div class="page-header breadcrumb-wrap">
+        <div class="container">
+            <div class="breadcrumb">
+                <a href="/" rel="nofollow"><i class="fi-rs-home mr-5"></i>Inicio</a>
+                <span></span> Tus pedidos
+            </div>
+        </div>
+    </div>
+    <div class="page-content pt-150 pb-150">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-10 m-auto">
+                    <div class="row">
+                        <div class="col-md-9">
+                            <a href="{% url 'customer:orders' %}" class="btn btn-sm btn-primary mb-3"><i class="fas fa-arrow-left"></i> Volver</a>
+                            <div class="card">
+                                <div class="card-body">
+                                    <h4 class="card-title mb-4">Detalle del Pedido #{{order.order_id}}</h4>                                               
+                                                {% for item in order.order_items.all %}
+                                                    <div>
+                                                        <div class="row">
+                                                            <div class="col-md-6">
+                                                                <div>
+                                                                    <img src="{{item.product.image.url}}" alt="" width="75" class="img-fluid rounded">
+                                                                </div>
+                                                                <p class="mb-2"><strong>{{item.product.name}}</strong></p>
+                                                                <p class="mb-2">Proveedor: {{item.product.vendor.profile.full_name}}</p>
+                                                                
+                                                                {% if item.color %}
+                                                                    <p class="mb-2">Color: {{item.color}}</p>
+                                                                {% endif %}
+                                                                
+                                                                {% if item.size %}
+                                                                    <p class="mb-2">Tamaño: {{item.size}}</p>
+                                                                {% endif %}
+                                                                <p class="mb-0">S/. {{item.price}}</p>
+                                                            </div>
+                                                            <div class="col-md-6">
+                                                                <p class="mb-2">Estado: 
+                                                                    {% if order.order_status == 'Pending' %}
+                                                                        <span class="badge bg-warning text-dark">Pendiente</span>
+                                                                    {% endif %}
+                                                                    {% if order.order_status == 'Fullfiled' %}
+                                                                        <span class="badge bg-success text-dark">Entregado</span>
+                                                                    {% endif %}
+                                                                    {% if order.order_status == 'Cancelled' %}
+                                                                        <span class="badge bg-danger text-dark">Cancelado</span>
+                                                                    {% endif %}
+                                                                    {% if order.order_status == 'Shipped' %}
+                                                                        <span class="badge bg-info text-dark">Enviado</span>
+                                                                    {% endif %}
+                                                                    {% if order.order_status == 'Processing' %}
+                                                                        <span class="badge bg-secondary text-dark">En proceso</span>
+                                                                    {% endif %}
+                                                                </p>
+                                                                <p class="mb-2">Estado de pago:
+                                                                    {% if order.payment_status == 'Paid' %}
+                                                                    <span class="badge bg-success text-dark">Pagado</span>
+                                                                    {% endif %}
+                                                                    {% if order.payment_status == 'Processing' %}
+                                                                        <span class="badge bg-info text-dark">En proceso</span>
+                                                                    {% endif %}
+                                                                    {% if order.payment_status == 'Failed' %}
+                                                                        <span class="badge bg-danger text-dark">Fallido</span>
+                                                                    {% endif %}
+                                                                </p>
+                                                                <p class="mb-2">Fecha de pedido: {{order.date}}</p>
+                                                            </div>
+                                                        </div>
+                                                        <hr>
+                                                        <div class="d-flex justify-content-between">
+                                                            <div></div>
+                                                            <div><strong>Total: S/. {{order.total|floatformat:2}}</strong></div>
+                                                        </div>
+                                                        <br>
+                                                        <div class="d-flex justify-content-between">
+                                                            <p class="mb-0">Se pago usando {{order.payment_method}}</p>
+                                                            <a href="{% url 'customer:order_item_detail' order.order_id item.item_id %}" class="btn btn-primary sm ">
+                                                                <i class="fa-solid fa-eye"></i>
+                                                            </a>
+                                                        </div>
+                                                        <hr>
+                                                    </div>
+                                                {% endfor %}
+                                </div>
+                            </div>
+
+                            <div class="card mt-4">
+                                <div class="card-body">
+                                    <h5 class="card-title">Resumen del Pedido</h5>
+                                    <table class="table table-sm">
+                                        <tbody>
+                                            <tr>
+                                                <th scope="row">Subtotal:</th>
+                                                <td>S/ {{order.sub_total}}</td>
+                                            </tr>
+                                            <tr>
+                                                <th scope="row">Envío:</th>
+                                                <td>S/ {{order.shipping}}</td>
+                                            </tr>
+                                            <tr>
+                                                <th scope="row">Impuesto:</th>
+                                                <td>S/ {{order.tax}}</td>
+                                            </tr>
+                                            
+                                            {% if order.saved %}
+                                                <tr>
+                                                    <th scope="row">Descuento:</th>
+                                                    <td>- S/ {{order.saved}}</td>
+                                                </tr>
+                                            {% endif %}
+                                                
+                                            <tr>
+                                                <th scope="row">Total:</th>
+                                                <td>S/ {{order.total}}</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+
+                            <div class="card mt-4">
+                                <div class="card-body">
+                                    <h5 class="card-title">Datos de Cliente</h5>
+                                    <p><strong>Nombre Completo:</strong> {{order.address.full_name}}</p>
+                                    <p><strong>Correo electrónico:</strong> {{order.address.email}}</p>
+                                    <p><strong>Número de celular:</strong> {{order.address.mobile}}</p>
+                                </div>
+                            </div>
+                            <div class="card mt-4">
+                                <div class="card-body">
+                                    <h5 class="card-title">Datos de Envío</h5>
+                                    <p><strong>Dirección:</strong> {{order.address.address}}</p>
+                                    <p><strong>Ciudad:</strong> {{order.address.city}}</p>
+                                    <p><strong>Distrito:</strong> {{order.address.state}}</p>
+                                    <p><strong>País:</strong> {{order.address.country}}</p>
+                                    <p><strong>Código de postal:</strong> {{order.address.zip_code}}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock content %}

@@ -1,0 +1,46 @@
+{% extends 'partials/base.html' %}
+{% load humanize %}
+{% load static %}
+
+{% block content %} 
+<main class="main">
+    <div class="container py-5">
+        <div class="row justify-content-center">
+            <div class="col-md-6">
+                
+                {% if payment_status == "paid" %}
+                    <div class="card shadow-sm">
+                        <div class="card-body text-center p-5">
+                            <i class="fas fa-check-circle fa-4x text-success mb-4"></i>
+                            <h2 class="card-title mb-3">¡Pedido Completado! </h2>
+                            <p class="card-text text-muted mb-4">
+                                Gracias por tu compra. Tu pedido ha sido procesado con éxito.
+                            </p>  
+                            <p class="card-text text-muted mb-4">
+                                Su pedido <span style="color: green;" class="fw-bold">#{{order.order_id}}</span> ha sido completado. <br>
+                                Hemos enviado los detalles del pedido a su correo electrónico.
+                            </p>
+                            <a href="#" class="btn btn-primary">
+                                <i class="fa-solid fa-cart-shopping"></i> Ver pedidos
+                            </a>
+                        </div>
+                    </div>
+                {% endif %}
+
+                {% if payment_status == "failed" %}
+                    <div class="card shadow-sm">
+                        <div class="card-body text-center p-5">
+                            <i class="fas fa-xmark-circle fa-4x text-danger mb-4"></i>
+                            <h2 class="card-title mb-3">¡Pedido no completado! </h2>
+                            <a href="{% url 'store:checkout' order.order_id %}" class="btn btn-primary">
+                                <i class="fa-solid fa-refresh"></i> Volver a intentar
+                            </a>
+                        </div>
+                    </div>
+                {% endif %}
+                    
+            </div>
+        </div>
+    </div>
+</main>
+{% endblock content %}

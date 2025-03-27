@@ -1,0 +1,220 @@
+{% extends 'partials/base.html' %}
+{% load humanize %}
+{% load static %}
+
+{% block content %}
+<main class="main pages">
+    <div class="page-header breadcrumb-wrap">
+        <div class="container">
+            <div class="breadcrumb">
+                <a href="/" rel="nofollow"><i class="fas fa-home me-1"></i>Inicio</a>
+                <span></span> Dashboard
+            </div>
+        </div>
+    </div>
+
+    <div class="page-content pt-50 pb-50">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-10 m-auto">
+                    <div class="row">
+                        {% include 'vendor/sidebar.html' %}
+                        <div class="col-md-9">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h3 class="mb-0">Resumen del Dashboard</h3>
+                                </div>
+                                <div class="card-body">
+                                    <div class="row">
+                                        <div class="col-md-4 mb-3">
+                                            <div class="card dashboard-card rounded text-center">
+                                                <div class="card-body">
+                                                    <i class="fas fa-box fa-2x text-primary"></i>
+                                                    <h5 class="card-title "> {{products.count}} Productos</h5>
+                                                    <p class="card-text ">Productos</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4 mb-3">
+                                            <div class="card dashboard-card text-center rounded">
+                                                <div class="card-body">
+                                                    <i class="fas fa-shopping-cart fa-2x text-danger"></i>
+                                                    <h5 class="card-title">{{orders.count}} Pedidos</h5>
+                                                    <p class="card-text">Pedidos</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4 mb-3">
+                                            <div class="card dashboard-card rounded text-center">
+                                                <div class="card-body">
+                                                    <i class="fas fa-dollar-sign fa-2x text-warning"></i>
+                                                    <h5 class="card-title">S/. {{revenue|floatformat:2|intcomma|default:"0.00"}}</h5>
+                                                    <p class="card-text">Ganancia</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4 mb-3">
+                                            <div class="card dashboard-card rounded text-center">
+                                                <div class="card-body">
+                                                    <i class="fas fa-bell fa-2x text-info"></i>
+                                                    <h5 class="card-title"> {{notis.count}} Notificaciones</h5>
+                                                    <p class="card-text">Notificaciones</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4 mb-3">
+                                            <div class="card dashboard-card rounded text-center">
+                                                <div class="card-body">
+                                                    <i class="fas fa-star fa-2x text-success"></i>
+                                                    <h5 class="card-title">{{reviews.count}} Reseñas</h5>
+                                                    <p class="card-text">Reseñas</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4 mb-3">
+                                            <div class="card dashboard-card rounded text-center">
+                                                <div class="card-body">
+                                                    <i class="fas fa-chart-bar fa-2x text-secondary"></i>
+                                                    <h5 class="card-title">{{rating|floatformat}} Calificaciones</h5>
+                                                    <p class="card-text">Calificaciones</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="card mt-3">
+                                <div class="card-header">
+                                    <h3 class="mb-0">Productos ({{products.count}})</h3>
+                                </div>
+                                <div class="card-body">
+                                    <div class="row">
+                                        
+                                        {% for p in products %}
+                                            <div class="col-md-6 mb-4">
+                                                <div class="card product-card">
+                                                    <div class="row g-0">
+                                                        <div class="col-md-6">
+                                                            <img src="{{p.image.url}}" style="width: 100%; height: 250px; object-fit: cover;" alt="{{ p.name }}" class="card-img-top rounded">
+                                                        </div>
+                                                        <div class="col-md-6">
+                                                            <div class="card-body">
+                                                                <h6 class="card-title">{{ p.name }}</h6>
+                                                                <div class="product-rate-cover">
+                                                                    <div class="product-rate d-inline-block">
+                                                                        {% if p.average_rating is not None %}
+                                                                            <div class="product-rating" style="width: {% widthratio p.average_rating 5 100 %}%"></div>
+                                                                        {% else %}
+                                                                            <div class="product-rating" style="width: 0%"></div>
+                                                                        {% endif %}
+                                                                    </div>
+                                                                    <span class="font-small ml-5 text-muted"> ({{ p.average_rating|floatformat:1|default:0 }})</span>
+                                                                </div>
+                                                                <p class="card-text"><strong>Precio</strong>: S/. {{ p.price|floatformat:2|intcomma }}</p>
+                                                                <p class="card-text"><strong>Calificaciones</strong>: {{ p.average_rating|floatformat|default:"Sin calificaiones" }} Calificaciones</p>
+                                                                <p class="card-text"><strong>Reseñas</strong>: {{ p.reviews.all.count }} Reseñas</p>
+                                                                <p class="card-text"><strong>Pedidos</strong>: {{ p.vendor_orders.all.count }} Pedidos</p>
+                                                                <div class="mt-3">
+                                                                    <a href="{% url 'store:product_detail' p.slug %}" target="_blank" class="btn btn-sm btn-outline-primary">
+                                                                        <i class="fas fa-eye me-1"></i>
+                                                                    </a>
+                                                                    <a href="#" class="btn btn-sm btn-outline-secondary ms-2">
+                                                                        <i class="fas fa-edit me-1"></i>
+                                                                    </a>
+                                                                    <a href="#" class="btn btn-sm btn-outline-danger ms-2">
+                                                                        <i class="fas fa-trash-alt me-1"></i>
+                                                                    </a>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        {% endfor %}
+                                            
+                                    </div>
+                                    <div class="text-center mt-4">
+                                        <a href="{% url 'vendor:products' %}" class="btn btn-primary">Ver Todos los Productos</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+{% endblock content %}
+
+<style>
+    .dashboard-menu .nav-link {
+        color: #333;
+        padding: 10px 15px;
+        border-radius: 5px;
+        margin-bottom: 5px;
+        display: flex;
+        align-items: center;
+    }
+
+    .dashboard-menu .nav-link.active {
+        background-color: #f0f0f0;
+        color: #007bff;
+    }
+
+    .dashboard-card {
+        border: none;
+        border-radius: 10px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+    }
+
+    .dashboard-card .card-body {
+        padding: 20px;
+        text-align: center;
+    }
+
+    .dashboard-card .card-title {
+        margin-top: 10px;
+        margin-bottom: 0;
+        font-size: 1.2rem;
+        font-weight: bold;
+    }
+
+    .dashboard-card .card-text {
+        color: #777; /* Changed to a neutral color */
+        font-size: 0.9rem;
+    }
+
+    .product-card {
+        border: 1px solid #ddd;
+        border-radius: 10px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.03);
+    }
+
+    .product-card img {
+        border-top-left-radius: 10px;
+        border-top-right-radius: 10px;
+        height: 200px; /* Adjust as needed */
+        object-fit: cover;
+    }
+
+    .product-card .card-body {
+        padding: 15px;
+    }
+
+    .product-card .card-title {
+        font-size: 1rem;
+        margin-bottom: 5px;
+    }
+
+    .product-card .rating {
+        font-size: 0.8rem;
+        color: #777;
+        margin-bottom: 5px;
+    }
+
+    .product-card .rating .fas, .product-card .rating .far, .product-card .rating .fa-star-half-alt {
+        margin-right: 2px;
+    }
+</style>

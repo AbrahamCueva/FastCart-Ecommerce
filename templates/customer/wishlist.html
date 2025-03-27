@@ -1,0 +1,135 @@
+{% extends 'partials/base.html' %}
+{% load humanize %}
+{% load static %}
+
+{% block content %}
+<main class="main pages">
+    <div class="page-header breadcrumb-wrap">
+        <div class="container">
+            <div class="breadcrumb">
+                <a href="/" rel="nofollow"><i class="fi-rs-home mr-5"></i>Inicio</a>
+                <span></span> Wishlist
+            </div>
+        </div>
+    </div>
+    <div class="page-content pt-150 pb-150">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-10 m-auto">
+                    <div class="row">
+                        {% include 'customer/sidebar.html' %}
+                        <div class="col-md-9">
+                            <div class="tab-content account wishlist pl-50">
+                                <div class="card">
+                                    <div class="card-header">
+                                        <h3 class="mb-0">Tus Favoritos ({{ wishlist.paginator.count }})</h3>
+                                    </div>
+                                </div>
+                                <div class="table-responsive shopping-summery">
+                                    <table class="table table-wishlist">
+                                        <thead>
+                                            <tr class="main-heading">
+                                                <th class="start pl-30">#</th>
+                                                <th scope="col">Producto</th>
+                                                <th scope="col">Precio</th>
+                                                <th scope="col">Acción</th>
+                                                <th scope="col">Quitar</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {% for w in wishlist %}
+                                                <tr class="pt-30">
+                                                    <td class="image product-thumbnail pt-40 pl-30">
+                                                        <a href="{% url 'store:product_detail' w.product.slug %}">
+                                                            <img src="{{ w.product.image.url }}" alt="#">
+                                                        </a>
+                                                    </td>
+                                                    <td class="product-des product-name">
+                                                        <h6>
+                                                            <a class="product-name mb-10" href="{% url 'store:product_detail' w.product.slug %}">
+                                                                {{ w.product.name }}
+                                                            </a>
+                                                        </h6>
+                                                        <p><strong>Categoría: </strong>{{ w.product.category.title }}</p>
+                                                        <div class="product-rate-cover">
+                                                            <div class="product-rate d-inline-block">
+                                                                {% if w.product.average_rating is not None %}
+                                                                    <div class="product-rating" style="width: {% widthratio w.product.average_rating 5 100 %}%"></div>
+                                                                {% else %}
+                                                                    <div class="product-rating" style="width: 0%"></div>
+                                                                {% endif %}
+                                                            </div>
+                                                            <span class="font-small ml-5 text-muted">({{ w.product.average_rating|floatformat:1|default:0 }})</span>
+                                                        </div>
+                                                    </td>
+                                                    <td class="price" data-title="Price">
+                                                        <h3 class="text-brand">S/. {{ w.product.price }}</h3>
+                                                    </td>
+                                                    <td class="text-right" data-title="Cart">
+                                                        <input type="hidden" class="quantity" value="1" name="" id="">
+                                                        <button type="button" class="btn btn-sm add_to_cart" data-id="{{ w.product.id }}">Agregar al cesto</button>
+                                                    </td>
+                                                    <td class="action text-center" data-title="Remove">
+                                                        <a href="{% url 'customer:remove_from_wishlist' w.id %}" class="text-body"><i class="fi-rs-trash"></i></a>
+                                                    </td>
+                                                </tr>
+                                            {% empty %}
+                                                <tr>
+                                                    <td colspan="5" class="text-center">Tu lista de deseos está vacía.</td>
+                                                </tr>
+                                            {% endfor %}
+                                        </tbody>
+                                    </table>
+                                </div>
+
+                                <div class="pagination-area mt-20 mb-20">
+                                    <nav aria-label="Page navigation example">
+                                        <ul class="pagination justify-content-start">
+
+                                            {% if wishlist.has_previous %}
+                                                <li class="page-item">
+                                                    <a class="page-link" href="?page={{ wishlist.previous_page_number }}">
+                                                        <i class="fi-rs-arrow-small-left"></i>
+                                                    </a>
+                                                </li>
+                                            {% endif %}
+
+                                            {% for num in wishlist.paginator.page_range %}
+                                                {% if num == wishlist.number %}
+                                                    <li class="page-item active">
+                                                        <a class="page-link" href="#">{{ num }}</a>
+                                                    </li>
+                                                {% elif num >= wishlist.number|add:-1 and num <= wishlist.number|add:1 %}
+                                                    <li class="page-item">
+                                                        <a class="page-link" href="?page={{ num }}">{{ num }}</a>
+                                                    </li>
+                                                {% elif num == 1 or num == wishlist.paginator.num_pages %}
+                                                    <li class="page-item">
+                                                        <a class="page-link" href="?page={{ num }}">{{ num }}</a>
+                                                    </li>
+                                                {% elif num == wishlist.number|add:2 %}
+                                                    <li class="page-item"><a class="page-link dot" href="#">...</a></li>
+                                                {% endif %}
+                                            {% endfor %}
+
+                                            {% if wishlist.has_next %}
+                                                <li class="page-item">
+                                                    <a class="page-link" href="?page={{ wishlist.next_page_number }}">
+                                                        <i class="fi-rs-arrow-small-right"></i>
+                                                    </a>
+                                                </li>
+                                            {% endif %}
+
+                                        </ul>
+                                    </nav>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+{% endblock content %}
