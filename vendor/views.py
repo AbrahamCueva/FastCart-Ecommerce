@@ -141,4 +141,34 @@ def coupon_create(request):
     messages.success(request, "Cupón creado")
     return redirect("vendor:coupons")
 
+@login_required
+def reviews(request):
+    reviews_list = store_models.Review.objects.filter(product__vendor=request.user)
+    reviews = paginate_queryset(request, reviews_list, 10)
+    rating = request.GET.get("rating")
+    date = request.GET.get("date")
+    
+    if rating:
+        reviews = reviews.filter(rating=rating)
+    
+    if date:
+        reviews = reviews.order_by(date)
+        
+    context = {
+        "reviews": reviews,
+        "reviews_list": reviews_list,
+    }
+    return render(request, "vendor/reviews.html", context)
+
+@login_required
+def update_repply(request, id):
+    review = store_models.Review.objects.get(id=id)
+    
+    if request.method == "POST":
+        repply = request.POST.get("repply")
+        review.repply = repply
+        review.save()
+        
+    messages.success(request, "Respuesta agregada")
+    return redirect("vendor:reviews")
 
