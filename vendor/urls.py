@@ -21,4 +21,7 @@ urlpatterns = [
     
     path("reviews/", views.reviews, name="reviews"),
     path("update_repply/<id>", views.update_repply, name="update_repply"),
+    
+    path("notis/", views.notis, name="notis"),
+    path("mark_noti_seen/<id>", views.mark_noti_seen, name="mark_noti_seen"),
 ]

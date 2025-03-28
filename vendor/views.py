@@ -172,3 +172,19 @@ def update_repply(request, id):
     messages.success(request, "Respuesta agregada")
     return redirect("vendor:reviews")
 
+@login_required
+def notis(request):
+    notis_list = vendor_models.Notifications.objects.filter(user=request.user, seen=False)
+    notis = paginate_queryset(request, notis_list, 1)
+    context = {
+        "notis": notis,
+    }
+    return render(request, "vendor/notis.html", context)
+
+@login_required
+def mark_noti_seen(request, id):
+    noti = vendor_models.Notifications.objects.get(user=request.user, id=id)
+    noti.seen = True
+    noti.save()
+    messages.success(request, "Notificacion vista")
+    return redirect("vendor:notis")

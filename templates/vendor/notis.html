@@ -1,0 +1,114 @@
+{% extends 'partials/base.html' %}
+{% load humanize %}
+{% load static %}
+
+{% block content %}
+<main class="main pages">
+    <div class="page-header breadcrumb-wrap">
+        <div class="container">
+            <div class="breadcrumb">
+                <a href="/" rel="nofollow"><i class="fi-rs-home mr-5"></i>Inicio</a>
+                <span></span> Notificaciones
+            </div>
+        </div>
+    </div>
+    <div class="page-content pt-150 pb-150">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-10 m-auto">
+                    <div class="row">
+                        {% include 'vendor/sidebar.html' %}
+                        <div class="col-md-9">
+                            <div class="tab-content account orders-content pl-50">
+                                <div class="tab-pane fade active show" id="orders" role="tabpanel" aria-labelledby="orders-tab">
+                                  <div class="card">
+                                    <div class="card-header d-flex justify-content-between align-items-center">
+                                        <h3 class="mb-0">
+                                            <i class="fas fa-bell text-primary"></i> Notificaciones ({{ notis.paginator.count }} No leídas)
+                                        </h3>
+                                    </div>
+                                    <div class="card-body">
+                                        {% for n in notis %}
+                                        <div class="card shadow-sm p-3 mb-3">
+                                            <div class="card-body">
+                                                <h5 class="card-title text-uppercase">
+                                                    {% if n.type == "New Order" %}
+                                                        <i class="fas fa-info-circle text-info"></i> Nuevo pedido
+                                                    {% elif n.type == "Items shipped" %}
+                                                        <i class="fas fa-shipping-fast text-secondary"></i> Pedido Enviado
+                                                    {% elif n.type == "Item delivered" %}
+                                                        <i class="fas fa-box-open text-success"></i> Pedido Entregado
+                                                    {% else %}
+                                                        <i class="fas fa-bell text-warning"></i> Notificación
+                                                    {% endif %}
+                                                </h5>              
+                                                <p class="text-muted mb-1">
+                                                    <i class="fas fa-calendar-alt"></i> Date: {{ n.date|date:"d M Y" }}
+                                                </p>                                  
+                                                <p class="text-muted mb-1">
+                                                    <i class="fas fa-box"></i> Producto: {{ n.order.product.name }}
+                                                </p>
+                                                <a href="{% url 'vendor:mark_noti_seen' n.id %}" class="btn btn-primary btn-sm">
+                                                    <i class="fas fa-check"></i> Marcar como leído
+                                                </a>
+                                            </div>
+                                        </div>
+                                        {% empty %}
+                                            <p class="text-center text-muted">No hay notificaciones nuevas.</p>
+                                        {% endfor %}
+                                    </div>
+                                    
+                                    
+                                    <div class="pagination-area mt-20 mb-20">
+                                        <nav aria-label="Page navigation example">
+                                            <ul class="pagination justify-content-start">
+            
+                                                {% if notis.has_previous %}
+                                                    <li class="page-item">
+                                                        <a class="page-link" href="?page={{ notis.previous_page_number }}">
+                                                            <i class="fi-rs-arrow-small-left"></i>
+                                                        </a>
+                                                    </li>
+                                                {% endif %}
+            
+                                                {% for num in notis.paginator.page_range %}
+                                                    {% if num == notis.number %}
+                                                        <li class="page-item active">
+                                                            <a class="page-link" href="#">{{ num }}</a>
+                                                        </li>
+                                                    {% elif num >= notis.number|add:-1 and num <= notis.number|add:1 %}
+                                                        <li class="page-item">
+                                                            <a class="page-link" href="?page={{ num }}">{{ num }}</a>
+                                                        </li>
+                                                    {% elif num == 1 or num == notis.paginator.num_pages %}
+                                                        <li class="page-item">
+                                                            <a class="page-link" href="?page={{ num }}">{{ num }}</a>
+                                                        </li>
+                                                    {% elif num == notis.number|add:2 %}
+                                                        <li class="page-item"><a class="page-link dot" href="#">...</a></li>
+                                                    {% endif %}
+                                                {% endfor %}
+            
+                                                {% if notis.has_next %}
+                                                    <li class="page-item">
+                                                        <a class="page-link" href="?page={{ notis.next_page_number }}">
+                                                            <i class="fi-rs-arrow-small-right"></i>
+                                                        </a>
+                                                    </li>
+                                                {% endif %}
+            
+                                            </ul>
+                                        </nav>
+                                    </div>
+                                  </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+{% endblock content %}
