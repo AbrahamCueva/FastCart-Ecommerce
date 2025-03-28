@@ -24,4 +24,7 @@ urlpatterns = [
     
     path("notis/", views.notis, name="notis"),
     path("mark_noti_seen/<id>", views.mark_noti_seen, name="mark_noti_seen"),
+    
+    path("profile/", views.profile, name="profile"),
+    path("change_password/", views.change_password, name="change_password"),
 ]

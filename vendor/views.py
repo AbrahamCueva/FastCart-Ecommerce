@@ -6,6 +6,7 @@ from django.db.models.functions import TruncMonth
 from django.db import models
 from plugin.paginate_queryset import paginate_queryset
 from django.contrib import messages
+from django.contrib.auth.hashers import check_password
 
 def get_monthly_sales():
     monthly_sales = (
@@ -188,3 +189,47 @@ def mark_noti_seen(request, id):
     noti.save()
     messages.success(request, "Notificacion vista")
     return redirect("vendor:notis")
+
+@login_required
+def profile(request):
+    profile = request.user.profile
+    if request.method == "POST":
+        image = request.FILES.get("image")
+        full_name = request.POST.get("full_name")
+        mobile = request.POST.get("mobile")
+        
+        if image != None:
+            profile.image = image
+            
+        profile.full_name = full_name
+        profile.mobile = mobile
+        
+        request.user.save()
+        profile.save()
+        
+        messages.success(request, "Perfil actualizado exitosamente")
+        return redirect("vendor:profile")
+    context = {
+        "profile": profile
+    }
+    return render(request, "vendor/profile.html", context)
+
+@login_required
+def change_password(request):
+    if request.method == "POST":
+        old_password = request.POST.get("old_password")
+        new_password = request.POST.get("new_password")
+        confirm_new_password = request.POST.get("confirm_new_password")
+
+        if confirm_new_password != new_password:
+            messages.error(request, "La nueva contraseña y confirmar contraseña no coinciden")
+            return redirect("vendor:change_password")
+        if check_password(old_password, request.user.password):
+            request.user.set_password(new_password)
+            request.user.save()
+            messages.success(request, "Contraseña cambiada exitosamente")
+            return redirect("vendor:profile")
+        else :
+            messages.error(request, "La contraseña antigua es incorrecta")
+            return redirect("vendor:change_password")
+    return render(request, "vendor/change_password.html")
