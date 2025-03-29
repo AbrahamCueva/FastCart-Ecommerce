@@ -175,7 +175,7 @@
                                         <a class="action-btn hover-up add_to_cart" data-id="{{ product.id }}" href="#">
                                             <i class="fi-rs-shopping-cart"></i>
                                         </a>
-                                        <a aria-label="Agregar a favoritos" class="action-btn hover-up" href="shop-wishlist.html">
+                                        <a aria-label="Agregar a favoritos" class="action-btn hover-up add_to_wishlist" data-product_id="{{product.id}}" href="#">
                                             <i class="fi-rs-heart"></i>
                                         </a>
                                     </div>
@@ -220,28 +220,34 @@
                                                 <h4 class="mb-30">Consultas y respuestas de clientes</h4>
                                                 <div class="comment-list">
                                                     {% for r in product.reviews.all %}
-                                                        <div class="single-comment justify-content-between d-flex mb-30">
-                                                            <div class="user justify-content-between d-flex">
-                                                                <div class="thumb text-center">
-                                                                    <a href="javascript:;" class="font-heading text-brand">{{ r.user.username|title }}</a>
-                                                                </div>
-                                                                <div class="desc">
-                                                                    <div class="d-flex justify-content-between mb-10">
-                                                                        <div class="d-flex align-items-center">
-                                                                            <span class="font-xs text-muted">{{r.date|date:"d M, Y"}}</span>
-                                                                        </div>
-                                                                            <div class="product-rate d-inline-block">
-                                                                                {% if product.average_rating is not None %}
-                                                                                    <div class="product-rating" style="width: {% widthratio product.average_rating 5 100 %}%"></div>
-                                                                                {% else %}
-                                                                                    <div class="product-rating" style="width: 0%"></div>
-                                                                                {% endif %}
-                                                                            </div>
+                                                        <div class="card mb-3">
+                                                            <div class="card-body">
+                                                                <div class="d-flex align-items-start mb-3">
+                                                                    <div>
+                                                                        <h6 class="mb-1">{{ r.user.username|title|default:"Usuario desconocido" }}</h6>
+                                                                        <p class="text-muted small mb-0">{{ r.date|date:"d M, Y" }} | para {{ product.name }}</p>
                                                                     </div>
-                                                                    <p class="mb-10">
-                                                                        {{ r.review }}
-                                                                    </p>
                                                                 </div>
+                                                                <div class="mb-2">
+                                                                    <div class="product-rate-cover">
+                                                                        <div class="product-rate d-inline-block">
+                                                                            {% if r.rating is not None %}
+                                                                                <div class="product-rating" style="width: {% widthratio r.rating 5 100 %}%"></div>
+                                                                            {% else %}
+                                                                                <div class="product-rating" style="width: 0%"></div>
+                                                                            {% endif %}
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                                <p class="mb-2"><strong><i class="fa-solid fa-arrow-right"></i> Reseña: </strong> {{ r.review }}</p>
+                                                                {% if r.repply %}
+                                                                    <div class="d-flex align-items-start ms-4 mt-2">
+                                                                        <div>
+                                                                            <p class="mb-1"><strong>Respuesta de la tienda: </p>
+                                                                            <p class="mb-0"><i class="fa-solid fa-message"></i></strong> {{ r.repply }}</p>
+                                                                        </div>
+                                                                    </div>
+                                                                {% endif %}
                                                             </div>
                                                         </div>
                                                     {% endfor %}
@@ -249,6 +255,42 @@
                                             </div>
                                         </div>
                                     </div>
+                                    {% if request.user.is_authenticated %}
+                                        <div class="row">
+                                            <div class="col-lg-8">
+                                                <div class="comment-form">
+                                                    <h4 class="mb-30">Agregar una consulta o comentario</h4>
+                                                    <form class="form-contact comment_form" method="post" action="{% url 'store:add_review' product_id=product.id %}">
+                                                        {% csrf_token %}
+                                                        <div class="row">
+                                                            <div class="col-12">
+                                                                <div class="form-group">
+                                                                    <textarea class="form-control w-100" name="review" id="review" cols="30" rows="9" placeholder="Escribe tu consulta o comentario"></textarea>
+                                                                </div>
+                                                            </div>
+                                                            <div class="col-sm-6">
+                                                                <div class="form-group">
+                                                                    <select class="form-control" name="rating" id="rating">
+                                                                        <option value="">Selecciona una calificación</option>
+                                                                        <option value="1">★☆☆☆☆</option>
+                                                                        <option value="2">★★☆☆☆</option>
+                                                                        <option value="3">★★★☆☆</option>
+                                                                        <option value="4">★★★★☆</option>
+                                                                        <option value="5">★★★★★</option>
+                                                                    </select>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <button type="submit" class="btn btn-primary">Enviar Consulta o Comentario</button>
+                                                        </div>
+                                                    </form>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    {% else %}
+                                        <p>Debes <a href="{% url 'userauths:sign-in' %}">iniciar sesión</a> para agregar una consulta o comentario.</p>
+                                    {% endif %}
                                 </div>
                             </div>
                         </div>
@@ -265,11 +307,11 @@
                                                 <div class="product-img-action-wrap">
                                                     <div class="product-img product-img-zoom">
                                                         <a href="{% url 'store:product_detail' p.slug %}">
-                                                            <img class="default-img" src="{{p.image.url}}" alt="" />
+                                                            <img class="default-img" style="width: 250px; height: 250px; object-fit: cover;" src="{{p.image.url}}" alt="" />
                                                         </a>
                                                     </div>
                                                     <div class="product-action-1">
-                                                        <a aria-label="Add To Wishlist" class="action-btn" href="shop-wishlist.html"><i class="fi-rs-heart"></i></a>
+                                                        <a aria-label="Agregar a favoritos" class="action-btn add_to_wishlist" data-product_id="{{p.id}}" href="#"><i class="fi-rs-heart"></i></a>
                                                     </div>
                                                 </div>
                                                 <div class="product-content-wrap">
@@ -293,7 +335,9 @@
                                                             <span class="old-price">S/. {{p.regular_price}}</span>
                                                         </div>
                                                         <div class="add-cart">
-                                                            <a class="add" href="shop-cart.html"><i class="fi-rs-shopping-cart mr-5"></i>Cesto </a>
+                                                            <a class="add add_to_cart" href="#" data-id="{{ p.id }}">
+                                                                <i class="fi-rs-shopping-cart mr-5"></i>
+                                                            </a>
                                                         </div>
                                                     </div>
                                                 </div>

@@ -28,7 +28,7 @@ class Profile(models.Model):
     image = models.ImageField(upload_to="images", default="default-user.jpg", null=True, blank=True)
     full_name = models.CharField(max_length=255, null=True, blank=True)
     mobile = models.CharField(max_length=255, null=True, blank=True)
-    user_Type = models.CharField(max_length=255, choices=USER_TYPE, null=True, blank=True, default=None)
+    user_type = models.CharField(max_length=255, choices=USER_TYPE, null=True, blank=True, default=None)
     def __str__(self):
         return self.user.username
     

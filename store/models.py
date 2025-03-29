@@ -75,7 +75,7 @@ class Product(models.Model):
     stock = models.PositiveIntegerField(default=0, null=True, blank=True)
     shipping = models.DecimalField(max_digits=12, decimal_places=2, default=0.00, null=True, blank=True, verbose_name="Costo de envío")
     
-    status = models.CharField(choices=STATUS, max_length=50, default="Publicado")
+    status = models.CharField(choices=STATUS, max_length=50, default="Published")
     featured = models.BooleanField(default=False, verbose_name="Destacado")
     
     vendor = models.ForeignKey(user_models.User, on_delete=models.SET_NULL, null=True, blank=True)

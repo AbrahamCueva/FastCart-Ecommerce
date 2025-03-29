@@ -18,4 +18,6 @@ urlpatterns = [
     path("stripe_payment_verify/<order_id>/", views.stripe_payment_verify, name="stripe_payment_verify"),
     path("paystack_payment_verify/<order_id>/", views.paystack_payment_verify, name="paystack_payment_verify"),
     path("flutterwave_payment_callback/<order_id>/", views.flutterwave_payment_callback, name="flutterwave_payment_callback"),
+
+    path('product/<int:product_id>/add_review/', views.add_review, name='add_review'),
 ]

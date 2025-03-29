@@ -1,5 +1,6 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.http import HttpResponse
+from django.contrib.auth.decorators import login_required
 from plugin.service_fee import calculate_service_fee
 from store import models as store_models
 from django.http import JsonResponse
@@ -429,4 +430,44 @@ def flutterwave_payment_callback(request, order_id):
             return redirect(f"/payment_status/{order.order_id}/?payment_status=paid")
     return redirect(f"/payment_status/{order.order_id}/?payment_status=failed")
 
+@login_required
+def add_review(request, product_id):
+    product = get_object_or_404(store_models.Product, id=product_id)
+
+    if request.method == "POST":
+        review_text = request.POST.get("review")
+        rating = request.POST.get("rating")
+
+        if not review_text:
+            messages.error(request, "Por favor, ingresa tu consulta o comentario.")
+            return redirect("store:product_detail", slug=product.slug)
+
+        if not rating:
+            messages.error(request, "Por favor, selecciona una calificación.")
+            return redirect("store:product_detail", slug=product.slug)
+
+        try:
+            rating = int(rating)
+            if not 1 <= rating <= 5:
+                messages.error(request, "La calificación debe estar entre 1 y 5.")
+                return redirect("store:product_detail", slug=product.slug)
+        except ValueError:
+            messages.error(request, "La calificación debe ser un número.")
+            return redirect("store:product_detail", slug=product.slug)
+
+        store_models.Review.objects.create(
+            user=request.user,
+            product=product,
+            review=review_text,
+            rating=rating,
+            active=True 
+        )
+        messages.success(request, "Tu comentario ha sido enviado.")
+        return redirect("store:product_detail", slug=product.slug)
+
+    # Si no es POST, podrías renderizar un formulario de reseña (opcional)
+    context = {
+        'product': product,
+    }
+    return render(request, 'store/add_review_form.html', context)
 

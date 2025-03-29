@@ -7,7 +7,7 @@ from django.db import models
 from plugin.paginate_queryset import paginate_queryset
 from django.contrib import messages
 from django.contrib.auth.hashers import check_password
-
+from django.http import JsonResponse
 def get_monthly_sales():
     monthly_sales = (
         store_models.OrderItem.objects.annotate(month=TruncMonth("date"))
@@ -233,3 +233,164 @@ def change_password(request):
             messages.error(request, "La contraseña antigua es incorrecta")
             return redirect("vendor:change_password")
     return render(request, "vendor/change_password.html")
+
+@login_required
+def create_product(request):
+    categories = store_models.Category.objects.all()
+    
+    if request.method == "POST":
+        image = request.FILES.get("image")
+        name = request.POST.get("name")
+        category_id = request.POST.get("category_id")
+        description = request.POST.get("description")
+        price = request.POST.get("price")
+        shipping = request.POST.get("shipping")
+        regular_price = request.POST.get("regular_price")
+        stock = request.POST.get("stock")
+        
+        category = store_models.Category.objects.get(id=category_id)
+        product = store_models.Product.objects.create(
+            image = image,
+            vendor = request.user,
+            name = name,
+            category = category,
+            description = description,
+            price = price,
+            regular_price = regular_price,
+            shipping = shipping,
+            stock = stock,
+        )
+        return redirect("vendor:update_product", product.id)
+    context = {
+        "categories": categories,
+    }
+    return render(request, "vendor/create_product.html", context)
+
+@login_required
+def update_product(request, id):
+    product = store_models.Product.objects.get(vendor=request.user, id=id)
+    categories = store_models.Category.objects.all()
+
+    if request.method == "POST":
+        image = request.FILES.get("image")
+        name = request.POST.get("name")
+        category_id = request.POST.get("category_id")
+        description = request.POST.get("description")
+        regular_price = request.POST.get('regular_price').replace(',', '.')
+        price = request.POST.get('price').replace(',', '.')
+        shipping = request.POST.get('shipping').replace(',', '.')
+        stock = request.POST.get("stock")
+        category = store_models.Category.objects.get(id=category_id)
+        
+        product.name = name
+        product.category = category
+        product.description = description
+        product.price = price
+        product.shipping = shipping
+        product.regular_price = regular_price
+        product.stock = stock
+        
+        if image:
+            product.image = image
+        
+        product.save()
+        
+        variant_ids = request.POST.getlist("variant_id[]")
+        variant_titles = request.POST.getlist("variant_title[]")
+
+        existing_variant_ids = set(store_models.Variant.objects.filter(product=product).values_list('id', flat=True))
+        received_variant_ids = set(map(int, filter(None, variant_ids)))
+
+        # Eliminar variantes que ya no están en el formulario
+        variants_to_delete = existing_variant_ids - received_variant_ids
+        store_models.Variant.objects.filter(id__in=variants_to_delete).delete()
+
+        if variant_titles:
+            for i in range(len(variant_titles)):
+                variant_id = variant_ids[i] if i < len(variant_ids) else None
+                variant_name = variant_titles[i]
+
+                variant = None  # Inicializa variant fuera del bloque if
+
+                if variant_id:
+                    variant = store_models.Variant.objects.filter(id=variant_id).first()
+                    if variant:
+                        variant.name = variant_name
+                        variant.save()
+                    else:
+                        # La variante existente no se encontró (esto debería ser raro)
+                        pass  # O podrías loggear un error aquí
+                else:
+                    variant = store_models.Variant.objects.create(product=product, name=variant_name)
+
+                # Manejo de ítems de variantes
+                item_ids = request.POST.getlist(f"item_id_{i}[]")
+                item_titles = request.POST.getlist(f"item_title_{i}[]")
+                item_descriptions = request.POST.getlist(f"item_description_{i}[]")
+
+                # Solo acceder a variant_items si variant no es None
+                if variant:
+                    existing_item_ids = set(variant.variant_items.values_list('id', flat=True))
+                    received_item_ids = set(map(int, filter(None, item_ids)))
+
+                    # Eliminar ítems no presentes
+                    items_to_delete = existing_item_ids - received_item_ids
+                    store_models.VariantItem.objects.filter(id__in=items_to_delete).delete()
+
+                    if item_titles:
+                        for j in range(len(item_titles)):
+                            item_id = item_ids[j] if j < len(item_ids) else None
+                            item_title = item_titles[j]
+                            item_description = item_descriptions[j]
+
+                            if item_id:
+                                variant_item = store_models.VariantItem.objects.filter(id=item_id).first()
+                                if variant_item:
+                                    variant_item.title = item_title
+                                    variant_item.content = item_description
+                                    variant_item.save()
+                            else:
+                                store_models.VariantItem.objects.create(
+                                    variant=variant,
+                                    title=item_title,
+                                    content=item_description,
+                                )
+
+        for file_key, image_file in request.FILES.items():
+            if file_key.startswith("image_"):
+                store_models.Gallery.objects.create(product=product, image=image_file)
+
+        messages.success(request, "Producto actualizado")
+        return redirect("vendor:update_product", product.id)
+
+    context = {
+        "product": product,
+        "categories": categories,
+        "variants": store_models.Variant.objects.filter(product=product),
+        "gallery_images": store_models.Gallery.objects.filter(product=product),
+    }
+
+    return render(request, "vendor/update_product.html", context)
+
+def delete_variants(request, product_id, variant_id):
+    product = store_models.Product.objects.get(id=product_id)
+    variants = store_models.Variant.objects.get(id=variant_id, product__vendor=request.user, product=product)
+    variants.delete()
+    return JsonResponse({"message": "Variante eliminada"})
+
+def delete_variants_items(request, variant_id, item_id):
+    variants = store_models.Variant.objects.get(id=variant_id)
+    item = store_models.VariantItem.objects.get(variant=variants, id=item_id)
+    item.delete()
+    return JsonResponse({"message": "Artículo de variante eliminada"})
+
+def delete_product_image(request, product_id, image_id):
+    product = store_models.Product.objects.get(id=product_id)
+    image = store_models.Gallery.objects.get(id=image_id, product=product)
+    image.delete()
+    return JsonResponse({"message": "Imágen de este producto ha sido eliminada"})
+
+def delete_product(request, product_id):
+    product = store_models.Product.objects.get(id=product_id)
+    product.delete()
+    return redirect("vendor:products")

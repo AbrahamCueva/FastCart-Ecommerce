@@ -1,0 +1,104 @@
+{% extends 'partials/base.html' %}
+{% load humanize %}
+{% load static %}
+
+{% block content %}
+<main class="main pages">
+    <div class="page-header breadcrumb-wrap">
+        <div class="container">
+            <div class="breadcrumb">
+                <a href="/" rel="nofollow"><i class="fas fa-home me-1"></i>Inicio</a>
+                <span></span> Crear producto
+            </div>
+        </div>
+    </div>
+
+    <div class="page-content pt-50 pb-50">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-10 m-auto">
+                    <div class="row">
+                        {% include 'vendor/sidebar.html' %}
+                        <div class="col-md-9">
+                            <div class="card mt-3">
+                                <div class="card-header">
+                                    <h3 class="mb-0">Crear producto</h3>
+                                </div>
+                                <div class="card-body">
+                                    <form class="pb-8 mt-2" method="POST" enctype="multipart/form-data">
+                                        {% csrf_token %}
+                                        <div class="card border-0 mb-3">
+                                            <div class="card-header border-0 px-4 py-3 rounded">
+                                                <h6 class="mb-0">Información básica</h6>
+                                            </div>
+                                            <div class="card-body">
+                                                <div class="text-center d-flex justify-content-center align-items-center">
+                                                    <img id="imagePreview" src="" alt="" style="width: 100%; height: 500px; object-fit: cover; border-radius: 10px; display: none;">
+                                                </div>
+                                                <div class="mb-3">
+                                                    <label for="imageInput" class="form-label">Imágen del producto</label>
+                                                    <input type="file" name="image" id="imageInput" class="form-control rounded" accept="image/*" onchange="previewImage(event)">
+                                                </div>
+                                                <div class="mb-3">
+                                                    <label for="productTitle" class="form-label">Nombre del producto</label>
+                                                    <input type="text" name="name"class="form-control rounded" placeholder="Nombre del producto">
+                                                </div>
+                                                <div class="mb-3">
+                                                    <label for="productTitle" class="form-label">Categoría del producto</label>
+                                                    <select name="category_id" class="form-select" required>
+                                                        <option value="">---------------</option>
+                                                        {% for c in categories %}
+                                                            <option value="{{c.id}}">{{c.title}}</option>
+                                                        {% endfor %}
+                                                    </select>
+                                                </div>
+                                                <div class="mb-3">
+                                                    <label class="form-label">Descripción del producto</label>
+                                                    <textarea name="description" class="form-control rounded" cols="30"></textarea>
+                                                </div>                                            
+                                                <div class="mb-3">
+                                                    <label for="productPrice" class="form-label">Precio regular del producto</label>
+                                                    <input type="text" name="regular_price" class="form-control rounded" placeholder="Precio regular del producto">
+                                                </div>
+                                                <div class="mb-3">
+                                                    <label for="productPrice" class="form-label">Precio de venta del producto</label>
+                                                    <input type="text" name="price" class="form-control rounded" placeholder="Precio de venta del producto">
+                                                </div>
+                                                <div class="mb-3">
+                                                    <label for="productPrice" class="form-label">Costo de envío</label>
+                                                    <input type="text" name="shipping" class="form-control rounded" placeholder="Costo de envío">
+                                                </div>
+                                                <div class="mb-3">
+                                                    <label for="productPrice" class="form-label">Stock</label>
+                                                    <input type="text" name="stock" class="form-control rounded" placeholder="Stock">
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <button class="btn btn-lg bg-primary rounded btn-sm text-white mt-2" type="submit">
+                                            Agregar
+                                            <i class="fas fa-arrow-right"></i>
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+<script>
+    function previewImage(event) {
+        const imageInput = event.target.files[0];
+        if (!imageInput) return; 
+        const reader = new FileReader();
+        reader.onload = function () {
+            const preview = document.getElementById("imagePreview");
+            preview.src = reader.result; 
+            preview.style.display = "block"; 
+        };
+        reader.readAsDataURL(imageInput);
+    }
+</script>
+{% endblock content %}

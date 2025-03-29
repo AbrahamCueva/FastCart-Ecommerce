@@ -1,0 +1,302 @@
+{% extends 'partials/base.html' %}
+{% load humanize %}
+{% load static %}
+
+{% block content %}
+<main class="main pages">
+    <div class="page-header breadcrumb-wrap">
+        <div class="container">
+            <div class="breadcrumb">
+                <a href="/" rel="nofollow"><i class="fas fa-home me-1"></i>Inicio</a>
+                <span></span> Actualizar producto
+            </div>
+        </div>
+    </div>
+
+    <div class="page-content pt-50 pb-50">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-10 m-auto">
+                    <div class="row">
+                        {% include 'vendor/sidebar.html' %}
+                        <div class="col-md-9">
+                            <div class="card mt-3">
+                                <div class="card-header">
+                                    <h3 class="mb-0">Editar producto</h3>
+                                </div>
+                                <div class="card-body">
+                                    <form class="pb-8 mt-2" method="POST" enctype="multipart/form-data">
+                                        {% csrf_token %}
+                                        <div class="card border-0 mb-3">
+                                            <div class="card-header border-0 px-4 py-3 rounded">
+                                                <h6 class="mb-0">Información básica</h6>
+                                            </div>
+                                            <div class="card-body">
+                                                <div class="text-center d-flex justify-content-center align-items-center">
+                                                    <img id="imagePreview" src="{{product.image.url}}" alt="" style="width: 100%; height: 500px; object-fit: cover; border-radius: 10px;">
+                                                </div>
+                                                <div class="mb-3">
+                                                    <label for="imageInput" class="form-label">Imágen del producto</label>
+                                                    <input type="file" name="image" id="imageInput" class="form-control rounded" accept="image/*" onchange="previewImage(event)">
+                                                </div>
+                                                <div class="mb-3">
+                                                    <label for="productTitle" class="form-label">Nombre del producto</label>
+                                                    <input type="text" name="name"class="form-control rounded" value="{{product.name}}" placeholder="Nombre del producto">
+                                                </div>
+                                                <div class="mb-3">
+                                                    <label for="productTitle" class="form-label">Categoría del producto</label>
+                                                    <select name="category_id" class="form-select" required>
+                                                        <option value="">---------------</option>
+                                                        {% for c in categories %}
+                                                            <option {% if c.title == product.category.title %} selected {% endif %} value="{{c.id}}">{{c.title}}</option>
+                                                        {% endfor %}
+                                                    </select>
+                                                </div>
+                                                <div class="mb-3">
+                                                    <label class="form-label">Descripción del producto</label>
+                                                    <textarea name="description" class="form-control rounded" cols="30">
+                                                        {{product.description}}
+                                                    </textarea>
+                                                </div>                                            
+                                                <div class="mb-3">
+                                                    <label for="productPrice" class="form-label">Precio regular del producto</label>
+                                                    <input type="text" name="regular_price" value="{{product.regular_price|intcomma}}" class="form-control rounded" placeholder="Precio regular del producto">
+                                                </div>
+                                                <div class="mb-3">
+                                                    <label for="productPrice" class="form-label">Precio de venta del producto</label>
+                                                    <input type="text" name="price" value="{{product.price|intcomma}}" class="form-control rounded" placeholder="Precio de venta del producto">
+                                                </div>
+                                                <div class="mb-3">
+                                                    <label for="productPrice" class="form-label">Costo de envío</label>
+                                                    <input type="text" name="shipping" value="{{product.shipping|intcomma}}" class="form-control rounded" placeholder="Costo de envío">
+                                                </div>
+                                                <div class="mb-3">
+                                                    <label for="productPrice" class="form-label">Stock</label>
+                                                    <input type="text" name="stock" value="{{product.stock}}" class="form-control rounded" placeholder="Stock">
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="card mb-3 m-3">
+                                            <div class="card-header border-bottom px-4 py-3">
+                                                <h6 class="mb-0">Variantes</h6>
+                                            </div>
+                                        
+                                            <div id="variant-container">
+                                                {% for variant in variants %}
+                                                    <div class="espec-item border rounded-3 mb-3 m-3 variant{{variant.id}}" data-variant-index="{{forloop.counter0}}">
+                                                        <div class="card-body bg-light">
+                                                            <div class="d-flex align-items-center gap-2">
+                                                                <input type="hidden" name="variant_id[]" value="{{variant.id}}">
+                                                                <input type="text" name="variant_title[]" value="{{variant.name}}" class="form-control rounded" placeholder="Título de la variante">
+                                                                <button type="button" class="btn text-white bg-danger rounded remove-variant" data-product_id="{{product.id}}" data-variant_id="{{variant.id}}">
+                                                                    <i class="fa fa-trash" aria-hidden="true"></i>
+                                                                </button>
+                                                            </div>
+                                                            <div class="sub-item-container mt-3">
+                                                                {% for item in variant.variant_items.all %}
+                                                                    <div class="card-body shadow mt-3 rounded sub-item{{item.id}}">
+                                                                        <input type="hidden" name="item_id_{{forloop.parentloop.counter0}}[]" value="{{item.id}}">
+                                                                        <input type="text" name="item_title_{{forloop.parentloop.counter0}}[]" value="{{item.title}}" class="form-control mb-2 rounded" placeholder="Nombre de subvariante">
+                                                                        <input type="text" name="item_description_{{forloop.parentloop.counter0}}[]" value="{{item.content}}" class="form-control mb-2 rounded" placeholder="Descripción de subvariante">
+                                        
+                                                                        <button type="button" class="btn text-white bg-danger ms-3 rounded remove-item" data-variant_id="{{variant.id}}" data-item_id="{{item.id}}">
+                                                                            <i class="fa fa-trash" aria-hidden="true"></i>
+                                                                        </button>
+                                                                    </div>
+                                                                {% endfor %}
+                                                            </div>
+                                                        </div>
+                                                        <button type="button" class="btn mb-2 mt-2 text-white rounded bg-dark ms-3 add-item" data-variant-index="{{forloop.counter0}}">
+                                                            <i class="fa fa-plus" aria-hidden="true"></i> Agregar
+                                                        </button>
+                                                    </div>
+                                                {% endfor %}                             
+                                            </div>
+                                            <div class="m-3">
+                                                <button id="add-variant" type="button" class="btn mt-21 text-white rounded bg-primary text-white add-variant">
+                                                    <i class="fa fa-plus" aria-hidden="true"></i> Agregar
+                                                </button>   
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="card mb-3 m-3">
+                                            <div class="card-header border-buttom px-4 py-3">
+                                                <h6 class="mb-0">Imágenes</h6>
+                                            </div>
+                                            <div class="card-body row" id="images-container">
+                                                
+                                                {% for image in gallery_images %}
+                                                    <div class="col-lg-3 image-container{{image.id}}" data-image-id="{{image.gallery_id}}">
+                                                        <div class="card-body image-item border rounded-3 mb-2">
+                                                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                                                <button class="btn btn-pink btn-sm text-white rounded-circle delete-image-btn" type="button" data-product_id="{{product.id}}" data-image_id="{{image.id}}" style="background-color: #e91e63;">
+                                                                    <i class="fa fa-trash" aria-hidden="true"></i>
+                                                                </button>
+                                                                <img src="{{image.image.url}}" alt="" class="img-fluid mb-2" style="width: 100%; height: 150px; object-fit: cover; border-radius: 10px;">
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                {% endfor %}
+                                                    
+                                            </div>
+                                            <div class="m-3">
+                                                <button type="button" class="btn btn-sm rounded text-white bg-primary" id="add-image-btn">
+                                                    <i class="fa fa-plus" aria-hidden="true"></i> Agregar
+                                                </button>
+                                            </div>
+                                        </div>
+                                        <button class="btn btn-lg bg-primary rounded btn-sm text-white mt-2" type="submit">
+                                            Guardar cambios
+                                            <i class="fas fa-save"></i>
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+<script src="{% static 'assets/js/vendor/jquery-3.6.0.min.js' %}"></script>
+<!-- <script>
+    function previewImage(event) {
+        const imageInput = event.target.files[0];
+        if (!imageInput) return; 
+        const reader = new FileReader();
+        reader.onload = function () {
+            const preview = document.getElementById("imagePreview");
+            preview.src = reader.result; 
+            preview.style.display = "block"; 
+        };
+        reader.readAsDataURL(imageInput);
+    }
+</script> -->
+<script>
+    let variant_index = "{{variants|length}}";
+    let variant_template = (variant_index) => `
+        <div class="espec-item border rounded-3 mb-3 m-3 variant" data-variant-index="${variant_index}">
+            <div class="card-body bg-light">
+                <div class="d-flex align-items-center gap-2">
+                    <input type="hidden" name="variant_id[]" value="">
+                    <input type="text" name="variant_title[]" value="" class="form-control rounded" placeholder="Título de la variante">
+                    <button type="button" class="btn text-white bg-danger rounded remove-variant">
+                        <i class="fa fa-trash" aria-hidden="true"></i>
+                    </button>
+                </div>
+                <div class="sub-item-container mt-3">
+                    ${sub_item_template(variant_index)}
+                </div>
+            </div>
+            <button type="button" class="btn mb-2 mt-2 text-white rounded bg-dark add-item ms-3" data-variant-index="${variant_index}">
+                <i class="fa fa-plus" aria-hidden="true"></i> Agregar
+            </button>
+        </div>
+    `;
+    let sub_item_template = (variant_index) => `
+        <div class="card-body shadow mt-3 rounded sub-item">
+            <input type="hidden" name="item_id_${variant_index}[]" value="">
+            <input type="text" name="item_title_${variant_index}[]" class="form-control mb-2 rounded" placeholder="Nombre de subvariante" required>
+            <input type="text" name="item_description_${variant_index}[]" class="form-control mb-2 rounded" placeholder="Descripción de subvariante" required>
+            <button type="button" class="btn text-white bg-danger ms-3 rounded remove-item">
+                <i class="fa fa-trash" aria-hidden="true"></i>
+            </button>
+        </div>
+    `;
+
+    $(document).on("click", ".add-item", function() {
+        let index = $(this).data("variant-index");
+        let variantElement = $(this).closest('.espec-item');
+        let subItemContainer = variantElement.find(".sub-item-container");
+        let nuevoSubItemHTML = sub_item_template(index);
+        subItemContainer.append(nuevoSubItemHTML);
+    });
+
+    $('#add-variant').on("click", function() {
+        $("#variant-container").append(variant_template(variant_index));
+        variant_index++;
+    });
+
+    $(document).on("click", ".remove-variant", function() {
+        let product_id = $(this).attr("data-product_id");
+        let variant_id = $(this).attr("data-variant_id");
+        console.log(product_id);
+        console.log(variant_id);
+        if (variant_id && product_id) {
+            $.ajax({
+                url: `/vendor/delete_variants/${product_id}/${variant_id}/`,
+                dataType: "json",
+                before: function() {
+                    console.log("eliminando...");
+                },
+                success: function(response) {
+                   console.log(response);
+                    $(`.variant${variant_id}`).addClass("d-none");
+                }
+            })
+        } else {
+            $(this).closest(".variant").remove();
+        }
+    });
+
+    $(document).on("click", ".remove-item", function() {
+        let variant_id = $(this).attr("data-variant_id");
+        let item_id = $(this).attr("data-item_id");
+        if (variant_id && item_id) {
+            $.ajax({
+                url: `/vendor/delete_variants_items/${variant_id}/${item_id}/`,
+                dataType: "json",
+                before: function() {
+                    console.log("eliminando...");
+                },
+                success: function(response) {
+                   console.log(response);
+                    $(`.sub-item${item_id}`).addClass("d-none");
+                }
+            });
+        } else {
+            $(this).closest(".sub-item").remove();
+        }
+    });
+
+    $("#add-image-btn").click(function() {
+        var imageIndex = new Date().getTime();
+        var imageHtml = `
+            <div class="col-lg-3 image-item image-container{{image.id}}" data-image-id="${imageIndex}">
+                <div class="card-body image-item border rounded-3 mb-2">
+                    <div class="d-flex justify-content-end align-items-start">
+                        <button class="btn btn-pink btn-sm text-white rounded-circle delete-image-btn" type="button" data-image_id="${imageIndex}" style="background-color: #e91e63;">
+                            <i class="fa fa-trash" aria-hidden="true"></i>
+                        </button>
+                    </div>
+                    <div class="mt-2">
+                        <input type="file" name="image_${imageIndex}" class="form-control mb-2" accept="image/*">
+                    </div>
+                </div>
+            </div>
+        `;
+        $("#images-container").append(imageHtml);
+        $(document).on("click", ".delete-image-btn", function() {
+            var imageId = $(this).data("image_id"); 
+            let product_id = $(this).attr("data-product_id");
+            let image_id = $(this).attr("data-image_id");
+            if (product_id && imageId) {
+                $.ajax({
+                    url: `/vendor/delete_product_image/${product_id}/${image_id}/`,
+                    dataType: "json",
+                    before: function() {
+                        console.log("eliminando...");
+                    },
+                    success: function(response) {
+                    console.log(response);
+                        $(`.image-container${imageId}`).addClass("d-none");
+                    }
+                })
+            } else {
+                $(`.image-item[data-image-id="${imageId}"]`).remove();
+            }
+        });
+    });
+</script>
+{% endblock content %}
