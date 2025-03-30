@@ -1,0 +1,62 @@
+{% extends 'partials/base.html' %}
+
+{% block content %}
+<div class="container py-5">
+    <h2 class="text-center mb-4 fw-bold">Resultados de búsqueda para <span class="text-primary">"{{ query }}"</span></h2>
+
+    {% if products %}
+        <div class="row">
+            {% for product in products %}
+                <div class="col-md-4 col-lg-3 mb-4">
+                    <div class="card h-100 shadow-sm border-0 rounded-4 overflow-hidden product-card">
+                        <div class="card-img-container">
+                            <img src="{{ product.image.url }}" class="card-img-top" alt="{{ product.title }}">
+                        </div>
+                        <div class="card-body text-center">
+                            <h5 class="card-title fw-semibold text-dark">{{ product.name }}</h5>
+                            <p class="text-success fw-bold fs-5">S/. {{ product.price }}</p>
+                            <a href="{% url 'store:product_detail' product.slug %}" class="btn btn-success btn-sm rounded-pill px-4">Ver producto</a>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="alert alert-warning text-center" role="alert">
+            <strong>No se encontraron productos.</strong>
+        </div>
+    {% endif %}
+</div>
+
+<!-- Agregar CSS personalizado -->
+<style>
+    .product-card {
+        transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+    }
+
+    .product-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
+    }
+
+    .card-img-container {
+        height: 220px;
+        overflow: hidden;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: #f8f9fa;
+    }
+
+    .card-img-container img {
+        max-height: 100%;
+        max-width: 100%;
+        object-fit: cover;
+        transition: transform 0.3s ease-in-out;
+    }
+
+    .product-card:hover .card-img-container img {
+        transform: scale(1.05);
+    }
+</style>
+{% endblock %}

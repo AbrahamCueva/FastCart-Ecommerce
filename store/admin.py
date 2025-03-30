@@ -1,5 +1,7 @@
 from django.contrib import admin
 from store import models as store_models
+from django import forms
+from ckeditor.widgets import CKEditorWidget
 
 class GalleryInline(admin.TabularInline):
     model = store_models.Gallery
@@ -59,7 +61,21 @@ class ReviewAdmin(admin.ModelAdmin):
     list_display = ['product', 'user', 'rating', 'active', 'date']
     search_fields = ['product__name', 'user__username']
     list_filter = ['active', 'rating']
-    
+
+class SliderAdmin(admin.ModelAdmin):
+    list_display = ("title", "status", "created_at")
+    list_filter = ("status",)
+    search_fields = ("title",)
+
+class StoreSettingsAdmin(admin.ModelAdmin):
+    list_display = ("store_name", "updated_at")
+    fieldsets = (
+        ("Información General", {"fields": ("store_name", "logo", "favicon")}),
+        ("Información de Contacto", {"fields": ("address", "phone", "email")}),
+        ("Redes Sociales", {"fields": ("facebook", "instagram", "twitter", "youtube", "linkedin")}),
+        ("Configuración SEO", {"fields": ("seo_title", "seo_description", "seo_keywords")}),
+    )
+
 admin.site.register(store_models.Category, CategoryAdmin)
 admin.site.register(store_models.Product, ProductAdmin)
 admin.site.register(store_models.Variant, VariantAdmin)
@@ -70,3 +86,5 @@ admin.site.register(store_models.Coupon, CouponAdmin)
 admin.site.register(store_models.Order, OrderAdmin)
 admin.site.register(store_models.OrderItem, OrderItemAdmin)
 admin.site.register(store_models.Review, ReviewAdmin)
+admin.site.register(store_models.Slider, SliderAdmin)
+admin.site.register(store_models.StoreSettings, StoreSettingsAdmin)

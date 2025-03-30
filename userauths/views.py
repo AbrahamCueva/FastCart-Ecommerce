@@ -75,3 +75,23 @@ def logout_view(request):
     request.session['cart_id'] = cart_id
     messages.success(request, "Has cerrado tu sesión")
     return redirect("userauths:sign-in")
+
+# Añade esta función a tu archivo views.py existente
+
+def access_denied(request):
+    """
+    Vista que muestra un mensaje de acceso denegado cuando un usuario
+    intenta acceder a una sección para la que no tiene permisos.
+    """
+    return render(request, 'userauths/access_denied.html')
+
+# Ejemplo de cómo usar los decoradores en tus vistas:
+# from .decorators import vendor_required, customer_required
+#
+# @vendor_required
+# def vendor_dashboard(request):
+#     return render(request, 'vendor/dashboard.html')
+#
+# @customer_required
+# def customer_dashboard(request):
+#     return render(request, 'customer/dashboard.html')

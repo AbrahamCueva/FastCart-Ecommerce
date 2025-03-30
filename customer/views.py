@@ -7,16 +7,21 @@ from django.contrib.auth.hashers import check_password
 from plugin.paginate_queryset import paginate_queryset
 from store import models as store_models
 from customer import models as customer_models
+from userauths.decorators import customer_required
 
 @login_required
 def dashboard(request):
     orders = store_models.Order.objects.filter(customer=request.user)
     total_spent = store_models.Order.objects.filter(customer=request.user).aggregate(total = models.Sum("total"))["total"]
     notis = customer_models.Notifications.objects.filter(user=request.user, seen=False)
+    settings = store_models.StoreSettings.objects.first()
+    categories = store_models.Category.objects.all()
     context = {
         "orders": orders,
         "total_spent": total_spent,
         "notis": notis,
+        "settings": settings,
+        "categories": categories,
     }
     return render(request, "customer/dashboard.html", context)
 
@@ -24,17 +29,25 @@ def dashboard(request):
 def orders(request):
     orders_list = store_models.Order.objects.filter(customer=request.user)
     orders = paginate_queryset(request, orders_list, 10)
+    settings = store_models.StoreSettings.objects.first()
+    categories = store_models.Category.objects.all()
     context = {
         "orders": orders,
         "orders_list": orders_list,
+        "settings": settings,
+        "categories": categories,
     }
     return render(request, "customer/orders.html", context)
 
 @login_required
 def order_detail(request, order_id):
     order = store_models.Order.objects.get(customer=request.user, order_id=order_id)
+    settings = store_models.StoreSettings.objects.first()
+    categories = store_models.Category.objects.all()
     context = {
         "order": order,
+        "settings": settings,
+        "categories": categories,
     }
     return render(request, "customer/order_detail.html", context)
 
@@ -42,9 +55,13 @@ def order_detail(request, order_id):
 def order_item_detail(request, order_id, item_id):
     order = store_models.Order.objects.get(customer=request.user, order_id=order_id)
     item = store_models.OrderItem.objects.get(order=order, item_id=item_id)
+    settings = store_models.StoreSettings.objects.first()
+    categories = store_models.Category.objects.all()
     context = {
         "order": order,
         "item": item,
+        "settings": settings,
+        "categories": categories,
     }
     return render(request, "customer/order_item_detail.html", context)
 
@@ -52,9 +69,13 @@ def order_item_detail(request, order_id, item_id):
 def wishlist(request):
     wishlist_list = customer_models.Wishlist.objects.filter(user=request.user)
     wishlist = paginate_queryset(request, wishlist_list, 10)
+    settings = store_models.StoreSettings.objects.first()
+    categories = store_models.Category.objects.all()
     context = {
         "wishlist_list": wishlist_list,
         "wishlist": wishlist,
+        "settings": settings,
+        "categories": categories,
     }
     return render(request, "customer/wishlist.html", context)
 
@@ -80,9 +101,13 @@ def add_to_whislist(request, id):
 def notis(request):
     notis_list = customer_models.Notifications.objects.filter(user=request.user, seen=False)
     notis = paginate_queryset(request, notis_list, 10)
+    settings = store_models.StoreSettings.objects.first()
+    categories = store_models.Category.objects.all()
     context = {
         "notis": notis,
         "notis_list": notis_list,
+        "settings": settings,
+        "categories": categories,
     }
     return render(request, "customer/notis.html", context)
 
@@ -97,14 +122,20 @@ def mark_noti_seen(request, id):
 @login_required
 def addresses(request):
     addresses = customer_models.Address.objects.filter(user=request.user)
+    settings = store_models.StoreSettings.objects.first()
+    categories = store_models.Category.objects.all()
     context = {
         "addresses": addresses,
+        "settings": settings,
+        "categories": categories,
     }
     return render(request, "customer/addresses.html", context)
 
 @login_required
 def address_detail(request, id):
     address = customer_models.Address.objects.get(user=request.user, id=id)
+    settings = store_models.StoreSettings.objects.first()
+    categories = store_models.Category.objects.all()
     if request.method == "POST":
         full_name = request.POST.get("full_name")
         mobile = request.POST.get("mobile")
@@ -129,11 +160,15 @@ def address_detail(request, id):
         return redirect("customer:address_detail", address.id)
     context = {
         "address": address,
+        "settings": settings,
+        "categories": categories,
     }
     return render(request, "customer/address_detail.html", context)
 
 @login_required
 def address_create(request):
+    settings = store_models.StoreSettings.objects.first()
+    categories = store_models.Category.objects.all()
     if request.method == "POST":
         full_name = request.POST.get("full_name")
         mobile = request.POST.get("mobile")
@@ -157,7 +192,11 @@ def address_create(request):
         )
         messages.success(request, "Dirección creada")
         return redirect("customer:addresses")
-    return render(request, "customer/address_create.html")
+    context = {
+        "settings": settings,
+        "categories": categories,
+    } # Contex
+    return render(request, "customer/address_create.html", context)
 
 @login_required
 def delete_addresses(request, id):
@@ -168,6 +207,8 @@ def delete_addresses(request, id):
 
 @login_required
 def profile(request):
+    settings = store_models.StoreSettings.objects.first()
+    categories = store_models.Category.objects.all()
     profile = request.user.profile
     if request.method == "POST":
         image = request.FILES.get("image")
@@ -186,12 +227,16 @@ def profile(request):
         messages.success(request, "Perfil actualizado exitosamente")
         return redirect("customer:profile")
     context = {
+        "settings": settings,
+        "categories": categories,
         "profile": profile
     }
     return render(request, "customer/profile.html", context)
 
 @login_required
 def change_password(request):
+    settings = store_models.StoreSettings.objects.first()
+    categories = store_models.Category.objects.all()
     if request.method == "POST":
         old_password = request.POST.get("old_password")
         new_password = request.POST.get("new_password")
@@ -208,5 +253,9 @@ def change_password(request):
         else :
             messages.error(request, "La contraseña antigua es incorrecta")
             return redirect("customer:change_password")
-    return render(request, "customer/change_password.html")
+    context = {
+        "settings": settings,
+        "categories": categories,
+    }
+    return render(request, "customer/change_password.html", context)
 

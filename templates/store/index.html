@@ -12,6 +12,31 @@
 }
 </style>
 <main class="main">
+    <section class="home-slider position-relative mb-30">
+        <div class="container">
+            <div class="home-slide-cover mt-30">
+                <div class="hero-slider-1 style-4 dot-style-1 dot-style-1-position-1">
+                    {% for slider in sliders %}
+                        <div class="single-hero-slider single-animation-wrap" style="background-image: url({{ slider.image.url }})">
+                            <div class="slider-content">
+                                <h1 class="display-2 mb-40">
+                                    {{ slider.title }}
+                                </h1>
+                                <p class="mb-65">{{ slider.description }}</p>
+    
+                                {% if slider.has_button %}
+                                    <a href="{{ slider.button_link }}" class="btn">
+                                        {{ slider.button_text }}
+                                    </a>
+                                {% endif %}
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+                <div class="slider-arrow hero-slider-1-arrow"></div>
+            </div>
+        </div>
+    </section>    
     <section class="popular-categories section-padding">
         <div class="container wow animate__animated animate__fadeIn">
             <div class="section-title">

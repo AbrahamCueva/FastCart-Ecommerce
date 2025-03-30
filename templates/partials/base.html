@@ -14,106 +14,60 @@
     <meta property="og:url" content="" />
     <meta property="og:image" content="" />
     <!-- Favicon -->
-    <link rel="shortcut icon" type="image/x-icon" href="{% static 'assets/imgs/theme/favicon.svg' %}" />
+    <link rel="shortcut icon" type="image/x-icon" href="{{ settings.favicon.url }}" />
     <!-- Template CSS -->
     <link rel="stylesheet" href="{% static 'assets/css/plugins/animate.min.css' %}" />
     <link rel="stylesheet" href="{% static 'assets/css/main.css' %}" />
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" integrity="sha512-Evv84Mr4kqVGRNSgIGL/F/aIDqQb7xQ2vcrdIwxfjThSH8CSR7PBEakCr51Ck+w+/U6swU2Im1vVX0SVk9ABhg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <style>
+        .search-button {
+            background: none;
+            border: none;
+            color: #555;
+            font-size: 18px;
+            cursor: pointer;
+        }
+
+        .search-button:hover {
+            color: #000;
+        }
+
+        .category-image {
+            width: 40px; /* Ajusta según el diseño */
+            height: 40px;
+            object-fit: contain;
+            border-radius: 5px;
+        }
+    </style>
 </head>
 
 <body>
     <header class="header-area header-style-1 header-height-2">
-        <div class="mobile-promotion">
-            <span>Grand opening, <strong>up to 15%</strong> off all items. Only <strong>3 days</strong> left</span>
-        </div>
-        <div class="header-top header-top-ptb-1 d-none d-lg-block">
-            <div class="container">
-                <div class="row align-items-center">
-                    <div class="col-xl-3 col-lg-4">
-                        <div class="header-info">
-                            <ul>
-                                <li><a href="page-about.htlm">About Us</a></li>
-                                <li><a href="page-account.html">My Account</a></li>
-                                <li><a href="{% url 'customer:wishlist' %}">Wishlist</a></li>
-                                <li><a href="shop-order.html">Order Tracking</a></li>
-                            </ul>
-                        </div>
-                    </div>
-                    <div class="col-xl-6 col-lg-4">
-                        <div class="text-center">
-                            <div id="news-flash" class="d-inline-block">
-                                <ul>
-                                    <li>100% Secure delivery without contacting the courier</li>
-                                    <li>Supper Value Deals - Save more with coupons</li>
-                                    <li>Trendy 25silver jewelry, save up 35% off today</li>
-                                </ul>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-xl-3 col-lg-4">
-                        <div class="header-info header-info-right">
-                            <ul>
-                                <li>Need help? Call Us: <strong class="text-brand"> + 1800 900</strong></li>
-                                <li>
-                                    <a class="language-dropdown-active" href="#">English <i class="fi-rs-angle-small-down"></i></a>
-                                    <ul class="language-dropdown">
-                                        <li>
-                                            <a href="#"><img src="{% static 'assets/imgs/theme/flag-fr.png' %}" alt="" />Français</a>
-                                        </li>
-                                        <li>
-                                            <a href="#"><img src="{% static 'assets/imgs/theme/flag-dt.png' %}" alt="" />Deutsch</a>
-                                        </li>
-                                        <li>
-                                            <a href="#"><img src="{% static 'assets/imgs/theme/flag-ru.png' %}" alt="" />Pусский</a>
-                                        </li>
-                                    </ul>
-                                </li>
-                                <li>
-                                    <a class="language-dropdown-active" href="#">USD <i class="fi-rs-angle-small-down"></i></a>
-                                    <ul class="language-dropdown">
-                                        <li>
-                                            <a href="#"><img src="{% static 'assets/imgs/theme/flag-fr.png' %}" alt="" />INR</a>
-                                        </li>
-                                        <li>
-                                            <a href="#"><img src="{% static 'assets/imgs/theme/flag-dt.png' %}" alt="" />MBP</a>
-                                        </li>
-                                        <li>
-                                            <a href="#"><img src="{% static 'assets/imgs/theme/flag-ru.png' %}" alt="" />EU</a>
-                                        </li>
-                                    </ul>
-                                </li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
         <div class="header-middle header-middle-ptb-1 d-none d-lg-block">
             <div class="container">
                 <div class="header-wrap">
                     <div class="logo logo-width-1">
-                        <a href="/"><img src="{% static 'assets/imgs/theme/logo.svg' %}" alt="logo" /></a>
+                        <a href="/">
+                            <img src="{{ settings.logo.url }}" alt="{{ settings.store_name }}">
+                        </a>
                     </div>
                     <div class="header-right">
                         <div class="search-style-2">
-                            <form action="#">
-                                <select class="select-active">
-                                    <option>All Categories</option>
-                                    <option>Milks and Dairies</option>
-                                    <option>Wines & Alcohol</option>
-                                    <option>Clothing & Beauty</option>
-                                    <option>Pet Foods & Toy</option>
-                                    <option>Fast food</option>
-                                    <option>Baking material</option>
-                                    <option>Vegetables</option>
-                                    <option>Fresh Seafood</option>
-                                    <option>Noodles & Rice</option>
-                                    <option>Ice cream</option>
+                            <form action="{% url 'store:search' %}" method="GET">
+                                <select class="select-active" name="category">
+                                    <option value="">Categorías</option>
+                                    {% for category in categories %}
+                                        <option value="{{ category.id }}">{{ category.title }}</option>
+                                    {% endfor %}
                                 </select>
-                                <input type="text" placeholder="Search for items..." />
+                                <input type="text" name="q" placeholder="Buscar productos..." required />
+                                <button type="submit" class="search-button">
+                                    <i class="fas fa-search"></i>
+                                </button>                                
                             </form>
-                        </div>
+                        </div>                        
+                        
                         <div class="header-action-right">
                             <div class="header-action-2">
                                 <div class="header-action-icon-2">
@@ -132,34 +86,76 @@
                                 </div>
                                 
                                 {% if request.user.is_authenticated %}
-                                    <div class="header-action-icon-2">
-                                        <a href="#">
-                                            <img class="svgInject" alt="Nest" src="{% static 'assets/imgs/theme/icons/icon-user.svg' %}" />
-                                        </a>
-                                        <a href="javascript:;"><span class="lable ml-0">Cuenta</span></a>
-                                        <div class="cart-dropdown-wrap cart-dropdown-hm2 account-dropdown">
-                                            <ul>
-                                                <li>
-                                                    <a href="{% url 'customer:dashboard' %}"><i class="fi fi-rs-user mr-10"></i>Dasboard</a>
-                                                </li>
-                                                <li>
-                                                    <a href="page-account.html"><i class="fi fi-rs-location-alt mr-10"></i>Order Tracking</a>
-                                                </li>
-                                                <li>
-                                                    <a href="page-account.html"><i class="fi fi-rs-label mr-10"></i>My Voucher</a>
-                                                </li>
-                                                <li>
-                                                    <a href="{% url 'customer:wishlist' %}"><i class="fi fi-rs-heart mr-10"></i>Favoritos</a>
-                                                </li>
-                                                <li>
-                                                    <a href="page-account.html"><i class="fi fi-rs-settings-sliders mr-10"></i>Setting</a>
-                                                </li>
-                                                <li>
-                                                    <a href="{% url 'userauths:sign-out' %}"><i class="fi fi-rs-sign-out mr-10"></i>Cerrar sesión</a>
-                                                </li>
-                                            </ul>
+                                    {% if user.profile.user_type == "Vendor" %}
+                                        <div class="header-action-icon-2">
+                                            <a href="{% url 'vendor:profile' %}">
+                                                <img class="svgInject" alt="Nest" src="{% static 'assets/imgs/theme/icons/icon-user.svg' %}" />
+                                            </a>
+                                            <a href="{% url 'vendor:profile' %}"><span class="lable ml-0">Cuenta</span></a>
+                                            <div class="cart-dropdown-wrap cart-dropdown-hm2 account-dropdown">
+                                                <ul>
+                                                    <li>
+                                                        <a href="{% url 'vendor:dashboard' %}">
+                                                            <i class="fi fi-rs-user mr-10"></i>Dashboard
+                                                        </a>
+                                                    </li>
+                                                    <li>
+                                                        <a href="{% url 'vendor:products' %}">
+                                                            <i class="fi fi-rs-box mr-10"></i>Productos
+                                                        </a>
+                                                    </li>
+                                                    <li>
+                                                        <a href="{% url 'vendor:orders' %}">
+                                                            <i class="fi fi-rs-shopping-cart mr-10"></i>Pedidos
+                                                        </a>
+                                                    </li>
+                                                    <li>
+                                                        <a href="{% url 'vendor:coupons' %}">
+                                                            <i class="fas fa-tags mr-10"></i>Cupones
+                                                        </a>
+                                                    </li>
+                                                    <li>
+                                                        <a href="{% url 'userauths:sign-out' %}">
+                                                            <i class="fi fi-rs-sign-out mr-10"></i>Cerrar sesión
+                                                        </a>
+                                                    </li>
+                                                </ul>
+                                            </div>
                                         </div>
-                                    </div>
+                                    {% elif user.profile.user_type == "Customer" %}
+                                        <div class="header-action-icon-2">
+                                            <a href="{% url 'customer:profile' %}">
+                                                <img class="svgInject" alt="Nest" src="{% static 'assets/imgs/theme/icons/icon-user.svg' %}" />
+                                            </a>
+                                            <a href="{% url 'customer:profile' %}"><span class="lable ml-0">Cuenta</span></a>
+                                            <div class="cart-dropdown-wrap cart-dropdown-hm2 account-dropdown">
+                                                <ul>
+                                                    <li>
+                                                        <a href="{% url 'customer:dashboard' %}"><i class="fi fi-rs-user mr-10"></i>Dashboard</a>
+                                                    </li>
+                                                    <li>
+                                                        <a href="{% url 'customer:orders' %}">
+                                                            <i class="fi fi-rs-shopping-cart mr-10"></i>Pedidos
+                                                        </a>
+                                                    </li>
+                                                    <li>
+                                                        <a href="{% url 'customer:profile' %}">
+                                                            <i class="fi fi-rs-user mr-10"></i>Perfil
+                                                        </a>
+                                                    </li>
+                                                    <li>
+                                                        <a href="{% url 'userauths:sign-out' %}">
+                                                            <i class="fi fi-rs-sign-out mr-10"></i>Cerrar sesión
+                                                        </a>
+                                                    </li>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    {% else %}
+                                        <a href="{% url 'userauths:sign-in' %}" class="btn btn-primary">
+                                            <i class="fi fi-rs-sign-in mr-10"></i>Iniciar sesión 
+                                        </a>
+                                    {% endif %}
                                 {% else %}
                                     <div class="header-action-icon-2">
                                         <a href="{% url 'userauths:sign-in' %}">
@@ -184,73 +180,38 @@
                     <div class="header-nav d-none d-lg-flex">
                         <div class="main-categori-wrap d-none d-lg-block">
                             <a class="categories-button-active" href="#">
-                                <span class="fi-rs-apps"></span> <span class="et">Browse</span> All Categories
+                                <span class="fi-rs-apps"></span> <span class="et">Ver</span> Las categorías
                                 <i class="fi-rs-angle-down"></i>
                             </a>
                             <div class="categories-dropdown-wrap categories-dropdown-active-large font-heading">
                                 <div class="d-flex categori-dropdown-inner">
                                     <ul>
-                                        <li>
-                                            <a href="shop-grid-right.html"> <img src="{% static 'assets/imgs/theme/icons/category-1.svg' %}" alt="" />Milks and Dairies</a>
-                                        </li>
-                                        <li>
-                                            <a href="shop-grid-right.html"> <img src="{% static 'assets/imgs/theme/icons/category-2.svg' %}" alt="" />Clothing & beauty</a>
-                                        </li>
-                                        <li>
-                                            <a href="shop-grid-right.html"> <img src="{% static 'assets/imgs/theme/icons/category-3.svg' %}" alt="" />Pet Foods & Toy</a>
-                                        </li>
-                                        <li>
-                                            <a href="shop-grid-right.html"> <img src="{% static 'assets/imgs/theme/icons/category-4.svg' %}" alt="" />Baking material</a>
-                                        </li>
-                                        <li>
-                                            <a href="shop-grid-right.html"> <img src="{% static 'assets/imgs/theme/icons/category-5.svg' %}" alt="" />Fresh Fruit</a>
-                                        </li>
+                                        {% for category in categories|slice:":5" %}
+                                            <li>
+                                                <a href="javascript:;">
+                                                    <img src="{{ category.image.url }}" alt="{{ category.title }}" class="category-image" />
+                                                    {{ category.title }}
+                                                </a>
+                                            </li>
+                                        {% endfor %}
                                     </ul>
                                     <ul class="end">
-                                        <li>
-                                            <a href="shop-grid-right.html"> <img src="{% static 'assets/imgs/theme/icons/category-6.svg' %}" alt="" />Wines & Drinks</a>
-                                        </li>
-                                        <li>
-                                            <a href="shop-grid-right.html"> <img src="{% static 'assets/imgs/theme/icons/category-7.svg' %}" alt="" />Fresh Seafood</a>
-                                        </li>
-                                        <li>
-                                            <a href="shop-grid-right.html"> <img src="{% static 'assets/imgs/theme/icons/category-8.svg' %}" alt="" />Fast food</a>
-                                        </li>
-                                        <li>
-                                            <a href="shop-grid-right.html"> <img src="{% static 'assets/imgs/theme/icons/category-9.svg' %}" alt="" />Vegetables</a>
-                                        </li>
-                                        <li>
-                                            <a href="shop-grid-right.html"> <img src="{% static 'assets/imgs/theme/icons/category-10.svg' %}" alt="" />Bread and Juice</a>
-                                        </li>
+                                        {% for category in categories|slice:"5:10" %}
+                                            <li>
+                                                <a href="javascript:;">
+                                                    <img src="{{ category.image.url }}" alt="{{ category.title }}" class="category-image" />
+                                                    {{ category.title }}
+                                                </a>
+                                            </li>
+                                        {% endfor %}
                                     </ul>
                                 </div>
-                                <div class="more_slide_open" style="display: none">
-                                    <div class="d-flex categori-dropdown-inner">
-                                        <ul>
-                                            <li>
-                                                <a href="shop-grid-right.html"> <img src="{% static 'assets/imgs/theme/icons/icon-1.svg' %}" alt="" />Milks and Dairies</a>
-                                            </li>
-                                            <li>
-                                                <a href="shop-grid-right.html"> <img src="{% static 'assets/imgs/theme/icons/icon-2.svg' %}" alt="" />Clothing & beauty</a>
-                                            </li>
-                                        </ul>
-                                        <ul class="end">
-                                            <li>
-                                                <a href="shop-grid-right.html"> <img src="{% static 'assets/imgs/theme/icons/icon-3.svg' %}" alt="" />Wines & Drinks</a>
-                                            </li>
-                                            <li>
-                                                <a href="shop-grid-right.html"> <img src="{% static 'assets/imgs/theme/icons/icon-4.svg' %}" alt="" />Fresh Seafood</a>
-                                            </li>
-                                        </ul>
-                                    </div>
-                                </div>
-                                <div class="more_categories"><span class="icon"></span> <span class="heading-sm-1">Show more...</span></div>
                             </div>
                         </div>
+                        
                         <div class="main-menu main-menu-padding-1 main-menu-lh-2 d-none d-lg-block font-heading">
                             <nav>
                                 <ul>
-                                    <li class="hot-deals"><img src="{% static 'assets/imgs/theme/icons/icon-hot.svg' %}" alt="hot deals" /><a href="shop-grid-right.html">Deals</a></li>
                                     <li>
                                         <a class="active" href="/">Inicio </a>
                                     </li>
@@ -583,17 +544,51 @@
                     <div class="col">
                         <div class="widget-about font-md mb-md-3 mb-lg-3 mb-xl-0 wow animate__animated animate__fadeInUp" data-wow-delay="0">
                             <div class="logo mb-30">
-                                <a href="/" class="mb-15"><img src="{% static 'assets/imgs/theme/logo.svg' %}" alt="logo" /></a>
-                                <p class="font-lg text-heading">Awesome grocery store website template</p>
+                                <a href="/" class="mb-15">
+                                    {% if settings and settings.logo %}
+                                        <img src="{{ settings.logo.url }}" style="height: 66px; width: 215px; object-fit: cover;" alt="{{ settings.store_name }}">
+                                    {% else %}
+                                        <img src="{% static 'assets/imgs/theme/logo.svg' %}" style="height: 66px; width: 215px; object-fit: cover;" alt="Logo de la tienda">
+                                    {% endif %}
+                                </a>
+                                <p class="font-lg text-heading">
+                                    {% if settings and settings.store_name %}
+                                        ¡Bienvenido a {{ settings.store_name }}!
+                                    {% else %}
+                                        Tienda en línea de productos increíbles
+                                    {% endif %}
+                                </p>
                             </div>
                             <ul class="contact-infor">
-                                <li><img src="{% static 'assets/imgs/theme/icons/icon-location.svg' %}" alt="" /><strong>Address: </strong> <span>5171 W Campbell Ave undefined Kent, Utah 53127 United States</span></li>
-                                <li><img src="{% static 'assets/imgs/theme/icons/icon-contact.svg' %}" alt="" /><strong>Call Us:</strong><span>(+91) - 540-025-124553</span></li>
-                                <li><img src="{% static 'assets/imgs/theme/icons/icon-email-2.svg' %}" alt="" /><strong>Email:</strong><span>sale@Nest.com</span></li>
-                                <li><img src="{% static 'assets/imgs/theme/icons/icon-clock.svg' %}" alt="" /><strong>Hours:</strong><span>10:00 - 18:00, Mon - Sat</span></li>
+                                <li>
+                                    <img src="{% static 'assets/imgs/theme/icons/icon-location.svg' %}" alt="Ubicación" />
+                                    <strong>Dirección: </strong>
+                                    <span>
+                                        {% if settings and settings.address %}{{ settings.address }}{% else %}Dirección no disponible{% endif %}
+                                    </span>
+                                </li>
+                                <li>
+                                    <img src="{% static 'assets/imgs/theme/icons/icon-contact.svg' %}" alt="Teléfono" />
+                                    <strong>Llámanos:</strong>
+                                    <span>
+                                        {% if settings and settings.phone %}{{ settings.phone }}{% else %}Teléfono no disponible{% endif %}
+                                    </span>
+                                </li>
+                                <li>
+                                    <img src="{% static 'assets/imgs/theme/icons/icon-email-2.svg' %}" alt="Correo electrónico" />
+                                    <strong>Email:</strong>
+                                    <span>
+                                        {% if settings and settings.email %}{{ settings.email }}{% else %}Correo no disponible{% endif %}
+                                    </span>
+                                </li>
+                                <li>
+                                    <img src="{% static 'assets/imgs/theme/icons/icon-clock.svg' %}" alt="Horario" />
+                                    <strong>Horario:</strong>
+                                    <span>10:00 - 18:00, Lunes - Sábado</span>
+                                </li>
                             </ul>
                         </div>
-                    </div>
+                    </div>                    
                     <div class="footer-link-widget col wow animate__animated animate__fadeInUp" data-wow-delay=".1s>
                         <h4 class=" widget-title">Company</h4>
                         <ul class="footer-list mb-sm-5 mb-md-0">
@@ -660,42 +655,58 @@
                     <div class="footer-bottom"></div>
                 </div>
                 <div class="col-xl-4 col-lg-6 col-md-6">
-                    <p class="font-sm mb-0">&copy; 2024, <strong class="text-brand">Nest</strong> - HTML Ecommerce Template <br />All rights reserved</p>
+                    <p class="font-sm mb-0">&copy; <script>document.write(new Date().getFullYear());</script>, <strong class="text-brand">
+                        {% if settings and settings.store_name %}{{ settings.store_name }}{% else %}Mi Tienda{% endif %}
+                    </strong> - Plantilla HTML para Ecommerce <br />Todos los derechos reservados</p>
                 </div>
                 <div class="col-xl-4 col-lg-6 text-center d-none d-xl-block">
-                    <div class="hotline d-lg-inline-flex mr-30">
-                        <img src="{% static 'assets/imgs/theme/icons/phone-call.svg' %}" alt="hotline" />
-                        <p>1900 - 6666<span>Working 8:00 - 22:00</span></p>
-                    </div>
+                    {% if settings and settings.phone %}
+                        <div class="hotline d-lg-inline-flex mr-30">
+                            <img src="{% static 'assets/imgs/theme/icons/phone-call.svg' %}" alt="Línea de atención" />
+                            <p>{{ settings.phone }}<span>Atención: 8:00 - 22:00</span></p>
+                        </div>
+                    {% endif %}
                     <div class="hotline d-lg-inline-flex">
-                        <img src="{% static 'assets/imgs/theme/icons/phone-call.svg' %}" alt="hotline" />
-                        <p>1900 - 8888<span>24/7 Support Center</span></p>
+                        <img src="{% static 'assets/imgs/theme/icons/phone-call.svg' %}" alt="Centro de soporte" />
+                        <p>1900 - 8888<span>Centro de soporte 24/7</span></p>
                     </div>
-                </div>
+                </div>                
                 <div class="col-xl-4 col-lg-6 col-md-6 text-end d-none d-md-block">
-                    <div class="mobile-social-icon">
-                        <h6>Follow Us</h6>
-                        <a href="#"><img src="{% static 'assets/imgs/theme/icons/icon-facebook-white.svg' %}" alt="" /></a>
-                        <a href="#"><img src="{% static 'assets/imgs/theme/icons/icon-twitter-white.svg' %}" alt="" /></a>
-                        <a href="#"><img src="{% static 'assets/imgs/theme/icons/icon-instagram-white.svg' %}" alt="" /></a>
-                        <a href="#"><img src="{% static 'assets/imgs/theme/icons/icon-pinterest-white.svg' %}" alt="" /></a>
-                        <a href="#"><img src="{% static 'assets/imgs/theme/icons/icon-youtube-white.svg' %}" alt="" /></a>
-                    </div>
-                    <p class="font-sm">Up to 15% discount on your first subscribe</p>
+                    {% if settings and settings.facebook or settings.instagram or settings.twitter or settings.youtube or settings.linkedin %}
+                        <div class="mobile-social-icon">
+                            <h6>Síguenos</h6>
+                            {% if settings.facebook %}
+                                <a href="{{ settings.facebook }}" target="_blank">
+                                    <img src="{% static 'assets/imgs/theme/icons/icon-facebook-white.svg' %}" alt="Facebook">
+                                </a>
+                            {% endif %}
+                            {% if settings.twitter %}
+                                <a href="{{ settings.twitter }}" target="_blank">
+                                    <img src="{% static 'assets/imgs/theme/icons/icon-twitter-white.svg' %}" alt="Twitter">
+                                </a>
+                            {% endif %}
+                            {% if settings.instagram %}
+                                <a href="{{ settings.instagram }}" target="_blank">
+                                    <img src="{% static 'assets/imgs/theme/icons/icon-instagram-white.svg' %}" alt="Instagram">
+                                </a>
+                            {% endif %}
+                            {% if settings.linkedin %}
+                                <a href="{{ settings.linkedin }}" target="_blank">
+                                    <img src="{% static 'assets/imgs/theme/icons/icon-pinterest-white.svg' %}" alt="Pinterest">
+                                </a>
+                            {% endif %}
+                            {% if settings.youtube %}
+                                <a href="{{ settings.youtube }}" target="_blank">
+                                    <img src="{% static 'assets/imgs/theme/icons/icon-youtube-white.svg' %}" alt="YouTube">
+                                </a>
+                            {% endif %}
+                        </div>
+                    {% endif %}
                 </div>
+                               
             </div>
         </div>
     </footer>
-    <!-- Preloader Start -->
-    <!-- <div id="preloader-active">
-        <div class="preloader d-flex align-items-center justify-content-center">
-            <div class="preloader-inner position-relative">
-                <div class="text-center">
-                    <img src="{% static 'assets/imgs/theme/loading.gif' %}" alt="" />
-                </div>
-            </div>
-        </div>
-    </div> -->
     <!-- Vendor JS-->
     <script src="{% static 'assets/js/vendor/modernizr-3.6.0.min.js' %}"></script>
     <script src="{% static 'assets/js/vendor/jquery-3.6.0.min.js' %}"></script>

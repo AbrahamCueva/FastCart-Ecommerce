@@ -4,7 +4,7 @@ from store import views
 app_name = "store"
 
 urlpatterns = [
-    path("", views.index, name="index"),
+    path("", views.index, name="index"), 
     path("detail/<slug>/", views.product_detail, name="product_detail"),
     path("add_to_cart/", views.add_to_cart, name="add_to_cart"),
     path("cart/", views.cart, name="cart"),
@@ -20,4 +20,6 @@ urlpatterns = [
     path("flutterwave_payment_callback/<order_id>/", views.flutterwave_payment_callback, name="flutterwave_payment_callback"),
 
     path('product/<int:product_id>/add_review/', views.add_review, name='add_review'),
+
+    path("search/", views.search_view, name="search"),
 ]

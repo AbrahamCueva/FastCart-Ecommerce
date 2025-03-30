@@ -21,23 +21,52 @@ import stripe
 
 stripe.api_key = settings.STTRIPE_SECRET_KEY
 
+def search_view(request):
+    query = request.GET.get("q", "").strip()  # Obtener el texto de búsqueda
+    category_id = request.GET.get("category", "").strip()  # Obtener la categoría (si se seleccionó)
+    settings = store_models.StoreSettings.objects.first()
+    categories = store_models.Category.objects.all()
+    products = store_models.Product.objects.filter(status="Published")
+    if query:
+        products = products.filter(name__icontains=query)  # Filtrar por nombre (ignora mayúsculas y minúsculas)
+    
+    if category_id:
+        products = products.filter(category_id=category_id)  # Filtrar por categoría
+    
+    context = {
+        "products": products,
+        "query": query,
+        "settings": settings,
+        "categories": categories,
+    }
+    return render(request, "store/search_results.html", context)
+    
+
 def index(request):
     products = store_models.Product.objects.filter(status="Published")[:10]
     categories = store_models.Category.objects.all()
+    sliders = store_models.Slider.objects.filter(status="Active").order_by("-created_at")
+    settings = store_models.StoreSettings.objects.first()
     context = {
         "products": products,
         "categories": categories,
+        "sliders": sliders,
+        "settings": settings,
     }
     return render(request, "store/index.html", context)
 
 def product_detail(request, slug):
     product = store_models.Product.objects.get(status="Published", slug=slug)
     related_products = store_models.Product.objects.filter(category=product.category, status="Published").exclude(id=product.id)
+    settings = store_models.StoreSettings.objects.first()
+    categories = store_models.Category.objects.all()
     product_stock_range = range(1, product.stock + 1)
     context = {
         "product": product,
         "related_products": related_products,
         "product_stock_range": product_stock_range,
+        "settings": settings,
+        "categories": categories,
     }
     return render(request, "store/product_detail.html", context)
 
@@ -108,6 +137,8 @@ def cart(request):
         cart_id = None
         
     items = store_models.Cart.objects.filter(Q(cart_id=cart_id) | Q(user=request.user) if request.user.is_authenticated else Q(cart_id=cart_id))
+    settings = store_models.StoreSettings.objects.first()
+    categories = store_models.Category.objects.all()
     cart_sub_total = store_models.Cart.objects.filter(Q(cart_id=cart_id) | Q(user=request.user) if request.user.is_authenticated else Q(cart_id=cart_id)).aggregate(sub_total = Sum("sub_total"))['sub_total']
     try:
         addresses = customer_models.Address.objects.filter(user=request.user)
@@ -121,7 +152,9 @@ def cart(request):
     context = {
         "items": items,
         "cart_sub_total": cart_sub_total,
-        "addresses": addresses
+        "addresses": addresses,
+        "settings": settings,
+        "categories": categories,
     }
     
     return render(request, "store/cart.html", context)
@@ -199,6 +232,8 @@ def create_order(request):
 
 def checkout(request, order_id):
     order = store_models.Order.objects.get(order_id=order_id)
+    settings = store_models.StoreSettings.objects.first()
+    categories = store_models.Category.objects.all()
     amount_in_inr = convert_usd_inr(order.total)
     amount_in_kobo = convert_usd_to_kobo(order.total)
     amount_in_ngn = convert_usd_to_ngn(order.total)
@@ -214,6 +249,8 @@ def checkout(request, order_id):
         "stripe_public_key": settings.STTRIPE_PUBLIC_KEY,
         "paystack_public_key": settings.PAYSTTACK_PUBLIC_KEY,
         "flutterwavee_public_key": settings.FLUTTERWAVEE_PUBLIC_KEY,
+        "settings": settings,
+        "categories": categories,
     }
     return render(request, "store/checkout.html", context)
         

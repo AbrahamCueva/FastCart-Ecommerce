@@ -1,0 +1,33 @@
+{% extends 'partials/base.html' %}  {# Ajusta esto según tu plantilla base #}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row">
+        <div class="col-md-8 offset-md-2">
+            <div class="alert alert-danger">
+                <h4 class="alert-heading">Acceso Denegado</h4>
+                <p>No tienes permisos para acceder a esta sección.</p>
+                
+                {% if messages %}
+                <ul class="messages">
+                    {% for message in messages %}
+                    <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+                    {% endfor %}
+                </ul>
+                {% endif %}
+                
+                <hr>
+                <p class="mb-0">
+                    {% if user.profile.user_type == "Vendor" %}
+                        <a href="{% url 'vendor:dashboard' %}" class="btn btn-primary">Volver al Panel de Proveedor</a>
+                    {% elif user.profile.user_type == "Customer" %}
+                        <a href="{% url 'customer:dashboard' %}" class="btn btn-primary">Volver al Panel de Cliente</a>
+                    {% else %}
+                        <a href="/" class="btn btn-primary">Volver al Inicio</a>
+                    {% endif %}
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

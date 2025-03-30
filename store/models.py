@@ -3,6 +3,8 @@ from shortuuid.django_fields import ShortUUIDField
 from django.utils import timezone
 from django.utils.text import slugify
 from django_ckeditor_5.fields import CKEditor5Field
+from ckeditor.fields import RichTextField
+from django.contrib.auth.models import User
 
 from userauths import models as user_models
 
@@ -49,6 +51,77 @@ RATING = (
     (4, "★★★★☆"),
     (5, "★★★★★"),
 )
+
+SLIDER_STATUS = (
+    ("Active", "Activo"),
+    ("Inactive", "Inactivo"),
+)
+
+class StoreSettings(models.Model):
+    store_name = models.CharField(max_length=255, verbose_name="Nombre de la Tienda")
+    logo = models.ImageField(upload_to="settings/", verbose_name="Logo de la Tienda")
+    favicon = models.ImageField(upload_to="settings/", verbose_name="Favicon (Ícono de pestaña)")
+    
+    # Información de contacto
+    address = models.TextField(verbose_name="Dirección")
+    phone = models.CharField(max_length=20, verbose_name="Teléfono")
+    email = models.EmailField(verbose_name="Correo Electrónico")
+
+    # Redes sociales
+    facebook = models.URLField(blank=True, null=True, verbose_name="Facebook")
+    instagram = models.URLField(blank=True, null=True, verbose_name="Instagram")
+    twitter = models.URLField(blank=True, null=True, verbose_name="Twitter")
+    youtube = models.URLField(blank=True, null=True, verbose_name="YouTube")
+    linkedin = models.URLField(blank=True, null=True, verbose_name="LinkedIn")
+
+    # Configuración SEO
+    seo_title = models.CharField(max_length=255, verbose_name="Título SEO")
+    seo_description = models.TextField(verbose_name="Descripción SEO")
+    seo_keywords = models.CharField(max_length=500, verbose_name="Palabras Clave SEO")
+
+    updated_at = models.DateTimeField(auto_now=True, verbose_name="Última Actualización")
+
+    class Meta:
+        verbose_name = "Configuración de la Tienda"
+        verbose_name_plural = "Configuraciones de la Tienda"
+
+    def __str__(self):
+        return self.store_name
+
+class Slider(models.Model):
+    slider_id = ShortUUIDField(length=6, max_length=25, alphabet="1234567890", unique=True, verbose_name="ID del Slider")
+    title = models.CharField(max_length=255, verbose_name="Título")
+    subtitle = models.CharField(max_length=255, blank=True, null=True, verbose_name="Subtítulo")
+    description = models.TextField(blank=True, null=True, verbose_name="Descripción")
+    image = models.ImageField(upload_to="sliders/", verbose_name="Imagen del Slider")
+    
+    has_button = models.BooleanField(default=False, verbose_name="¿Tiene botón?")
+    button_text = models.CharField(max_length=50, blank=True, null=True, verbose_name="Texto del Botón")
+    button_link = models.URLField(max_length=500, blank=True, null=True, verbose_name="Enlace del Botón")
+
+    status = models.CharField(choices=SLIDER_STATUS, max_length=10, default="Active", verbose_name="Estado")
+    created_at = models.DateTimeField(auto_now_add=True, verbose_name="Fecha de Creación")
+    updated_at = models.DateTimeField(auto_now=True, verbose_name="Última Actualización")
+
+    class Meta:
+        verbose_name = "Slider"
+        verbose_name_plural = "Sliders"
+        ordering = ["-created_at"]
+
+    def __str__(self):
+        return self.title
+
+    def save(self, *args, **kwargs):
+        # Generar un slider_id si no existe
+        if not self.slider_id:
+            self.slider_id = slugify(self.title)[:6] + str(timezone.now().timestamp())[-4:]
+
+        # Si `has_button` es False, limpiar los valores de button_text y button_link
+        if not self.has_button:
+            self.button_text = None
+            self.button_link = None
+
+        super(Slider, self).save(*args, **kwargs)
 
 class Category(models.Model):
     title = models.CharField(max_length=255)
