@@ -1,0 +1,25 @@
+{% extends 'partials/base.html' %}
+{% load humanize %}
+{% load static %}
+
+{% block content %} 
+<main class="main page-404">
+    <div class="page-content pt-150 pb-150">
+        <div class="container">
+            <div class="row">
+                <div class="col-xl-8 col-lg-10 col-md-12 m-auto text-center">
+                    <p class="mb-20">
+                        <img src="{% static 'assets/imgs/page/page-404.png' %}" alt="" class="hover-up" />
+                    </p>
+                    <h1 class="display-2 mb-30">Página no encontrada</h1>
+                    <p class="font-lg text-grey-700 mb-30">
+                        Es posible que el enlace en el que hiciste clic esté roto o que la página haya sido eliminada.<br />
+                        Visita la <a href="{% url 'store:index' %}"> <span>Página de inicio</span></a> o <a href="{% url 'store:contacto' %}"><span>Contáctanos</span></a> para informar sobre el problema.
+                    </p>
+                    <a class="btn btn-default submit-auto-width font-xs hover-up mt-30" href="{% url 'store:index' %}"><i class="fi-rs-home mr-5"></i> Volver al inicio</a>
+                </div>                
+            </div>
+        </div>
+    </div>
+</main>
+{% endblock content %}

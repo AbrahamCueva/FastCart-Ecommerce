@@ -107,8 +107,8 @@ class StoreSettings(models.Model):
     updated_at = models.DateTimeField(auto_now=True, verbose_name="Última Actualización")
 
     class Meta:
-        verbose_name = "Configuración de la Tienda"
-        verbose_name_plural = "Configuraciones de la Tienda"
+        verbose_name = "Configuración"
+        verbose_name_plural = "Configuraciones"
 
     def __str__(self):
         return self.store_name

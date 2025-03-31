@@ -193,96 +193,119 @@ MESSAGES_TAGS = {
 }
 
 JAZZMIN_SETTINGS = {
-    "site_title": "Tienda rico",
-    "site_header": "Tienda rico",
-    "site_brand": "Tienda rico ",
-    # "site_icon": "images/favicon.ico",
-    # "site_logo": "images/logos/logo.jpg",
-    "welcome_sign": "Bienvenido/a a rico",
-    "copyright": "rico",
-    "user_avatar": "images/photos/logo.jpg",
+    "site_title": "Tienda Rico",
+    "site_header": "Tienda Rico",
+    "site_brand": "Tienda Rico",
+    "welcome_sign": "Bienvenido/a a Rico",
+    "copyright": "© 2025 Tienda Rico",
+    
+    # Logo e icono del sitio
+    "site_icon": None,  # Usa el ícono por defecto de Jazzmin
+    "site_logo": None,  # No se mostrará un logo en la barra lateral
+    "login_logo": None,  # No se mostrará un logo en la pantalla de login
+    "login_background": None,
+
+    # Personalización del Tema
+    "theme": "darkly",  # Otras opciones: "cosmo", "flatly", "sandstone", "solar", "cyborg"
+    
+    # Barra de Navegación y Sidebar
+    "fixed_navbar": True,
     "show_sidebar": True,
-    "navigation_expanded": True,
+    "navigation_expanded": False,  # Sidebar minimizado por defecto
+
+    # Organización del menú
     "order_with_respect_to": [
-        "store",
-        "store.product",
-        "store.cartorder",
-        "store.cartorderitem",
-        "store.cart",
-        "store.category",
-        "store.brand",
-        "store.productfaq",
-        "store.review",
-        "vendor.Coupon",
-        "vendor.DeliveryCouriers",
-        "userauths",
-        "userauths.user",
-        "userauths.profile",
-        "donations",
-        "blog",
-        'newsfeed',
-        "contacts",
-        "addon",
+        "store", "store.product", "store.cartorder", "store.cartorderitem",
+        "store.cart", "store.category", "store.brand", "store.productfaq",
+        "store.review", "vendor.Coupon", "vendor.DeliveryCouriers",
+        "userauths", "userauths.user", "userauths.profile",
+        "donations", "blog", 'newsfeed', "contacts", "addon",
     ],
+
+    # Iconos para cada modelo
     "icons": {
         "admin.LogEntry": "fas fa-file",
-
         "auth": "fas fa-users-cog",
         "auth.user": "fas fa-user",
-
         "userauths.User": "fas fa-user",
-        "userauths.Profile":"fas fa-address-card",
-
+        "userauths.Profile": "fas fa-address-card",
         "donations.Donation": "fas fa-hand-holding-usd",
         "donations.Payment": "fas fa-credit-card",
-
         "newsfeed.Newsletter": "fas fa-envelope",
-        "newsfeed.SubscribedUser": "fas fa-at",
-
-        "newsfeed.SubscribedUser": "fas fa-at",
-
         "contacts.Inquiry": "fas fa-phone",
         "addon.BasicAddon": "fas fa-cog",
-
-        "store.Product": "fas fa-th",
-        "store.CartOrder":"fas fa-shopping-cart",
-        "store.Cart":"fas fa-cart-plus",
-        "store.CartOrderItem":"fas fa-shopping-basket",
-        "store.Brand":"fas fa-check-circle",
-        "store.productfaq":"fas fa-question",
-        "store.Review":"fas fa-star fa-beat",
-        "store.Category":"fas fa-tag",
-        "store.Tag":"fas fa-tag",
-        "store.Notification":"fas fa-bell",
         
-        "customer.Address":"fas fa-location-arrow",
-        "customer.Wishlist":"fas fa-heart",
-
-        "vendor.DeliveryCouriers":"fas fa-truck",
-        "vendor.Coupon":"fas fa-percentage",
-        "vendor.Vendor":"fas fa-store",
-        "vendor.Notification":"fas fa-bell",
-        "vendor.PayoutTracker":"fas fa-wallet",
-        "vendor.ChatMessage":"fas fa-envelope",
-
-        "addons.BecomeAVendor":"fas fa-user-plus",
-        "addons.AboutUS":"fas fa-users",
-        "addons.Company":"fas fa-university",
-        "addons.BasicAddon":"fas fa-cog",
+        "store.Product": "fas fa-th",
+        "store.CartOrder": "fas fa-shopping-cart",
+        "store.Cart": "fas fa-cart-plus",
+        "store.CartOrderItem": "fas fa-shopping-basket",
+        "store.Brand": "fas fa-check-circle",
+        "store.productfaq": "fas fa-question",
+        "store.Review": "fas fa-star fa-beat",
+        "store.Category": "fas fa-tag",
+        "store.Notification": "fas fa-bell",
+        "store.StoreSettings": "fas fa-tools",
+        "store.Coupon": "fas fa-ticket-alt",
+        "store.Gallery": "fas fa-images",
+        "store.MensajeContacto": "fas fa-envelope-open-text",
+        "store.Order": "fas fa-shopping-bag",
+        "store.OrderItem": "fas fa-box-open",
+        "store.Slider": "fas fa-sliders-h",
+        "store.AboutUs": "fas fa-info-circle",
+        "store.VariantItem": "fas fa-th-list",
+        "store.Variant": "fas fa-palette",
+        "customer.Address": "fas fa-location-arrow",
+        "customer.Wishlist": "fas fa-heart",
+        "customer.Notifications": "fas fa-bell",
+        
+        "vendor.DeliveryCouriers": "fas fa-truck",
+        "vendor.Coupon": "fas fa-percentage",
+        "vendor.Vendor": "fas fa-store",
+        "vendor.Payout": "fas fa-credit-card",
+        "vendor.BankAccount": "fas fa-university",
+        
+        "addons.BecomeAVendor": "fas fa-user-plus",
+        "addons.AboutUS": "fas fa-users",
     },
+
+    # Iconos por defecto
     "default_icon_parents": "fas fa-chevron-circle-right",
     "default_icon_children": "fas fa-arrow-circle-right",
-    "related_modal_active": False,
-    
-    "custom_js": None,
-    "show_ui_builder": True,
-    
-    "changeform_format": "horizontal_tabs",
+
+    # Personalización de la Interfaz
+    "changeform_format": "vertical_tabs",
     "changeform_format_overrides": {
+        "store.Product": "horizontal_tabs",
         "auth.user": "collapsible",
-        "auth.group": "vertical_tabs",
     },
+
+    # Accesos rápidos en la barra superior
+    "topmenu_links": [
+        {"name": "Inicio", "url": "admin:index", "permissions": ["auth.view_user"]},
+        {"name": "Añadir Producto", "url": "admin:store_product_add", "permissions": ["store.add_product"]},
+    ],
+
+    # Atajos en el Dashboard
+    "custom_links": {
+        "store": [
+            {"name": "Añadir Producto", "url": "admin:store_product_add", "icon": "fas fa-plus-circle", "permissions": ["store.add_product"]},
+            {"name": "Ver Pedidos", "url": "admin:store_order_changelist", "icon": "fas fa-shopping-bag"},
+        ],
+    },
+
+    # Panel de control personalizado
+    "custom_dashboard": "admin_dashboard.html",
+
+    # Permisos personalizados
+    "permissions": {
+        "store.Product": ["add", "change", "delete"],
+        "store.Order": ["view", "change"],
+    },
+
+    # Mostrar constructor de UI (opcional)
+    "show_ui_builder": True,
 }
+
 
 
 customColorPalette = [

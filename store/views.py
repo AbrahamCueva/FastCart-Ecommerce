@@ -545,3 +545,12 @@ def contacto(request):
         form = FormularioContacto()
 
     return render(request, "store/contacto.html", {"form": form, "settings": settings, "categories": categories})
+
+def custom_404(request, exception):
+    settings = store_models.StoreSettings.objects.first()
+    categories = store_models.Category.objects.all()
+    context = {
+        "settings": settings,
+        "categories": categories,
+    }
+    return render(request, "store/404.html", status=404, context=context)
