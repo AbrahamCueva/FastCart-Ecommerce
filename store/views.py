@@ -16,6 +16,7 @@ from django.urls import reverse
 from plugin.exchange_rate import convert_usd_inr, convert_usd_to_kobo, convert_usd_to_ngn
 from django.core.mail import EmailMultiAlternatives, send_mail
 from django.template.loader import render_to_string
+from .forms import FormularioContacto
 import requests
 import stripe
 
@@ -518,3 +519,29 @@ def add_review(request, product_id):
     }
     return render(request, 'store/add_review_form.html', context)
 
+def contacto(request):
+    settings = store_models.StoreSettings.objects.first()
+    categories = store_models.Category.objects.all()
+    if request.method == "POST":
+        form = FormularioContacto(request.POST)
+        if form.is_valid():
+            mensaje = form.save()
+
+            # Enviar correo al administrador
+            send_mail(
+                subject=f"Nuevo Mensaje de Contacto: {mensaje.asunto}",
+                message=f"Nombre: {mensaje.nombre}\n"
+                        f"Correo: {mensaje.email}\n"
+                        f"Teléfono: {mensaje.telefono}\n"
+                        f"Mensaje:\n{mensaje.mensaje}",
+                from_email="no-reply@tuempresa.com",
+                recipient_list=["abrahamrico546@gmail.com"],  # Cambia esto al correo del administrador
+                fail_silently=False,
+            )
+
+            messages.success(request, "Tu mensaje ha sido enviado correctamente. ¡Nos pondremos en contacto pronto!")
+            return redirect("store:contacto")
+    else:
+        form = FormularioContacto()
+
+    return render(request, "store/contacto.html", {"form": form, "settings": settings, "categories": categories})

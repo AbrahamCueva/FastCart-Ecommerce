@@ -1,5 +1,7 @@
 from django.contrib import admin
 from store import models as store_models
+from django import forms
+
 
 class AboutUsAdmin(admin.ModelAdmin):
     list_display = ("title", "updated_at")
@@ -77,6 +79,11 @@ class StoreSettingsAdmin(admin.ModelAdmin):
         ("Redes Sociales", {"fields": ("facebook", "instagram", "twitter", "youtube", "linkedin")}),
         ("Configuración SEO", {"fields": ("seo_title", "seo_description", "seo_keywords")}),
     )
+    
+class MensajeContactoAdmin(admin.ModelAdmin):
+    list_display = ('nombre', 'email', 'telefono', 'asunto', 'fecha_envio')
+    search_fields = ('nombre', 'email', 'asunto')
+    list_filter = ('fecha_envio',)
 
 admin.site.register(store_models.Category, CategoryAdmin)
 admin.site.register(store_models.Product, ProductAdmin)
@@ -92,3 +99,4 @@ admin.site.register(store_models.Slider, SliderAdmin)
 admin.site.register(store_models.StoreSettings, StoreSettingsAdmin)
 
 admin.site.register(store_models.AboutUs, AboutUsAdmin)
+admin.site.register(store_models.MensajeContacto, MensajeContactoAdmin)

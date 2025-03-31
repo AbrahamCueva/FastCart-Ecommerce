@@ -66,6 +66,21 @@ class AboutUs(models.Model):
 
     def __str__(self):
         return self.title
+    
+class MensajeContacto(models.Model):
+    nombre = models.CharField(max_length=100, verbose_name="Nombre")
+    email = models.EmailField(verbose_name="Correo Electrónico")
+    telefono = models.CharField(max_length=20, verbose_name="Teléfono")
+    asunto = models.CharField(max_length=255, verbose_name="Asunto")
+    mensaje = models.TextField(verbose_name="Mensaje")
+    fecha_envio = models.DateTimeField(auto_now_add=True, verbose_name="Fecha de Envío")
+
+    class Meta:
+        verbose_name = "Mensaje de Contacto"
+        verbose_name_plural = "Mensajes de Contacto"
+
+    def __str__(self):
+        return f"{self.nombre} - {self.asunto}"
 
 class StoreSettings(models.Model):
     store_name = models.CharField(max_length=255, verbose_name="Nombre de la Tienda")

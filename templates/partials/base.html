@@ -210,10 +210,13 @@
                             <nav>
                                 <ul>
                                     <li>
-                                        <a class="active" href="/">Inicio </a>
+                                        <a class="{% if request.resolver_match.url_name == 'index' %}active{% endif %}" href="{% url 'store:index' %}">Inicio </a>
                                     </li>
                                     <li>
-                                        <a class="" href="{% url 'store:about_us' %}">Sobre nosotros </a>
+                                        <a class="{% if request.resolver_match.url_name == 'about_us' %}active{% endif %}" href="{% url 'store:about_us' %}">Sobre nosotros </a>
+                                    </li>
+                                    <li>
+                                        <a class="{% if request.resolver_match.url_name == 'contacto' %}active{% endif %}" href="{% url 'store:contacto' %}">Contactenos </a>
                                     </li>
                                 </ul>
                             </nav>

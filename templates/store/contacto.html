@@ -1,0 +1,71 @@
+{% extends 'partials/base.html' %}
+{% load static %}
+
+{% block content %}
+<main class="main pages">
+    <div class="page-header breadcrumb-wrap">
+        <div class="container">
+            <div class="breadcrumb">
+                <a href="{% url 'store:index' %}" rel="nofollow"><i class="fi-rs-home mr-5"></i>inicio</a>
+                <span></span>
+                <a href="{% url 'store:contacto' %}">Contacto</a>
+            </div>
+        </div>
+    </div>
+    <div class="page-content pt-50">
+
+        <div class="container">
+            <div class="row">
+                <div class="col-xl-10 col-lg-12 m-auto">
+                    <section class="mb-50">
+                        <div class="row">
+                            <div class="col-xl-8">
+                                <div class="contact-from-area padding-20-row-col">
+                                    <h5 class="text-brand mb-10">Formualario de contacto</h5>
+                                    <h2 class="mb-10">Envíanos un mensaje</h2>
+                                    <p class="text-muted mb-30 font-sm">Tu dirección de correo no será publicada. Los campos obligatorios están marcados con *</p>
+                                    <form class="contact-form-style mt-30" id="contact-form" action="{% url 'store:contacto' %}" method="post">
+                                        {% csrf_token %}
+                                        <div class="row">
+                                            <div class="col-lg-6 col-md-6">
+                                                <div class="input-style mb-20">
+                                                    {{ form.nombre }}
+                                                </div>
+                                            </div>
+                                            <div class="col-lg-6 col-md-6">
+                                                <div class="input-style mb-20">
+                                                    {{ form.email }}
+                                                </div>
+                                            </div>
+                                            <div class="col-lg-6 col-md-6">
+                                                <div class="input-style mb-20">
+                                                    {{ form.telefono }}
+                                                </div>
+                                            </div>
+                                            <div class="col-lg-6 col-md-6">
+                                                <div class="input-style mb-20">
+                                                    {{ form.asunto }}
+                                                </div>
+                                            </div>
+                                            <div class="col-lg-12 col-md-12">
+                                                <div class="textarea-style mb-30">
+                                                    {{ form.mensaje }}
+                                                </div>
+                                                <button class="submit submit-auto-width" type="submit">Enviar mensaje</button>
+                                            </div>
+                                        </div>
+                                    </form>
+                                    <p class="form-messege"></p>
+                                </div>
+                            </div>
+                            <div class="col-lg-4 pl-50 d-lg-block d-none">
+                                <img class="border-radius-15 mt-50" src="{% static 'assets/imgs/page/contact-2.png' %}" alt="Contact Image" />
+                            </div>
+                        </div>
+                    </section>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+{% endblock %}
