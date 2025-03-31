@@ -1,0 +1,35 @@
+{% extends 'partials/base.html' %}
+{% load humanize %}
+{% load static %}
+
+{% block content %}
+<main class="main pages">
+    <div class="page-header breadcrumb-wrap">
+        <div class="container">
+            <div class="breadcrumb">
+                <a href="{% url 'store:index' %}" rel="nofollow"><i class="fi-rs-home mr-5"></i>Home</a>
+                <span></span> Sobre Nosotros
+            </div>
+        </div>
+    </div>
+    <div class="page-content pt-50">
+        <div class="container">
+            <div class="row">
+                <div class="col-xl-10 col-lg-12 m-auto">
+                    <section class="row align-items-center mb-50">
+                        <div class="col-lg-6">
+                            <img src="{% static 'imgs/page/about-1.png' %}" alt="" class="border-radius-15 mb-md-3 mb-lg-0 mb-sm-4" />
+                        </div>
+                        <div class="col-lg-6">
+                            <div class="pl-25">
+                                <h2 class="mb-30">{{ about.title }}</h2>
+                                <div class="mb-25">{{ about.content | safe }}</div>
+                            </div>
+                        </div>
+                    </section>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+{% endblock content %}

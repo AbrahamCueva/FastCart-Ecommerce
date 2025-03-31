@@ -71,13 +71,6 @@
                         <div class="header-action-right">
                             <div class="header-action-2">
                                 <div class="header-action-icon-2">
-                                    <a href="{% url 'customer:wishlist' %}">
-                                        <img class="svgInject" alt="Nest" src="{% static 'assets/imgs/theme/icons/icon-heart.svg' %}" />
-                                        <span class="pro-count blue">2</span>
-                                    </a>
-                                    <a href="{% url 'customer:wishlist' %}"><span class="lable">Favoritos</span></a>
-                                </div>
-                                <div class="header-action-icon-2">
                                     <a class="mini-cart-icon" href="{% url 'store:cart' %}">
                                         <img alt="Nest" src="{% static 'assets/imgs/theme/icons/icon-cart.svg' %}" />
                                         <span class="pro-count blue total_cart_items">{{ total_cart_items }}</span>
@@ -152,9 +145,13 @@
                                             </div>
                                         </div>
                                     {% else %}
-                                        <a href="{% url 'userauths:sign-in' %}" class="btn btn-primary">
-                                            <i class="fi fi-rs-sign-in mr-10"></i>Iniciar sesión 
-                                        </a>
+                                        <div class="header-action-icon-2">
+                                            <a href="{% url 'userauths:sign-in' %}">
+                                                <span class="lable ml-0">
+                                                    <i class="fi fi-rs-sign-in mr-10"></i>Iniciar sesión 
+                                                </span>
+                                            </a>
+                                        </div>
                                     {% endif %}
                                 {% else %}
                                     <div class="header-action-icon-2">
@@ -214,6 +211,9 @@
                                 <ul>
                                     <li>
                                         <a class="active" href="/">Inicio </a>
+                                    </li>
+                                    <li>
+                                        <a class="" href="{% url 'store:about_us' %}">Sobre nosotros </a>
                                     </li>
                                 </ul>
                             </nav>

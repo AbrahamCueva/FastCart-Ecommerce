@@ -3,11 +3,7 @@ from shortuuid.django_fields import ShortUUIDField
 from django.utils import timezone
 from django.utils.text import slugify
 from django_ckeditor_5.fields import CKEditor5Field
-from ckeditor.fields import RichTextField
-from django.contrib.auth.models import User
-
 from userauths import models as user_models
-
 import shortuuid
 
 STATUS = (
@@ -56,6 +52,20 @@ SLIDER_STATUS = (
     ("Active", "Activo"),
     ("Inactive", "Inactivo"),
 )
+
+class AboutUs(models.Model):
+    title = models.CharField(max_length=255, verbose_name="Título")
+    content = CKEditor5Field("Contenido", config_name="extends")
+    created_at = models.DateTimeField(auto_now_add=True, verbose_name="Fecha de Creación")
+    updated_at = models.DateTimeField(auto_now=True, verbose_name="Última Actualización")
+
+    class Meta:
+        verbose_name = "Sobre Nosotros"
+        verbose_name_plural = "Sobre Nosotros"
+        ordering = ["-updated_at"]
+
+    def __str__(self):
+        return self.title
 
 class StoreSettings(models.Model):
     store_name = models.CharField(max_length=255, verbose_name="Nombre de la Tienda")

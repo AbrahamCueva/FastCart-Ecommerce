@@ -41,6 +41,16 @@ def search_view(request):
     }
     return render(request, "store/search_results.html", context)
     
+def about_us(request):
+    about = store_models.AboutUs.objects.first()
+    settings = store_models.StoreSettings.objects.first()
+    categories = store_models.Category.objects.all()
+    context = {
+        "settings": settings,
+        "categories": categories,
+        "about": about,
+    }
+    return render(request, 'store/about-us.html', context)
 
 def index(request):
     products = store_models.Product.objects.filter(status="Published")[:10]

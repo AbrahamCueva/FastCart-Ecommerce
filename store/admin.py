@@ -1,7 +1,9 @@
 from django.contrib import admin
 from store import models as store_models
-from django import forms
-from ckeditor.widgets import CKEditorWidget
+
+class AboutUsAdmin(admin.ModelAdmin):
+    list_display = ("title", "updated_at")
+    search_fields = ("title",)
 
 class GalleryInline(admin.TabularInline):
     model = store_models.Gallery
@@ -88,3 +90,5 @@ admin.site.register(store_models.OrderItem, OrderItemAdmin)
 admin.site.register(store_models.Review, ReviewAdmin)
 admin.site.register(store_models.Slider, SliderAdmin)
 admin.site.register(store_models.StoreSettings, StoreSettingsAdmin)
+
+admin.site.register(store_models.AboutUs, AboutUsAdmin)
