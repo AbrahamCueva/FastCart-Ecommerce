@@ -213,6 +213,9 @@
                                         <a class="{% if request.resolver_match.url_name == 'index' %}active{% endif %}" href="{% url 'store:index' %}">Inicio </a>
                                     </li>
                                     <li>
+                                        <a class="{% if request.resolver_match.url_name == 'shop' %}active{% endif %}" href="{% url 'store:shop' %}">Tienda </a>
+                                    </li>
+                                    <li>
                                         <a class="{% if request.resolver_match.url_name == 'about_us' %}active{% endif %}" href="{% url 'store:about_us' %}">Sobre nosotros </a>
                                     </li>
                                     <li>

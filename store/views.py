@@ -16,9 +16,11 @@ from django.urls import reverse
 from plugin.exchange_rate import convert_usd_inr, convert_usd_to_kobo, convert_usd_to_ngn
 from django.core.mail import EmailMultiAlternatives, send_mail
 from django.template.loader import render_to_string
+from plugin.paginate_queryset import paginate_queryset
 from .forms import FormularioContacto
 import requests
 import stripe
+import random
 
 stripe.api_key = settings.STTRIPE_SECRET_KEY
 
@@ -54,10 +56,14 @@ def about_us(request):
     return render(request, 'store/about-us.html', context)
 
 def index(request):
-    products = store_models.Product.objects.filter(status="Published")[:10]
+    products = list(store_models.Product.objects.filter(status="Published"))  # Convertir a lista
+    random.shuffle(products)  # Mezclar aleatoriamente
+    products = products[:10]  # Seleccionar solo 10 productos aleatorios
+
     categories = store_models.Category.objects.all()
     sliders = store_models.Slider.objects.filter(status="Active").order_by("-created_at")
     settings = store_models.StoreSettings.objects.first()
+
     context = {
         "products": products,
         "categories": categories,
@@ -68,7 +74,7 @@ def index(request):
 
 def product_detail(request, slug):
     product = store_models.Product.objects.get(status="Published", slug=slug)
-    related_products = store_models.Product.objects.filter(category=product.category, status="Published").exclude(id=product.id)
+    related_products = store_models.Product.objects.filter(category=product.category, status="Published").exclude(id=product.id)[:5] 
     settings = store_models.StoreSettings.objects.first()
     categories = store_models.Category.objects.all()
     product_stock_range = range(1, product.stock + 1)
@@ -554,3 +560,20 @@ def custom_404(request, exception):
         "categories": categories,
     }
     return render(request, "store/404.html", status=404, context=context)
+
+def shop(request):
+    products_list = store_models.Product.objects.filter(status="Published")
+    categories = store_models.Category.objects.all()[:5]
+    sliders = store_models.Slider.objects.filter(status="Active").order_by("-created_at")
+    new_products = store_models.Product.objects.filter(status="Published").order_by("-id")[:3]
+    settings = store_models.StoreSettings.objects.first()
+    products = paginate_queryset(request, products_list, 20)
+    context = {
+        "products": products,
+        "categories": categories,
+        "sliders": sliders,
+        "settings": settings,
+        "products_list": products_list,
+        "new_products": new_products,
+    }
+    return render(request, "store/shop.html", context)

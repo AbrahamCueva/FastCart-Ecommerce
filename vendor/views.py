@@ -25,6 +25,7 @@ def dashboard(request):
     settings = store_models.StoreSettings.objects.first()
     categories = store_models.Category.objects.all()
     products = store_models.Product.objects.filter(vendor=request.user)
+    products_dash = store_models.Product.objects.filter(vendor=request.user)[:10]
     orders = store_models.Order.objects.filter(vendors=request.user)
     revenue = store_models.OrderItem.objects.filter(vendor=request.user).aggregate(total=models.Sum("total"))['total']
     notis = vendor_models.Notifications.objects.filter(user=request.user, seen=False)
@@ -34,6 +35,7 @@ def dashboard(request):
     
     context = {
         "products": products,
+        "products_dash": products_dash,
         "orders": orders,
         "revenue": revenue,
         "notis": notis,

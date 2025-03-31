@@ -1,0 +1,168 @@
+{% extends 'partials/base.html' %}
+{% load static %}
+
+{% block content %} 
+<main class="main">
+    <div class="page-header mt-30 mb-50">
+        <div class="container">
+            <div class="archive-header">
+                <div class="row align-items-center">
+                    <div class="col-xl-3">
+                        <h1 class="mb-15">Tienda</h1>
+                        <div class="breadcrumb">
+                            <a href="{% url 'store:index' %}" rel="nofollow"><i class="fi-rs-home mr-5"></i>Incio</a>
+                            <span></span> Tienda 
+                        </div>
+                    </div>
+                    <div class="col-xl-9 text-end d-none d-xl-block">
+                        <ul class="tags-list">
+                            {% for c in categories %}
+                                <li class="hover-up">
+                                    <a href="javascript:;"><i class="fi-rs-cross mr-10"></i>{{c.title}}</a>
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="container mb-30">
+        <div class="row flex-row-reverse">
+            <div class="col-lg-4-5">
+                <div class="shop-product-fillter">
+                    <div class="totall-product">
+                        <p>Tenemos <strong class="text-brand">{{products.paginator.count}}</strong> productos para tí!</p>
+                    </div>
+                </div>
+                <div class="row product-grid">
+                    
+                    {% for p in products %}
+                        <div class="col-lg-1-5 col-md-4 col-12 col-sm-6">
+                            <div class="product-cart-wrap mb-30">
+                                <div class="product-img-action-wrap">
+                                    <div class="product-img product-img-zoom">
+                                        <a href="{% url 'store:product_detail' p.slug %}">
+                                            <img class="default-img" style="width: 180px; height: 180px; object-fit: cover;" src="{{p.image.url}}" alt="" />
+                                        </a>
+                                    </div>
+                                    <div class="product-action-1">
+                                        <a aria-label="Agregar a favoritos" class="action-btn add_to_wishlist" data-product_id="{{p.id}}" href="#">
+                                            <i class="fi-rs-heart"></i>
+                                        </a>
+                                    </div>
+                                </div>
+                                <div class="product-content-wrap">
+                                    <div class="product-category">
+                                        <a href="javascript:;">{{p.category.title}}</a>
+                                    </div>
+                                    <h2><a href="{% url 'store:product_detail' p.slug %}">{{p.name}}</a></h2>
+                                    <div class="product-rate-cover">
+                                        <div class="product-rate d-inline-block">
+                                            {% if p.average_rating is not None %}
+                                                <div class="product-rating" style="width: {% widthratio p.average_rating 5 100 %}%"></div>
+                                            {% else %}
+                                                <div class="product-rating" style="width: 0%"></div>
+                                            {% endif %}
+                                        </div>
+                                        <span class="font-small ml-5 text-muted"> ({{ p.average_rating|floatformat:1|default:0 }})</span>
+                                    </div>
+                                    <div class="product-card-bottom">
+                                        <div class="product-price">
+                                            <span>S/. {{p.price}}</span>
+                                            <span class="old-price">S/. {{p.regular_price}}</span>
+                                        </div>
+                                        <div class="add-cart">
+                                            <a class="add add_to_cart" href="#" data-id="{{ p.id }}">
+                                                <i class="fi-rs-shopping-cart mr-5"></i>Cesto 
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                        
+                </div>
+                <div class="pagination-area mt-20 mb-20">
+                    <nav aria-label="Page navigation example">
+                        <ul class="pagination justify-content-start">
+                            {% if products.has_previous %}
+                                <li class="page-item">
+                                    <a class="page-link" href="?page={{ products.previous_page_number }}">
+                                        <i class="fi-rs-arrow-small-left"></i>
+                                    </a>
+                                </li>
+                            {% endif %}
+
+                            {% for num in products.paginator.page_range %}
+                                {% if num == products.number %}
+                                    <li class="page-item active">
+                                        <a class="page-link" href="#">{{ num }}</a>
+                                    </li>
+                                {% elif num >= products.number|add:-1 and num <= products.number|add:1 %}
+                                    <li class="page-item">
+                                        <a class="page-link" href="?page={{ num }}">{{ num }}</a>
+                                    </li>
+                                {% elif num == 1 or num == products.paginator.num_pages %}
+                                    <li class="page-item">
+                                        <a class="page-link" href="?page={{ num }}">{{ num }}</a>
+                                    </li>
+                                {% elif num == products.number|add:2 %}
+                                    <li class="page-item"><a class="page-link dot" href="#">...</a></li>
+                                {% endif %}
+                            {% endfor %}
+
+                            {% if products.has_next %}
+                                <li class="page-item">
+                                    <a class="page-link" href="?page={{ products.next_page_number }}">
+                                        <i class="fi-rs-arrow-small-right"></i>
+                                    </a>
+                                </li>
+                            {% endif %}
+                        </ul>
+                    </nav>
+                </div>
+            </div>
+            <div class="col-lg-1-5 primary-sidebar sticky-sidebar">
+                <div class="sidebar-widget widget-category-2 mb-30">
+                    <h5 class="section-title style-1 mb-30">Categorías</h5>
+                    <ul>
+                        
+                        {% for category in categories %}
+                            <li>
+                                <a href="javascript:;">
+                                    <img src="{{ category.image.url }}" alt="{{ category.title }}" class="category-image" />
+                                    {{ category.title }}
+                                </a>
+                            </li>
+                            
+                        {% endfor %}
+                    </ul>
+                </div>
+                <div class="sidebar-widget product-sidebar mb-30 p-30 bg-grey border-radius-10">
+                    <h5 class="section-title style-1 mb-30">Nuevos productos</h5>
+                    {% for np in new_products %}
+                        <div class="single-post clearfix">
+                            <div class="image">
+                                <img style="width: 50px; height: 50px; object-fit: cover;" src="{{np.image.url}}" alt="#" />
+                            </div>
+                            <div class="content pt-10">
+                                <h5><a href="{% url 'store:product_detail' np.slug %}">{{np.name}}</a></h5>
+                                <p class="price mb-0 mt-5">S/. {{np.price}}</p>
+                                <div class="product-rate d-inline-block">
+                                    {% if np.average_rating is not None %}
+                                        <div class="product-rating" style="width: {% widthratio np.average_rating 5 100 %}%"></div>
+                                    {% else %}
+                                        <div class="product-rating" style="width: 0%"></div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+{% endblock content %}

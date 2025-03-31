@@ -20,6 +20,8 @@ urlpatterns = [
     path("flutterwave_payment_callback/<order_id>/", views.flutterwave_payment_callback, name="flutterwave_payment_callback"),
 
     path('product/<int:product_id>/add_review/', views.add_review, name='add_review'),
+    
+    path("shop/", views.shop, name="shop"),
 
     path("search/", views.search_view, name="search"),
     path('about_us/', views.about_us, name='about_us'),
