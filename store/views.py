@@ -111,6 +111,7 @@ def product_detail(request, slug):
         "product_stock_range": product_stock_range,
         "settings": settings,
         "categories": categories,
+        'page_title': f"{product.name} - {settings.store_name}"
     }
     return render(request, "store/product_detail.html", context)
 

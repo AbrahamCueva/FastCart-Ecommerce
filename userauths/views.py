@@ -88,11 +88,17 @@ def logout_view(request):
 # Añade esta función a tu archivo views.py existente
 
 def access_denied(request):
+    settings = store_models.StoreSettings.objects.first()
+    categories = store_models.Category.objects.all()
+    context = {
+        "settings": settings,
+        "categories": categories,
+    }
     """
     Vista que muestra un mensaje de acceso denegado cuando un usuario
     intenta acceder a una sección para la que no tiene permisos.
     """
-    return render(request, 'userauths/access_denied.html')
+    return render(request, 'userauths/access_denied.html', context)
 
 # Ejemplo de cómo usar los decoradores en tus vistas:
 # from .decorators import vendor_required, customer_required
