@@ -1,0 +1,99 @@
+{% extends 'partials/base.html' %}
+{% load humanize %}
+{% load static %}
+
+{% block content %} 
+<main class="main pages mb-80">
+    <div class="page-header breadcrumb-wrap">
+        <div class="container">
+            <div class="breadcrumb">
+                <a href="{% url 'store:index' %}" rel="nofollow"><i class="fi-rs-home mr-5"></i>Inicio</a>
+                <span></span> Lista de categorías
+            </div>
+        </div>
+    </div>
+    <div class="page-content pt-50">
+        <div class="container">
+            <div class="archive-header-2 text-center">
+                <h1 class="display-2 mb-50">Lista de categorías</h1>
+            </div>
+            <div class="row mb-50">
+                <div class="col-12 col-lg-8 mx-auto">
+                    <div class="shop-product-fillter">
+                        <div class="totall-product">
+                            <p>Tenemos <strong class="text-brand">{{categories_list.count}}</strong> categorías ahora</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row vendor-grid">
+                
+                {% for category in categories %}
+                    <div class="col-lg-4 col-md-4 col-12 col-sm-6">
+                        <div class="vendor-wrap style-2 mb-40">
+                            <div class="vendor-img-action-wrap">
+                                <div class="vendor-img">
+                                    <a href="{% url 'store:category_detail' category.slug %}">
+                                        <img class="default-img" style="width: 140px; height: 140px; object-fit: contain;" src="{{category.image.url}}" alt="" />
+                                    </a>
+                                </div>
+                                <div class="mt-10">
+                                    <span class="font-small total-product">{{ category.product_count }} productos</span>
+                                </div>
+                            </div>
+                            <div class="vendor-content-wrap">
+                                <div class="mb-30">
+                                    <h4 class="mb-5"><a href="{% url 'store:category_detail' category.slug %}">{{category.title}}</a></h4>
+                                    <div class="vendor-info d-flex justify-content-between align-items-end mt-30">
+                                        <a href="{% url 'store:category_detail' category.slug %}" class="btn btn-xs">Ver productos <i class="fi-rs-arrow-small-right"></i></a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+                    
+            </div>
+            <div class="pagination-area mt-20 mb-20">
+                <nav aria-label="Page navigation example">
+                    <ul class="pagination justify-content-start">
+                        {% if categories.has_previous %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ categories.previous_page_number }}">
+                                    <i class="fi-rs-arrow-small-left"></i>
+                                </a>
+                            </li>
+                        {% endif %}
+
+                        {% for num in categories.paginator.page_range %}
+                            {% if num == categories.number %}
+                                <li class="page-item active">
+                                    <a class="page-link" href="#">{{ num }}</a>
+                                </li>
+                            {% elif num >= categories.number|add:-1 and num <= categories.number|add:1 %}
+                                <li class="page-item">
+                                    <a class="page-link" href="?page={{ num }}">{{ num }}</a>
+                                </li>
+                            {% elif num == 1 or num == categories.paginator.num_pages %}
+                                <li class="page-item">
+                                    <a class="page-link" href="?page={{ num }}">{{ num }}</a>
+                                </li>
+                            {% elif num == categories.number|add:2 %}
+                                <li class="page-item"><a class="page-link dot" href="#">...</a></li>
+                            {% endif %}
+                        {% endfor %}
+
+                        {% if categories.has_next %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ categories.next_page_number }}">
+                                    <i class="fi-rs-arrow-small-right"></i>
+                                </a>
+                            </li>
+                        {% endif %}
+                    </ul>
+                </nav>
+            </div>
+        </div>
+    </div>
+</main>
+{% endblock content %}

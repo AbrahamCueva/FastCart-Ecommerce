@@ -72,6 +72,33 @@ def index(request):
     }
     return render(request, "store/index.html", context)
 
+def category_list(request):
+    settings = store_models.StoreSettings.objects.first()
+    categories_list = store_models.Category.objects.all() 
+    categories = paginate_queryset(request, categories_list, 12)
+    for category in categories:
+        category.product_count = store_models.Product.objects.filter(category=category).count() 
+    context = {
+        "settings": settings,
+        "categories": categories,
+        "categories_list": categories_list,
+    }
+    return render(request, "store/category_list.html", context)
+
+def category_detail(request, slug):
+    settings = store_models.StoreSettings.objects.first()
+    category = get_object_or_404(store_models.Category, slug=slug)  # Obtener la categoría por el slug
+    products_list = store_models.Product.objects.filter(category=category)  # Obtener productos de esa categoría
+    products = paginate_queryset(request, products_list, 12)
+    
+    context = {
+        "category": category,
+        "products": products,
+        "settings": settings,
+        "products_list": products_list,
+    }
+    return render(request, "store/category_detail.html", context)
+
 def product_detail(request, slug):
     product = store_models.Product.objects.get(status="Published", slug=slug)
     related_products = store_models.Product.objects.filter(category=product.category, status="Published").exclude(id=product.id) 

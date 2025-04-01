@@ -50,11 +50,11 @@
                     {% for category in categories %}
                         <div class="card-2 bg-9 wow animate__animated animate__fadeInUp" data-wow-delay=".{{ forloop.counter }}s">
                             <figure class="img-hover-scale overflow-hidden">
-                                <a href="javascript:;">
+                                <a href="{% url 'store:category_detail' category.slug %}">
                                     <img style="width: 80px; height: 80px; object-fit: contain;" src="{{ category.image.url }}" alt="{{ category.title }}" />
                                 </a>
                             </figure>
-                            <h6><a href="javascript:;">{{ category.title }}</a></h6>
+                            <h6><a href="{% url 'store:category_detail' category.slug %}">{{ category.title }}</a></h6>
                         </div>
                     {% endfor %}
                 </div>

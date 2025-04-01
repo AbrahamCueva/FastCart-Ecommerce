@@ -1,4 +1,5 @@
 {% extends 'partials/base.html' %}
+{% load humanize %}
 {% load static %}
 
 {% block content %} 
@@ -12,40 +13,26 @@
     }
 </style>
 <main class="main">
-    <div class="page-header mt-30 mb-50">
+    <div class="page-header breadcrumb-wrap">
         <div class="container">
-            <div class="archive-header">
-                <div class="row align-items-center">
-                    <div class="col-xl-3">
-                        <h1 class="mb-15">Tienda</h1>
-                        <div class="breadcrumb">
-                            <a href="{% url 'store:index' %}" rel="nofollow"><i class="fi-rs-home mr-5"></i>Incio</a>
-                            <span></span> Tienda 
-                        </div>
-                    </div>
-                    <div class="col-xl-9 text-end d-none d-xl-block">
-                        <ul class="tags-list">
-                            {% for c in categories %}
-                                <li class="hover-up">
-                                    <a href="javascript:;"><i class="fi-rs-cross mr-10"></i>{{c.title}}</a>
-                                </li>
-                            {% endfor %}
-                        </ul>
-                    </div>
-                </div>
+            <div class="breadcrumb">
+                <a href="{% url 'store:index' %}" rel="nofollow"><i class="fi-rs-home mr-5"></i>Inicio</a>
+                <span></span> <a href="{% url 'store:categories' %}">Categorías</a> <span></span> {{ category.title }}
             </div>
         </div>
     </div>
     <div class="container mb-30">
+        <div class="archive-header-2 text-center pt-80 pb-50">
+            <h1 class="display-2 mb-50">{{ category.title }}</h1>
+        </div>
         <div class="row flex-row-reverse">
             <div class="col-lg-4-5">
                 <div class="shop-product-fillter">
                     <div class="totall-product">
-                        <p>Tenemos <strong class="text-brand">{{products.paginator.count}}</strong> productos para tí!</p>
+                        <p>Tenemos <strong class="text-brand">{{ products_list.count }}</strong> productos para ti!</p>
                     </div>
                 </div>
                 <div class="row product-grid">
-                    
                     {% for p in products %}
                         <div class="col-lg-1-5 col-md-4 col-12 col-sm-6">
                             <div class="product-cart-wrap mb-30">
@@ -91,8 +78,8 @@
                             </div>
                         </div>
                     {% endfor %}
-                        
                 </div>
+                <!--product grid-->
                 <div class="pagination-area mt-20 mb-20">
                     <nav aria-label="Page navigation example">
                         <ul class="pagination justify-content-start">
@@ -134,41 +121,13 @@
                 </div>
             </div>
             <div class="col-lg-1-5 primary-sidebar sticky-sidebar">
-                <div class="sidebar-widget widget-category-2 mb-30">
-                    <h5 class="section-title style-1 mb-30">Categorías</h5>
-                    <ul>
-                        
-                        {% for category in categories %}
-                            <li>
-                                <a href="{% url 'store:category_detail' category.slug %}">
-                                    <img src="{{ category.image.url }}" alt="{{ category.title }}" class="category-image" />
-                                    {{ category.title }}
-                                </a>
-                            </li>
-                            
-                        {% endfor %}
-                    </ul>
-                </div>
-                <div class="sidebar-widget product-sidebar mb-30 p-30 bg-grey border-radius-10">
-                    <h5 class="section-title style-1 mb-30">Nuevos productos</h5>
-                    {% for np in new_products %}
-                        <div class="single-post clearfix">
-                            <div class="image">
-                                <img style="width: 50px; height: 50px; object-fit: contain;" src="{{np.image.url}}" alt="#" />
-                            </div>
-                            <div class="content pt-10">
-                                <h5><a href="{% url 'store:product_detail' np.slug %}" class="una-linea">{{np.name}}</a></h5>
-                                <p class="price mb-0 mt-5">S/. {{np.price}}</p>
-                                <div class="product-rate d-inline-block">
-                                    {% if np.average_rating is not None %}
-                                        <div class="product-rating" style="width: {% widthratio np.average_rating 5 100 %}%"></div>
-                                    {% else %}
-                                        <div class="product-rating" style="width: 0%"></div>
-                                    {% endif %}
-                                </div>
-                            </div>
-                        </div>
-                    {% endfor %}
+                <div class="sidebar-widget widget-store-info mb-30 bg-3 border-0">
+                    <div class="vendor-logo mb-30">
+                        <img src="{{category.image.url}}" style="width: 136px; height: 150px; object-fit: contain;" alt="" />
+                    </div>
+                    <div class="vendor-info">
+                        <h4 class="mb-5"><a href="{% url 'store:category_detail' category.slug %}" class="text-heading">{{category.title}}</a></h4>
+                    </div>
                 </div>
             </div>
         </div>

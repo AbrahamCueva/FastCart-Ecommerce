@@ -185,7 +185,7 @@
                                     <ul>
                                         {% for category in categories|slice:":5" %}
                                             <li>
-                                                <a href="javascript:;">
+                                                <a href="{% url 'store:category_detail' category.slug %}">
                                                     <img src="{{ category.image.url }}" alt="{{ category.title }}" class="category-image" />
                                                     {{ category.title }}
                                                 </a>
@@ -195,7 +195,7 @@
                                     <ul class="end">
                                         {% for category in categories|slice:"5:10" %}
                                             <li>
-                                                <a href="javascript:;">
+                                                <a href="{% url 'store:category_detail' category.slug %}">
                                                     <img src="{{ category.image.url }}" alt="{{ category.title }}" class="category-image" />
                                                     {{ category.title }}
                                                 </a>
@@ -220,6 +220,9 @@
                                     </li>
                                     <li>
                                         <a class="{% if request.resolver_match.url_name == 'blog' %}active{% endif %}" href="{% url 'store:blog' %}">Blog </a>
+                                    </li>
+                                    <li>
+                                        <a class="{% if request.resolver_match.url_name == 'categories' %}active{% endif %}" href="{% url 'store:categories' %}">Categorías </a>
                                     </li>
                                     <li>
                                         <a class="{% if request.resolver_match.url_name == 'contacto' %}active{% endif %}" href="{% url 'store:contacto' %}">Contactenos </a>
