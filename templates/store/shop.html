@@ -2,6 +2,15 @@
 {% load static %}
 
 {% block content %} 
+<style>
+    .una-linea {
+        display: inline-block; /* Asegura que funcione correctamente */
+        max-width: 100%; /* Ajusta al ancho del contenedor */
+        white-space: nowrap; /* Evita que el texto se divida en varias líneas */
+        overflow: hidden; /* Oculta el texto que se desborda */
+        text-overflow: ellipsis; /* Muestra "..." si el texto es muy largo */
+    }
+</style>
 <main class="main">
     <div class="page-header mt-30 mb-50">
         <div class="container">
@@ -43,7 +52,7 @@
                                 <div class="product-img-action-wrap">
                                     <div class="product-img product-img-zoom">
                                         <a href="{% url 'store:product_detail' p.slug %}">
-                                            <img class="default-img" style="width: 180px; height: 180px; object-fit: cover;" src="{{p.image.url}}" alt="" />
+                                            <img class="default-img" style="width: 180px; height: 180px; object-fit: contain;" src="{{p.image.url}}" alt="" />
                                         </a>
                                     </div>
                                     <div class="product-action-1">
@@ -56,7 +65,7 @@
                                     <div class="product-category">
                                         <a href="javascript:;">{{p.category.title}}</a>
                                     </div>
-                                    <h2><a href="{% url 'store:product_detail' p.slug %}">{{p.name}}</a></h2>
+                                    <h2><a href="{% url 'store:product_detail' p.slug %}" class="una-linea">{{p.name}}</a></h2>
                                     <div class="product-rate-cover">
                                         <div class="product-rate d-inline-block">
                                             {% if p.average_rating is not None %}
@@ -69,7 +78,7 @@
                                     </div>
                                     <div class="product-card-bottom">
                                         <div class="product-price">
-                                            <span>S/. {{p.price}}</span>
+                                            <span>S/. {{p.price}}</span> <br>
                                             <span class="old-price">S/. {{p.regular_price}}</span>
                                         </div>
                                         <div class="add-cart">
@@ -145,10 +154,10 @@
                     {% for np in new_products %}
                         <div class="single-post clearfix">
                             <div class="image">
-                                <img style="width: 50px; height: 50px; object-fit: cover;" src="{{np.image.url}}" alt="#" />
+                                <img style="width: 50px; height: 50px; object-fit: contain;" src="{{np.image.url}}" alt="#" />
                             </div>
                             <div class="content pt-10">
-                                <h5><a href="{% url 'store:product_detail' np.slug %}">{{np.name}}</a></h5>
+                                <h5><a href="{% url 'store:product_detail' np.slug %}" class="una-linea">{{np.name}}</a></h5>
                                 <p class="price mb-0 mt-5">S/. {{np.price}}</p>
                                 <div class="product-rate d-inline-block">
                                     {% if np.average_rating is not None %}

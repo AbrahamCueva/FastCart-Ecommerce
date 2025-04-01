@@ -61,6 +61,14 @@
     .capacity-label:hover {
         border-color: #555;
     }
+
+    .una-linea {
+        display: inline-block; /* Asegura que funcione correctamente */
+        max-width: 100%; /* Ajusta al ancho del contenedor */
+        white-space: nowrap; /* Evita que el texto se divida en varias líneas */
+        overflow: hidden; /* Oculta el texto que se desborda */
+        text-overflow: ellipsis; /* Muestra "..." si el texto es muy largo */
+    }
 </style>
 <main class="main">
     <div class="page-header breadcrumb-wrap">
@@ -83,21 +91,21 @@
                                 <span class="zoom-icon"><i class="fi-rs-search"></i></span>
                                 <div class="product-image-slider">
                                     <figure class="border-radius-10">
-                                        <img id="main-img" src="{{ product.image.url }}" alt="{{ product.name }}" style="width: 645px; height: 645px;" />
+                                        <img id="main-img" src="{{ product.image.url }}" alt="{{ product.name }}" style="width: 645px; height: 645px; object-fit: contain;" />
                                     </figure>
                                     {% for image in product.gallery.all %}
                                         <figure class="border-radius-10">
-                                            <img src="{{ image.image.url }}" alt="{{ image.image.name }}" style="width: 645px; height: 645px;" />
+                                            <img src="{{ image.image.url }}" alt="{{ image.image.name }}" style="width: 645px; height: 645px; object-fit: contain;" />
                                         </figure>
                                     {% endfor %}
                                 </div>
                                 <div class="slider-nav-thumbnails">
                                     <div>
-                                        <img src="{{ product.image.url }}" alt="{{ product.name }}" style="width: 147px; height: 147px;" />
+                                        <img src="{{ product.image.url }}" alt="{{ product.name }}" style="width: 147px; height: 147px; object-fit: contain;" />
                                     </div>
                                     {% for image in product.gallery.all %}
                                         <div>
-                                            <img src="{{ image.image.url }}" alt="{{ image.image.name }}" style="width: 147px; height: 147px;" />
+                                            <img src="{{ image.image.url }}" alt="{{ image.image.name }}" style="width: 147px; height: 147px; object-fit: contain;" />
                                         </div>
                                     {% endfor %}
                                 </div>
@@ -307,7 +315,7 @@
                                                 <div class="product-img-action-wrap">
                                                     <div class="product-img product-img-zoom">
                                                         <a href="{% url 'store:product_detail' p.slug %}">
-                                                            <img class="default-img" style="width: 250px; height: 250px; object-fit: cover;" src="{{p.image.url}}" alt="" />
+                                                            <img class="default-img" style="width: 250px; height: 250px; object-fit: contain;" src="{{p.image.url}}" alt="" />
                                                         </a>
                                                     </div>
                                                     <div class="product-action-1">
@@ -318,7 +326,7 @@
                                                     <div class="product-category">
                                                         <a href="javascript:;">{{p.category.title}}</a>
                                                     </div>
-                                                    <h2 class="product-title"><a href="{% url 'store:product_detail' p.slug %}">{{p.name}}</a></h2>
+                                                    <h2 class="product-title"><a href="{% url 'store:product_detail' p.slug %}" class="una-linea">{{p.name}}</a></h2>
                                                     <div class="product-rate-cover">
                                                         <div class="product-rate d-inline-block">
                                                             {% if p.average_rating is not None %}
@@ -331,7 +339,7 @@
                                                     </div>
                                                     <div class="product-card-bottom">
                                                         <div class="product-price">
-                                                            <span>S/. {{p.price}}</span>
+                                                            <span>S/. {{p.price}}</span> <br>
                                                             <span class="old-price">S/. {{p.regular_price}}</span>
                                                         </div>
                                                         <div class="add-cart">

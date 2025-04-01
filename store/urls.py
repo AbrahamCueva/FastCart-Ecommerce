@@ -26,4 +26,7 @@ urlpatterns = [
     path("search/", views.search_view, name="search"),
     path('about_us/', views.about_us, name='about_us'),
     path("contacto/", views.contacto, name="contacto"),
+    
+    path("blog/", views.blog, name="blog"),
+    path("blog_detail/<slug>/", views.blog_detail, name="blog_detail")
 ]

@@ -1,5 +1,6 @@
 from django.contrib import admin
 from store import models as store_models
+from . import models as blog_models
 from django import forms
 
 
@@ -85,6 +86,33 @@ class MensajeContactoAdmin(admin.ModelAdmin):
     search_fields = ('nombre', 'email', 'asunto')
     list_filter = ('fecha_envio',)
 
+class CategoryPostAdmin(admin.ModelAdmin):
+    list_display = ('title', 'slug')
+    search_fields = ('title',)
+    prepopulated_fields = {'slug': ('title',)}
+
+class TagAdmin(admin.ModelAdmin):
+    list_display = ('name', 'slug')
+    search_fields = ('name',)
+    prepopulated_fields = {'slug': ('name',)}
+    
+class BlogCommentInline(admin.TabularInline):
+    model = store_models.BlogComment
+    extra = 1  # Número de formularios vacíos a mostrar por defecto (puedes ajustarlo según sea necesario)
+    fields = ('author', 'email', 'comment', 'created_at')  # Campos que quieres mostrar
+    readonly_fields = ('created_at',)
+
+class BlogPostAdmin(admin.ModelAdmin):
+    list_display = ('title', 'category', 'status', 'author', 'created_at', 'updated_at')
+    list_filter = ('status', 'category', 'author')
+    search_fields = ('title', 'category__title', 'author__username')
+    prepopulated_fields = {'slug': ('title',)}
+    inlines = [BlogCommentInline]  # Si deseas agregar inlines, puedes hacerlo aquí
+
+class BlogCommentAdmin(admin.ModelAdmin):
+    list_display = ('author', 'email', 'post', 'created_at')
+    search_fields = ('author', 'post__title', 'email')
+
 admin.site.register(store_models.Category, CategoryAdmin)
 admin.site.register(store_models.Product, ProductAdmin)
 admin.site.register(store_models.Variant, VariantAdmin)
@@ -100,3 +128,8 @@ admin.site.register(store_models.StoreSettings, StoreSettingsAdmin)
 
 admin.site.register(store_models.AboutUs, AboutUsAdmin)
 admin.site.register(store_models.MensajeContacto, MensajeContactoAdmin)
+
+admin.site.register(store_models.CategoryPost, CategoryPostAdmin)
+admin.site.register(store_models.Tag, TagAdmin)
+admin.site.register(store_models.BlogPost, BlogPostAdmin)
+admin.site.register(store_models.BlogComment, BlogCommentAdmin)

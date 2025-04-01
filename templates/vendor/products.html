@@ -8,7 +8,7 @@
         <div class="container">
             <div class="breadcrumb">
                 <a href="/" rel="nofollow"><i class="fas fa-home me-1"></i>Inicio</a>
-                <span></span> Dashboard
+                <span></span> Productos
             </div>
         </div>
     </div>
@@ -32,7 +32,7 @@
                                                 <div class="card product-card">
                                                     <div class="row g-0">
                                                         <div class="col-md-6">
-                                                            <img src="{{p.image.url}}" style="width: 250px; height: 250px; object-fit: cover;" alt="{{ p.name }}" class="card-img-top rounded">
+                                                            <img src="{{p.image.url}}" style="width: 250px; height: 250px; object-fit: contain;" alt="{{ p.name }}" class="card-img-top rounded">
                                                         </div>
                                                         <div class="col-md-6">
                                                             <div class="card-body">
@@ -227,7 +227,7 @@
         border-top-left-radius: 10px;
         border-top-right-radius: 10px;
         height: 200px; /* Adjust as needed */
-        object-fit: cover;
+        object-fit: contain;
     }
 
     .product-card .card-body {

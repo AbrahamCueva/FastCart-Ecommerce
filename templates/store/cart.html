@@ -55,7 +55,7 @@
                                 {% for item in items %}
                                         <tr class="pt-30 item_div_{{item.id}}">
                                             <td class="image product-thumbnail pt-40 start pl-30">
-                                                <img style="width: 120px; height: 120px;" src="{{item.product.image.url}}" alt="{{item.product.name}}">
+                                                <img style="width: 120px; height: 120px; object-fit: contain;" src="{{item.product.image.url}}" alt="{{item.product.name}}">
                                             </td>
                                             <td class="product-des product-name">
                                                 <h6 class="mb-5">

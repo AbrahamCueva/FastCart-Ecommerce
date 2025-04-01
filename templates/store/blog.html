@@ -1,0 +1,116 @@
+{% extends 'partials/base.html' %}
+{% load humanize %}
+{% load static %}
+
+{% block content %} 
+<main class="main">
+    <div class="page-header mt-30 mb-75">
+        <div class="container">
+            <div class="archive-header">
+                <div class="row align-items-center">
+                    <div class="col-xl-3">
+                        <h1 class="mb-15">Blog</h1>
+                        <div class="breadcrumb">
+                            <a href="{% url 'store:index' %}" rel="nofollow"><i class="fi-rs-home mr-5"></i>Inicio</a>
+                            <span></span> Blog
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="page-content mb-50">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-9">
+                    <div class="shop-product-fillter mb-50 pr-30">
+                        <div class="totall-product">
+                            <h2>
+                                <img class="w-36px mr-10" src="{% static 'assets/imgs/theme/icons/category-1.svg' %}" alt="" />
+                                Blogs
+                            </h2>
+                        </div>
+                    </div>
+                    <div class="loop-grid loop-list pr-30 mb-50">
+                        {% for post in posts %}
+                            <article class="wow fadeIn animated hover-up mb-30 animated">
+                                <div class="post-thumb" style="background-image: url({{post.image.url}})" sty>
+                                    <div class="entry-meta">
+                                    </div>
+                                </div>
+                                <div class="entry-content-2 pl-50">
+                                    <h3 class="post-title mb-20">
+                                        <a href="{% url 'store:blog_detail' post.slug %}">{{post.title}}</a>
+                                    </h3>
+                                    <p class="post-exerpt mb-40">{{post.short_content|safe}}</p>
+                                    <div class="entry-meta meta-1 font-xs color-grey mt-10 pb-10">
+                                        <a href="{% url 'store:blog_detail' post.slug %}" class="text-brand font-heading font-weight-bold">Leer mas 
+                                            <i class="fi-rs-arrow-right"></i>
+                                        </a>
+                                    </div>
+                                </div>
+                            </article>
+                        {% endfor %}
+                    </div>
+                    <div class="pagination-area mt-15 mb-sm-5 mb-lg-0">
+                        <nav aria-label="Page navigation example">
+                            <ul class="pagination justify-content-start">
+                                {% if posts.has_previous %}
+                                    <li class="page-item">
+                                        <a class="page-link" href="?page={{ posts.previous_page_number }}">
+                                            <i class="fi-rs-arrow-small-left"></i>
+                                        </a>
+                                    </li>
+                                {% endif %}
+    
+                                {% for num in posts.paginator.page_range %}
+                                    {% if num == posts.number %}
+                                        <li class="page-item active">
+                                            <a class="page-link" href="#">{{ num }}</a>
+                                        </li>
+                                    {% elif num >= posts.number|add:-1 and num <= posts.number|add:1 %}
+                                        <li class="page-item">
+                                            <a class="page-link" href="?page={{ num }}">{{ num }}</a>
+                                        </li>
+                                    {% elif num == 1 or num == posts.paginator.num_pages %}
+                                        <li class="page-item">
+                                            <a class="page-link" href="?page={{ num }}">{{ num }}</a>
+                                        </li>
+                                    {% elif num == posts.number|add:2 %}
+                                        <li class="page-item"><a class="page-link dot" href="#">...</a></li>
+                                    {% endif %}
+                                {% endfor %}
+    
+                                {% if posts.has_next %}
+                                    <li class="page-item">
+                                        <a class="page-link" href="?page={{ posts.next_page_number }}">
+                                            <i class="fi-rs-arrow-small-right"></i>
+                                        </a>
+                                    </li>
+                                {% endif %}
+                            </ul>
+                        </nav>
+                    </div>
+                </div>
+                <div class="col-lg-3 primary-sidebar sticky-sidebar">
+                    <div class="widget-area">
+                        <div class="sidebar-widget widget-tags mb-50 pb-10">
+                            <h5 class="section-title style-1 mb-30">Etiquetas</h5>
+                            <ul class="tags-list">
+                                {% for tag in tags %}
+                                    <li class="hover-up">
+                                        <a href="javascript:;">
+                                            <i class="fi-rs-cross mr-10"></i>
+                                            {{tag.name}}
+                                        </a>
+                                    </li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+{% endblock content %}

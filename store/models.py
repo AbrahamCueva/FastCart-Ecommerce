@@ -4,6 +4,10 @@ from django.utils import timezone
 from django.utils.text import slugify
 from django_ckeditor_5.fields import CKEditor5Field
 from userauths import models as user_models
+from ckeditor.fields import RichTextField
+from django.utils.timezone import now
+from django.utils.text import slugify
+from django.contrib.auth.models import User
 import shortuuid
 
 STATUS = (
@@ -339,4 +343,75 @@ class Review(models.Model):
     def __str__(self):
         return f"{self.user.username} calificó a {self.product.name}"
     
+# Opciones de Estado para el Post
+POST_STATUS = (
+    ("Published", "Publicado"),
+    ("Draft", "Borrador"),
+    ("Archived", "Archivado"),
+)
+
+class CategoryPost(models.Model):
+    title = models.CharField(max_length=255, verbose_name="Categoría")
+    slug = models.SlugField(unique=True)
+    
+    class Meta:
+        verbose_name = "Categoría"
+        verbose_name_plural = "Categorías de posts"
+    
+    def __str__(self):
+        return self.title
+
+
+class Tag(models.Model):
+    name = models.CharField(max_length=255, verbose_name="Etiquetas")
+    slug = models.SlugField(unique=True)
+    
+    class Meta:
+        verbose_name = "Etiqueta"
+        verbose_name_plural = "Etiquetas"
+    
+    def __str__(self):
+        return self.name
+
+
+class BlogPost(models.Model):
+    image = models.ImageField(upload_to="blog_images/", verbose_name="Imagen Destacada", null=True, blank=True)
+    title = models.CharField(max_length=255, verbose_name="Título")
+    short_content = models.TextField(verbose_name="Contenido corto", default="Sin resumen", null=True, blank=True)
+    content = CKEditor5Field("Contenido", config_name="extends")
+    category = models.ForeignKey(CategoryPost, on_delete=models.SET_NULL, null=True, blank=True)
+    tags = models.ManyToManyField(Tag, related_name="blog_posts", blank=True)
+    slug = models.SlugField(unique=True, null=True, blank=True)
+    status = models.CharField(choices=POST_STATUS, max_length=10, default="Draft")
+    author = models.ForeignKey('userauths.User', on_delete=models.SET_NULL, null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True, verbose_name="Fecha de Creación")
+    updated_at = models.DateTimeField(auto_now=True, verbose_name="Última Actualización")
+    
+    class Meta:
+        verbose_name = "Post del Blog"
+        verbose_name_plural = "Posts del Blog"
+        ordering = ["-created_at"]
+    
+    def __str__(self):
+        return self.title
+    
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            self.slug = slugify(self.title) + "-" + str(shortuuid.uuid().lower()[:6])
+        super(BlogPost, self).save(*args, **kwargs)
+
+
+class BlogComment(models.Model):
+    post = models.ForeignKey(BlogPost, on_delete=models.CASCADE, related_name="comments")
+    author = models.CharField(max_length=255, verbose_name="Nombre")
+    email = models.EmailField(verbose_name="Correo Electrónico")
+    comment = models.TextField(verbose_name="Comentario")
+    created_at = models.DateTimeField(auto_now_add=True, verbose_name="Fecha de Creación")
+    
+    class Meta:
+        verbose_name = "Comentario"
+        verbose_name_plural = "Comentarios"
+    
+    def __str__(self):
+        return f"Comentario de {self.author} en {self.post.title}"
 

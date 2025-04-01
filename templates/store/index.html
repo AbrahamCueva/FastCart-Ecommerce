@@ -51,7 +51,7 @@
                         <div class="card-2 bg-9 wow animate__animated animate__fadeInUp" data-wow-delay=".{{ forloop.counter }}s">
                             <figure class="img-hover-scale overflow-hidden">
                                 <a href="javascript:;">
-                                    <img style="width: 80px; height: 80px; object-fit: cover;" src="{{ category.image.url }}" alt="{{ category.title }}" />
+                                    <img style="width: 80px; height: 80px; object-fit: contain;" src="{{ category.image.url }}" alt="{{ category.title }}" />
                                 </a>
                             </figure>
                             <h6><a href="javascript:;">{{ category.title }}</a></h6>
@@ -75,7 +75,7 @@
                                     <div class="product-img-action-wrap">
                                         <div class="product-img product-img-zoom">
                                             <a href="{% url 'store:product_detail' p.slug %}">
-                                                <img class="default-img" style="width: 250px; height: 250px; object-fit: cover;" src="{{ p.image.url }}" alt="" />
+                                                <img class="default-img" style="width: 250px; height: 250px; object-fit: contain;" src="{{ p.image.url }}" alt="" />
                                             </a>
                                         </div>
                                         <div class="product-action-1">
@@ -101,7 +101,7 @@
                                         </div>
                                         <div class="product-card-bottom">
                                             <div class="product-price">
-                                                <span>S/. {{p.price}}</span>
+                                                <span>S/. {{p.price}}</span> <br>
                                                 <span class="old-price">S/. {{p.regular_price}}</span>
                                             </div>
                                             <div class="add-cart">

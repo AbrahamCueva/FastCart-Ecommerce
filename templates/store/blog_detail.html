@@ -1,0 +1,170 @@
+{% extends 'partials/base.html' %}
+{% load humanize %}
+{% load static %}
+
+{% block content %} 
+<main class="main">
+    <div class="page-header breadcrumb-wrap">
+        <div class="container">
+            <div class="breadcrumb">
+                <a href="{% url 'store:index' %}" rel="nofollow"><i class="fi-rs-home mr-5"></i>Inicio</a>
+                <span></span> <a href="javascript:;">{{category_post.title}}</a> <span></span> {{post.title}}
+            </div>
+        </div>
+    </div>
+    <div class="page-content mb-50">
+        <div class="container">
+            <div class="row">
+                <div class="col-xl-11 col-lg-12 m-auto">
+                    <div class="row">
+                        <div class="col-lg-9">
+                            <div class="single-page pt-50 pr-30">
+                                <div class="single-header style-2">
+                                    <div class="row">
+                                        <div class="col-xl-10 col-lg-12 m-auto">
+                                            <h6 class="mb-10"><a href="javascript:;">{{category_post.title}}</a></h6>
+                                            <h2 class="mb-10">{{post.title}}</h2>
+                                            <div class="single-header-meta">
+                                                <div class="entry-meta meta-1 font-xs mt-15 mb-15">
+                                                    <a class="author-avatar" href="#">
+                                                        {% if post.author.profile.image %}
+                                                            <img style="width: 30px; height: 30px; object-fit: cover;" src="{{ post.author.profile.image.url }}" alt="{{ post.author.profile.full_name }}" class="avatar" />
+                                                        {% else %}
+                                                            <img style="width: 30px; height: 30px; object-fit: cover;" src="{% static 'images/default-user.jpg' %}" alt="Default User" class="avatar" />
+                                                        {% endif %}
+                                                    </a>
+                                                    <h5 class="mb-5">{{ post.author.profile.full_name }}</h5>
+                                                    <span class="post-on has-dot">{{ post.created_at|timesince }}</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <figure class="single-thumbnail">
+                                    <img style="width: 1052px; height: 490px; object-fit: cover; border-radius: 10px;" src="{{post.image.url}}" alt="" />
+                                </figure>
+                                <div class="single-content">
+                                    <div class="row">
+                                        <div class="col-xl-10 col-lg-12 m-auto">
+                                            <blockquote>
+                                                <p>
+                                                    {{post.content|safe}}
+                                                </p>
+                                            </blockquote>
+                                            <div class="entry-bottom mt-50 mb-30">
+                                                <div class="tags w-50 w-sm-100">
+                                                    {% for tag in tags %}
+                                                        <a href="javascript:;" rel="tag" class="hover-up btn btn-sm btn-rounded mr-10">
+                                                            {{ tag.name }}
+                                                        </a>
+                                                    {% empty %}
+                                                        <p>No tags available</p>
+                                                    {% endfor %}
+                                                </div>
+                                            </div>                                            
+                                            <!--Author box-->
+                                            <div class="author-bio p-30 mt-50 border-radius-15 bg-white">
+                                                <div class="author-image mb-30">
+                                                    <a href="javascript:;">
+                                                        {% if post.author.profile.image %}
+                                                            <img style="width: 60px; height: 60px; object-fit: cover;" src="{{ post.author.profile.image.url }}" alt="{{ post.author.profile.full_name }}" class="avatar" />
+                                                        {% else %}
+                                                            <img style="width: 60px; height: 60px; object-fit: cover;" src="{% static 'images/default-user.jpg' %}" alt="Default User" class="avatar" />
+                                                        {% endif %}
+                                                    </a>
+                                                    <div class="author-infor">
+                                                        <h5 class="mb-5">{{ post.author.profile.full_name }}</h5>
+                                                        <p class="mb-0 text-muted font-xs">
+                                                            <span class="mr-10">{{ post.author.blogpost_set.count }} posts</span>
+                                                            <span class="has-dot">Miembro desde {{ post.author.date_joined|date:"Y" }}</span>
+                                                        </p>
+                                                    </div>
+                                                </div>
+                                            </div>                                                                                     
+                                            <!--Comment form-->
+                                            <div class="comment-form">
+                                                <div class="row">
+                                                    <div class="col-lg-9 col-md-12">
+                                                        <div class="comment-form">
+                                                            <h3 class="mb-15">Deja un Comentario</h3>
+                                                            <form method="POST" class="form-contact comment_form mb-50">
+                                                                {% csrf_token %}
+                                                                <div class="row">
+                                                                    <div class="col-sm-6">
+                                                                        <div class="form-group">
+                                                                            {{ form.author }}
+                                                                        </div>
+                                                                    </div>
+                                                                    <div class="col-sm-6">
+                                                                        <div class="form-group">
+                                                                            {{ form.email }}
+                                                                        </div>
+                                                                    </div>
+                                                                    <div class="col-12">
+                                                                        <div class="form-group">
+                                                                            {{ form.comment }}
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="form-group">
+                                                                    <button type="submit" class="button button-contactForm">Publicar Comentario</button>
+                                                                </div>
+                                                            </form>
+                                                        </div>
+                                                        
+                                                        <div class="comments-area">
+                                                            <h3 class="mb-30">Comentarios ({{ comments|length }})</h3>
+                                                            <div class="comment-list">
+                                                                {% for comment in comments %}
+                                                                    <div class="single-comment justify-content-between d-flex mb-30">
+                                                                        <div class="user justify-content-between d-flex">
+                                                                            <div class="thumb text-center">
+                                                                                <a href="javascript:;" class="font-heading text-brand">{{ comment.author }}</a>
+                                                                            </div>
+                                                                            <div class="desc">
+                                                                                <div class="d-flex justify-content-between mb-10">
+                                                                                    <div class="d-flex align-items-center">
+                                                                                        <span class="font-xs text-muted">{{ comment.created_at|date:"d M, Y h:i A" }}</span>
+                                                                                    </div>
+                                                                                </div>
+                                                                                <p class="mb-10">{{comment.comment}}</p>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                {% empty %}
+                                                                    <p>No hay comentarios aún. ¡Sé el primero en comentar!</p>
+                                                                {% endfor %}
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-3 primary-sidebar sticky-sidebar pt-50">
+                            <div class="widget-area">
+                                <div class="sidebar-widget widget-tags mb-50 pb-10">
+                                    <h5 class="section-title style-1 mb-30">Etiquetas</h5>
+                                    <ul class="tags-list">
+                                        {% for tag in tags %}
+                                            <li class="hover-up">
+                                                <a href="javascript:;">
+                                                    <i class="fi-rs-cross mr-10"></i>
+                                                    {{tag.name}}
+                                                </a>
+                                            </li>
+                                        {% endfor %}
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+{% endblock content %}

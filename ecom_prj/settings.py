@@ -36,7 +36,7 @@ ALLOWED_HOSTS = ["*", ".ngrok-free.app"]
 SECURE_CROSS_ORIGIN_OPENER_POLICY = 'same-origin-allow-popups'
 CSRF_TRUSTED_ORIGINS = [
     'http://127.0.0.1',
-    'https://f7c8-190-235-170-190.ngrok-free.app',
+    'https://59b1-190-235-170-190.ngrok-free.app',
     'https://*.ngrok-free.app',
     'https://fastcart.up.railway.app'
 ]
@@ -254,6 +254,12 @@ JAZZMIN_SETTINGS = {
         "store.AboutUs": "fas fa-info-circle",
         "store.VariantItem": "fas fa-th-list",
         "store.Variant": "fas fa-palette",
+        "store.CategoryPost": "fas fa-folder",  
+        "store.Tag": "fas fa-tags",  
+        "store.BlogPost": "fas fa-newspaper",  
+        "store.BlogComment": "fas fa-comments",  
+
+        
         "customer.Address": "fas fa-location-arrow",
         "customer.Wishlist": "fas fa-heart",
         "customer.Notifications": "fas fa-bell",

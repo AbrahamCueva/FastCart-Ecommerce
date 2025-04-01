@@ -33,7 +33,7 @@
                                             </div>
                                             <div class="card-body">
                                                 <div class="text-center d-flex justify-content-center align-items-center">
-                                                    <img id="imagePreview" src="{{product.image.url}}" alt="" style="width: 100%; height: 500px; object-fit: cover; border-radius: 10px;">
+                                                    <img id="imagePreview" src="{{product.image.url}}" alt="" style="width: 100%; height: 500px; object-fit: contain; border-radius: 10px;">
                                                 </div>
                                                 <div class="mb-3">
                                                     <label for="imageInput" class="form-label">Imágen del producto</label>
@@ -132,7 +132,7 @@
                                                                 <button class="btn btn-pink btn-sm text-white rounded-circle delete-image-btn" type="button" data-product_id="{{product.id}}" data-image_id="{{image.id}}" style="background-color: #e91e63;">
                                                                     <i class="fa fa-trash" aria-hidden="true"></i>
                                                                 </button>
-                                                                <img src="{{image.image.url}}" alt="" class="img-fluid mb-2" style="width: 100%; height: 150px; object-fit: cover; border-radius: 10px;">
+                                                                <img src="{{image.image.url}}" alt="" class="img-fluid mb-2" style="width: 100%; height: 150px; object-fit: contain; border-radius: 10px;">
                                                             </div>
                                                         </div>
                                                     </div>

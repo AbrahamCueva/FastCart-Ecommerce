@@ -17,7 +17,7 @@ from plugin.exchange_rate import convert_usd_inr, convert_usd_to_kobo, convert_u
 from django.core.mail import EmailMultiAlternatives, send_mail
 from django.template.loader import render_to_string
 from plugin.paginate_queryset import paginate_queryset
-from .forms import FormularioContacto
+from .forms import BlogCommentForm, FormularioContacto
 import requests
 import stripe
 import random
@@ -74,7 +74,7 @@ def index(request):
 
 def product_detail(request, slug):
     product = store_models.Product.objects.get(status="Published", slug=slug)
-    related_products = store_models.Product.objects.filter(category=product.category, status="Published").exclude(id=product.id)[:5] 
+    related_products = store_models.Product.objects.filter(category=product.category, status="Published").exclude(id=product.id) 
     settings = store_models.StoreSettings.objects.first()
     categories = store_models.Category.objects.all()
     product_stock_range = range(1, product.stock + 1)
@@ -86,6 +86,52 @@ def product_detail(request, slug):
         "categories": categories,
     }
     return render(request, "store/product_detail.html", context)
+
+def blog(request):
+    settings = store_models.StoreSettings.objects.first()
+    categories = store_models.Category.objects.all()
+    posts_list = store_models.BlogPost.objects.filter(status="Published")
+    tags = store_models.Tag.objects.all()
+    posts = paginate_queryset(request, posts_list, 10)
+    context = {
+        "settings": settings,
+        "categories": categories,
+        "posts": posts,
+        "posts_list": posts_list,
+        "tags": tags,
+    }
+    return render(request, "store/blog.html", context=context)
+
+def blog_detail(request, slug):
+    settings = store_models.StoreSettings.objects.first()
+    tags = store_models.Tag.objects.all()
+    categories = store_models.Category.objects.all()
+    category_post = store_models.CategoryPost.objects.first()
+    post = get_object_or_404(store_models.BlogPost, slug=slug, status="Published")
+    comments = post.comments.all().order_by("-created_at")
+
+    if request.method == "POST":
+        form = BlogCommentForm(request.POST)
+        if form.is_valid():
+            comment = form.save(commit=False)
+            comment.post = post
+            comment.save()
+            messages.success(request, "Tu comentario ha sido enviado correctamente.")
+            return redirect("store:blog_detail", slug=slug)  # Redirigir para evitar reenvíos
+    else:
+        form = BlogCommentForm()
+
+    context = {
+        "settings": settings,
+        "categories": categories,
+        "post": post,
+        "category_post": category_post,
+        "comments": comments,
+        "form": form,
+        "tags": tags,
+    }
+    return render(request, "store/blog_detail.html", context)
+
 
 def add_to_cart(request):
     id = request.GET.get("id")

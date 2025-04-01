@@ -1,11 +1,14 @@
 from django.shortcuts import render, redirect
 from django.contrib import messages
 from userauths import forms as userauths_forms
+from store import models as store_models
 from vendor import models as vendor_models
 from django.contrib.auth import authenticate, login, logout
 from userauths import models as userauths_models
 
 def register_view(request):
+    settings = store_models.StoreSettings.objects.first()
+    categories = store_models.Category.objects.all()
     if request.user.is_authenticated:
         messages.warning(request, "Ya has iniciado sesión")
         return redirect("/")
@@ -30,11 +33,15 @@ def register_view(request):
         next_url = request.GET.get("next", "store:index")
         return redirect(next_url)
     context = {
+        "settings": settings,
+        "categories": categories,
         "form": form,
     }
     return render(request, "userauths/sign-up.html", context)
 
 def login_view(request):
+    settings = store_models.StoreSettings.objects.first()
+    categories = store_models.Category.objects.all()
     if request.user.is_authenticated:
         messages.warning(request, "Ya has iniciado sesión")
         return redirect("/")
@@ -62,6 +69,8 @@ def login_view(request):
     else:
         form = userauths_forms.LoginForm()
     context = {
+        "settings": settings,
+        "categories": categories,
         "form": form,
     }
     return render(request, "userauths/sign-in.html", context)
