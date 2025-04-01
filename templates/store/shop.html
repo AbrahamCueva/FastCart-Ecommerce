@@ -28,7 +28,7 @@
                         <ul class="tags-list">
                             {% for c in categories %}
                                 <li class="hover-up">
-                                    <a href="javascript:;"><i class="fi-rs-cross mr-10"></i>{{c.title}}</a>
+                                    <a href="{% url 'store:category_detail' c.slug %}"><i class="fi-rs-cross mr-10"></i>{{c.title}}</a>
                                 </li>
                             {% endfor %}
                         </ul>
