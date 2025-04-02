@@ -77,7 +77,7 @@
             <div class="breadcrumb">
                 <a href="/" rel="nofollow"><i class="fi-rs-home mr-5"></i>Inicio</a>
                 <span></span> 
-                <a href="javascript:;">{{ product.category.title }}</a> 
+                <a href="{% url 'store:category_detail' product.category.slug %}" rel="nofollow">{{ product.category.title }}</a>
                 <span></span> {{ product.name }}
             </div>
         </div>
@@ -325,7 +325,7 @@
                                                 </div>
                                                 <div class="product-content-wrap">
                                                     <div class="product-category">
-                                                        <a href="javascript:;">{{p.category.title}}</a>
+                                                        <a href="{% url 'store:category_detail' p.category.slug %}">{{p.category.title}}</a>
                                                     </div>
                                                     <h2 class="product-title"><a href="{% url 'store:product_detail' p.slug %}" class="una-linea">{{p.name}}</a></h2>
                                                     <div class="product-rate-cover">

@@ -3,7 +3,11 @@
 
 {% block content %}
 <div class="container py-5">
-    <h2 class="text-center mb-4 fw-bold">Resultados de búsqueda para <span class="text-primary">"{{ query }}"</span></h2>
+    {% if search_type == "category" %}
+        <h2 class="text-center mb-4 fw-bold">Resultados de búsqueda para la categoría <span class="text-primary">"{{ query }}"</span></h2>
+    {% else %}
+        <h2 class="text-center mb-4 fw-bold">Resultados de búsqueda para <span class="text-primary">"{{ query }}"</span></h2>
+    {% endif %}
 
     {% if products %}
         <div class="row">
@@ -29,7 +33,6 @@
     {% endif %}
 </div>
 
-<!-- Agregar CSS personalizado -->
 <style>
     .product-card {
         transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;

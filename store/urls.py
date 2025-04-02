@@ -32,4 +32,6 @@ urlpatterns = [
     
     path("categories/", views.category_list, name="categories"),
     path("category_detail/<slug>/", views.category_detail, name="category_detail"),
+    
+    path("subscribe/", views.subscribe, name="subscribe"),
 ]

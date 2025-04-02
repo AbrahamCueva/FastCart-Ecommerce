@@ -3,6 +3,9 @@ from store import models as store_models
 from . import models as blog_models
 from django import forms
 
+class SubscriberAdmin(admin.ModelAdmin):
+    list_display = ("email", "subscribed_at")
+    search_fields = ("email",)
 
 class AboutUsAdmin(admin.ModelAdmin):
     list_display = ("title", "updated_at")
@@ -74,11 +77,29 @@ class SliderAdmin(admin.ModelAdmin):
 
 class StoreSettingsAdmin(admin.ModelAdmin):
     list_display = ("store_name", "updated_at")
+    
     fieldsets = (
         ("Información General", {"fields": ("store_name", "logo", "favicon")}),
         ("Información de Contacto", {"fields": ("address", "phone", "email")}),
         ("Redes Sociales", {"fields": ("facebook", "instagram", "twitter", "youtube", "linkedin")}),
         ("Configuración SEO", {"fields": ("seo_title", "seo_description", "seo_keywords")}),
+        ("Claves de Pago", {
+            "fields": (
+                "STTRIPE_PUBLIC_KEY", "STTRIPE_SECRET_KEY",
+                "PAYPPAL_CLIENT_ID", "PAYPPAL_SECRET_ID",
+                "FLUTTERWAVEE_PUBLIC_KEY", "FLUTTERWAVEE_PRIVATE_KEY",
+                "PAYSTTACK_PUBLIC_KEY", "PAYSTTACK_PRIVATE_KEY"
+            )
+        }),
+        ("Configuración de Correo", {
+            "fields": (
+                "MAILGUN_API_KEY", "MAILGUN_SENDER_DOMAIN",
+                "FROM_EMAIL", "EMAIL_BACKEND", "DEFAULT_FROM_EMAIL", "SERVER_EMAIL"
+            )
+        }),
+        ("Configuración reCAPTCHA", {
+            "fields": ("DJANGO_RECAPTCHA_PUBLIC_KEY", "DJANGO_RECAPTCHA_PRIVATE_KEY")
+        }),
     )
     
 class MensajeContactoAdmin(admin.ModelAdmin):
@@ -133,3 +154,5 @@ admin.site.register(store_models.CategoryPost, CategoryPostAdmin)
 admin.site.register(store_models.Tag, TagAdmin)
 admin.site.register(store_models.BlogPost, BlogPostAdmin)
 admin.site.register(store_models.BlogComment, BlogCommentAdmin)
+
+admin.site.register(store_models.Subscriber, SubscriberAdmin)

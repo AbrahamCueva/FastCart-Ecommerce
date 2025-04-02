@@ -58,15 +58,17 @@
                                 <select class="select-active" name="category">
                                     <option value="">Categorías</option>
                                     {% for category in categories %}
-                                        <option value="{{ category.id }}">{{ category.title }}</option>
+                                        <option value="{{ category.id }}" {% if category.id|stringformat:"s" == request.GET.category %}selected{% endif %}>
+                                            {{ category.title }}
+                                        </option>
                                     {% endfor %}
                                 </select>
-                                <input type="text" name="q" placeholder="Buscar productos..." required />
+                                <input type="text" name="q" placeholder="Buscar productos..." value="{{ request.GET.q }}" required />
                                 <button type="submit" class="search-button">
                                     <i class="fas fa-search"></i>
-                                </button>                                
+                                </button>
                             </form>
-                        </div>                        
+                        </div>
                         
                         <div class="header-action-right">
                             <div class="header-action-2">
@@ -271,12 +273,28 @@
             </div>
             <div class="mobile-header-content-area">
                 <div class="mobile-search search-style-3 mobile-header-border">
-                    <form action="{% url 'store:search' %}" method="GET">
-                        <input type="text" name="q" placeholder="Buscar productos..." required />
-                        <button type="submit" class="search-button">
-                            <i class="fas fa-search"></i>
-                        </button>                                
+                    <form action="{% url 'store:search' %}" method="GET" class="mobile-search-form" onsubmit="return validateSearchForm()">
+                        <div class="d-flex">
+                            <!-- Select para Categorías -->
+                            <select name="category" class="form-select me-2" aria-label="Seleccionar Categoría">
+                                <option value="">Categorías</option>
+                                {% for category in categories %}
+                                    <option value="{{ category.id }}" {% if category.id|stringformat:"s" == request.GET.category %}selected{% endif %}>
+                                        {{ category.title }}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                    
+                            <!-- Campo de texto para la búsqueda de productos -->
+                            <input type="text" name="q" placeholder="Buscar productos..." class="form-control" value="{{ request.GET.q }}" required />
+                    
+                            <!-- Botón de búsqueda -->
+                            <button type="submit" class="btn btn-success ms-2">
+                                <i class="fas fa-search"></i>
+                            </button>
+                        </div>
                     </form>
+                    
                 </div>
                 <div class="mobile-menu-wrap mobile-header-border">
                     <nav>
@@ -376,14 +394,17 @@
                         <div class="position-relative newsletter-inner">
                             <div class="newsletter-content">
                                 <h2 class="mb-20">
-                                    Stay home & get your daily <br />
-                                    needs from our shop
+                                    Quédate en casa y recibe tus <br />
+                                    compras diarias desde nuestra tienda
                                 </h2>
-                                <p class="mb-45">Start You'r Daily Shopping with <span class="text-brand">Nest Mart</span></p>
-                                <form class="form-subcriber d-flex">
-                                    <input type="email" placeholder="Your emaill address" />
-                                    <button class="btn" type="submit">Subscribe</button>
+                                <p class="mb-45">
+                                    Comienza tus compras diarias con <span class="text-brand">Nest Mart</span>
+                                </p>
+                                <form id="subscribe-form" class="form-subcriber d-flex">
+                                    <input type="email" id="email-input" placeholder="Tu correo electrónico" required />
+                                    <button class="btn" type="submit">Suscribirse</button>
                                 </form>
+                                <p id="subscribe-message" style="margin-top: 10px;"></p>
                             </div>
                             <img src="{% static 'assets/imgs/banner/banner-9.png' %}" alt="newsletter" />
                         </div>
@@ -602,6 +623,54 @@
     <script src="{% static 'assets/js/main.js' %}"></script>
     <script src="{% static 'assets/js/functions.js' %}"></script>
     <script src="{% static 'assets/js/shop.js' %}"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const form = document.getElementById("subscribe-form");
+            const emailInput = document.getElementById("email-input");
+            const messageBox = document.getElementById("subscribe-message");
+        
+            form.addEventListener("submit", function (event) {
+                event.preventDefault();
+                const email = emailInput.value;
+        
+                fetch("{% url 'store:subscribe' %}", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "X-CSRFToken": "{{ csrf_token }}"
+                    },
+                    body: JSON.stringify({ email: email })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.message) {
+                        messageBox.style.color = "green";
+                        messageBox.textContent = data.message;
+                        emailInput.value = "";
+                    } else if (data.error) {
+                        messageBox.style.color = "red";
+                        messageBox.textContent = data.error;
+                    }
+                })
+                .catch(error => {
+                    messageBox.style.color = "red";
+                    messageBox.textContent = "¡Algo salió mal!";
+                    console.error("Error:", error);
+                });
+            });
+        });
+    </script>
+
+    <script>
+        function validateSearchForm() {
+            var query = document.querySelector('input[name="q"]').value.trim();
+            if (query === "") {
+                alert("Por favor ingrese un término de búsqueda válido.");
+                return false;  // Prevenir el envío del formulario
+            }
+            return true;  // Continuar con el envío del formulario
+        }
+    </script>
 </body>
 
 </html>

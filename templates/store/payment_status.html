@@ -21,7 +21,7 @@
                                 Su pedido <span style="color: green;" class="fw-bold">#{{order.order_id}}</span> ha sido completado. <br>
                                 Hemos enviado los detalles del pedido a su correo electrónico.
                             </p>
-                            <a href="#" class="btn btn-primary">
+                            <a href="{% url 'customer:orders' %}" class="btn btn-primary">
                                 <i class="fa-solid fa-cart-shopping"></i> Ver pedidos
                             </a>
                         </div>

@@ -73,7 +73,7 @@
                                 {% for item in order.order_items.all %}
                                     <tr>
                                         <td class="image product-thumbnail">
-                                            <img style="width: 120px; height: 120px;" src="{{item.product.image.url}}" alt="{{item.product.name}}">
+                                            <img style="width: 120px; height: 120px; object-fit: contain;" src="{{item.product.image.url}}" alt="{{item.product.name}}">
                                         </td>
                                         <td>
                                             <span> 
@@ -167,7 +167,7 @@
                             <input type="hidden" name="tx_ref" value="{{order.order_id}}">
                             <input type="hidden" name="amount" value="{{order_total_paypal}}">
                             <input type="hidden" name="currency" value="USD">
-                            <input type="hidden" name="redirect_url" value="https://f7c8-190-235-170-190.ngrok-free.app/flutterwave_payment_callback/{{order.order_id}}/?payment_method=Flutterwave">
+                            <input type="hidden" name="redirect_url" value="https://eade-190-236-75-232.ngrok-free.app/flutterwave_payment_callback/{{order.order_id}}/?payment_method=Flutterwave">
                             <input type="hidden" name="meta[source]" value="docs-html-test">
                             <button type="submit" id="start-payment-button" class="btn btn-primary text-white w-100 mb-3">
                                 <img style="width: 150px; height: 30px; object-fit: contain;" src="https://upload.wikimedia.org/wikipedia/commons/9/9e/Flutterwave_Logo.png" alt="">
@@ -242,15 +242,18 @@
                 },
                 onApprove: function(data, actions) {
                     return actions.order.capture().then(function (orderData) {
-                        console.log("Capture result", orderData, JSON.stringify(orderData, null, 2));
+                        // Añade estos logs para depuración
+                        console.log("Capture result FULL DATA:", JSON.stringify(orderData, null, 2));
+                        console.log("Status directo:", orderData.status);
+                        console.log("ID de transacción:", orderData.id);
+                        
                         const element = document.getElementById("paypal-button-container");
                         element.innerHTML = "";
                         element.innerHTML = "<h5>Verificando pago ...</h5>";
-                        window.location.href = `/paypal_payment_verify/{{order.order_id}}/?transaction_id=${orderData.id}`
+                        
+                        // Añade el estado del pago a la URL para depuración
+                        window.location.href = `/paypal_payment_verify/{{order.order_id}}/?transaction_id=${orderData.id}&status=${orderData.status}`
                     });
-                },
-                onError: function(err) {
-                    console.log(err);
                 },
             })
             .render("#paypal-button-container");

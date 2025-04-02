@@ -18,27 +18,61 @@ from django.core.mail import EmailMultiAlternatives, send_mail
 from django.template.loader import render_to_string
 from plugin.paginate_queryset import paginate_queryset
 from .forms import BlogCommentForm, FormularioContacto
+from django.views.decorators.csrf import csrf_exempt
+from .models import Subscriber
 import requests
 import stripe
 import random
+import json
 
 stripe.api_key = settings.STTRIPE_SECRET_KEY
 
+@csrf_exempt
+def subscribe(request):
+    if request.method == "POST":
+        try:
+            data = json.loads(request.body)
+            email = data.get("email")
+
+            if not email:
+                return JsonResponse({"error": "El correo electrónico es obligatorio."}, status=400)
+
+            subscriber, created = Subscriber.objects.get_or_create(email=email)
+
+            if created:
+                return JsonResponse({"message": "¡Te has suscrito correctamente!"}, status=201)
+            else:
+                return JsonResponse({"message": "¡Este correo ya está suscrito!"}, status=200)
+
+        except json.JSONDecodeError:
+            return JsonResponse({"error": "Formato JSON inválido."}, status=400)
+
+    return JsonResponse({"error": "Método de solicitud no permitido."}, status=405)
+
 def search_view(request):
-    query = request.GET.get("q", "").strip()  # Obtener el texto de búsqueda
-    category_id = request.GET.get("category", "").strip()  # Obtener la categoría (si se seleccionó)
+    query = request.GET.get("q", "").strip()  # Elimina espacios al principio y al final
+    category_query = request.GET.get("category", "").strip()
     settings = store_models.StoreSettings.objects.first()
     categories = store_models.Category.objects.all()
+
+    # Validación: Si el término de búsqueda está vacío, redirigimos o mostramos un mensaje
+    if not query:
+        # Puedes redirigir a una página de inicio o mostrar un mensaje específico
+        # En este caso, redirigimos a la página principal
+        return redirect('store:index')
+
     products = store_models.Product.objects.filter(status="Published")
+
     if query:
-        products = products.filter(name__icontains=query)  # Filtrar por nombre (ignora mayúsculas y minúsculas)
-    
-    if category_id:
-        products = products.filter(category_id=category_id)  # Filtrar por categoría
-    
+        products = products.filter(Q(name__icontains=query))
+
+    if category_query:
+        products = products.filter(category__id=category_query)
+
     context = {
         "products": products,
         "query": query,
+        "category_query": category_query,
         "settings": settings,
         "categories": categories,
     }
@@ -60,7 +94,7 @@ def index(request):
     random.shuffle(products)  # Mezclar aleatoriamente
     products = products[:10]  # Seleccionar solo 10 productos aleatorios
 
-    categories = store_models.Category.objects.all()
+    categories = store_models.Category.objects.all()[:5]
     sliders = store_models.Slider.objects.filter(status="Active").order_by("-created_at")
     settings = store_models.StoreSettings.objects.first()
 
@@ -87,8 +121,8 @@ def category_list(request):
 
 def category_detail(request, slug):
     settings = store_models.StoreSettings.objects.first()
-    category = get_object_or_404(store_models.Category, slug=slug)  # Obtener la categoría por el slug
-    products_list = store_models.Product.objects.filter(category=category)  # Obtener productos de esa categoría
+    category = get_object_or_404(store_models.Category, slug=slug)  
+    products_list = store_models.Product.objects.filter(category=category)  
     products = paginate_queryset(request, products_list, 12)
     
     context = {
@@ -159,7 +193,6 @@ def blog_detail(request, slug):
         "tags": tags,
     }
     return render(request, "store/blog_detail.html", context)
-
 
 def add_to_cart(request):
     id = request.GET.get("id")
@@ -402,33 +435,84 @@ def get_paypal_access_token():
         raise Exception(f"No se pudo obtener el token de acceso de Paypal. Código de estado: {response.status_code}")
     
 def paypal_payment_verify(request, order_id):
-    order = store_models.Order.objects.get(order_id=order_id)
-    transaction_id = request.GET.get("transaction_id")
-    paypal_api_url = f"https://api-m.sandbox.paypal.com/v2/checkout/orders/{transaction_id}"
-    headers = {
-        'Content-Type': 'application/json',
-        'Authorization': f"Bearer {get_paypal_access_token()}",
-    }
-    print(get_paypal_access_token())
-    response = requests.get(paypal_api_url, headers=headers)
-    if response.status_code == 200:
-        paypal_order_data = response.json()
-        paypal_payment_status = paypal_order_data['status']
-        payment_method = "Paypal"
-        if paypal_payment_status == "COMPLETED":
-            if order.payment_status == "Processing":
+    try:
+        order = store_models.Order.objects.get(order_id=order_id)
+        transaction_id = request.GET.get("transaction_id")
+        frontend_status = request.GET.get("status")
+        
+        print(f"1. Transaction ID recibido: {transaction_id}")
+        print(f"2. Estado reportado por frontend: {frontend_status}")
+        
+        if frontend_status in ["COMPLETED", "APPROVED"]:
+            print(f"3. Estado válido reportado por frontend: {frontend_status}")
+            order.payment_status = "Paid"
+            order.payment_method = "Paypal"
+            order.payment_id = transaction_id
+            order.save()
+            clear_cart_items(request)
+            return redirect(f"/payment_status/{order.order_id}/?payment_status=paid")
+        
+        if not transaction_id:
+            print("3. No se recibió transaction_id")
+            return redirect(f"/payment_status/{order.order_id}/?payment_status=failed")
+            
+        paypal_api_url = f"https://api-m.sandbox.paypal.com/v2/checkout/orders/{transaction_id}"
+        
+        access_token = get_paypal_access_token()
+        print(f"4. Token de acceso obtenido: {access_token[:10]}...") 
+        
+        headers = {
+            'Content-Type': 'application/json',
+            'Authorization': f"Bearer {access_token}",
+        }
+        
+        print(f"5. Consultando API de PayPal para transacción: {transaction_id}")
+        response = requests.get(paypal_api_url, headers=headers)
+        print(f"6. Código de respuesta API PayPal: {response.status_code}")
+        
+        if response.status_code == 200:
+            paypal_order_data = response.json()
+            print(f"7. Datos de la orden PayPal: {paypal_order_data}")
+            paypal_payment_status = paypal_order_data.get('status')
+            print(f"8. Estado del pago según PayPal API: {paypal_payment_status}")
+            
+            purchase_units = paypal_order_data.get('purchase_units', [])
+            if purchase_units and 'payments' in purchase_units[0]:
+                captures = purchase_units[0]['payments'].get('captures', [])
+                if captures and captures[0].get('status') == "COMPLETED":
+                    print("9. ¡Captura completada encontrada!")
+                    paypal_payment_status = "COMPLETED"
+            
+            if paypal_payment_status in ["COMPLETED", "APPROVED"]:
+                print(f"10. Estado válido, actualizando pedido a pagado")
                 order.payment_status = "Paid"
-                order.payment_method = payment_method
+                order.payment_method = "Paypal"
+                order.payment_id = transaction_id
                 order.save()
                 clear_cart_items(request)
                 return redirect(f"/payment_status/{order.order_id}/?payment_status=paid")
-    else :
-        return redirect(f"/payment_status/{order.order_id}/payment_status=failed")
+            else:
+                print(f"10. Estado no válido: {paypal_payment_status}")
+        else:
+            print(f"7. Error en respuesta PayPal: {response.status_code}")
+            print(f"8. Texto de respuesta: {response.text}")
+        
+        print("Redirigiendo a estado de pago fallido")
+        return redirect(f"/payment_status/{order.order_id}/?payment_status=failed")
+    except Exception as e:
+        print(f"Error en la verificación del pago: {str(e)}")
+        import traceback
+        print(traceback.format_exc())
+        return redirect(f"/payment_status/{order.order_id}/?payment_status=failed")
     
 def payment_status(request, order_id):
+    settings = store_models.StoreSettings.objects.first()
+    categories = store_models.Category.objects.all()
     order = store_models.Order.objects.get(order_id=order_id)
     payment_status = request.GET.get("payment_status")
     context = {
+        "settings": settings,
+        "categories": categories,
         "order": order,
         "payment_status": payment_status
     }
@@ -548,12 +632,6 @@ def flutterwave_payment_callback(request, order_id):
             order.payment_method = "Flutterwave"
             order.save()
             clear_cart_items(request)
-                    
-            # Send Email to Customer
-                    
-            # Send InApp Notification
-                    
-            #Send email to vendor
                     
             return redirect(f"/payment_status/{order.order_id}/?payment_status=paid")
     return redirect(f"/payment_status/{order.order_id}/?payment_status=failed")

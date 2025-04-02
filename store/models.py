@@ -57,6 +57,13 @@ SLIDER_STATUS = (
     ("Inactive", "Inactivo"),
 )
 
+class Subscriber(models.Model):
+    email = models.EmailField(unique=True)
+    subscribed_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return self.email
+
 class AboutUs(models.Model):
     title = models.CharField(max_length=255, verbose_name="Título")
     content = CKEditor5Field("Contenido", config_name="extends")
@@ -107,6 +114,32 @@ class StoreSettings(models.Model):
     seo_title = models.CharField(max_length=255, verbose_name="Título SEO")
     seo_description = models.TextField(verbose_name="Descripción SEO")
     seo_keywords = models.CharField(max_length=500, verbose_name="Palabras Clave SEO")
+
+    # Claves de pago
+    STTRIPE_PUBLIC_KEY = models.CharField(max_length=255, blank=True, null=True, verbose_name="Stripe Public Key")
+    STTRIPE_SECRET_KEY = models.CharField(max_length=255, blank=True, null=True, verbose_name="Stripe Secret Key")
+
+    PAYPPAL_CLIENT_ID = models.CharField(max_length=255, blank=True, null=True, verbose_name="PayPal Client ID")
+    PAYPPAL_SECRET_ID = models.CharField(max_length=255, blank=True, null=True, verbose_name="PayPal Secret ID")
+
+    FLUTTERWAVEE_PUBLIC_KEY = models.CharField(max_length=255, blank=True, null=True, verbose_name="Flutterwave Public Key")
+    FLUTTERWAVEE_PRIVATE_KEY = models.CharField(max_length=255, blank=True, null=True, verbose_name="Flutterwave Private Key")
+
+    PAYSTTACK_PUBLIC_KEY = models.CharField(max_length=255, blank=True, null=True, verbose_name="Paystack Public Key")
+    PAYSTTACK_PRIVATE_KEY = models.CharField(max_length=255, blank=True, null=True, verbose_name="Paystack Private Key")
+
+    # Configuración de correo
+    MAILGUN_API_KEY = models.CharField(max_length=255, blank=True, null=True, verbose_name="Mailgun API Key")
+    MAILGUN_SENDER_DOMAIN = models.CharField(max_length=255, blank=True, null=True, verbose_name="Mailgun Sender Domain")
+
+    FROM_EMAIL = models.EmailField(blank=True, null=True, verbose_name="Correo de Envío")
+    EMAIL_BACKEND = models.CharField(max_length=255, blank=True, null=True, verbose_name="Backend de Correo")
+    DEFAULT_FROM_EMAIL = models.EmailField(blank=True, null=True, verbose_name="Correo Predeterminado")
+    SERVER_EMAIL = models.EmailField(blank=True, null=True, verbose_name="Correo del Servidor")
+
+    # Configuración reCAPTCHA
+    DJANGO_RECAPTCHA_PUBLIC_KEY = models.CharField(max_length=255, blank=True, null=True, verbose_name="reCAPTCHA Public Key")
+    DJANGO_RECAPTCHA_PRIVATE_KEY = models.CharField(max_length=255, blank=True, null=True, verbose_name="reCAPTCHA Private Key")
 
     updated_at = models.DateTimeField(auto_now=True, verbose_name="Última Actualización")
 
@@ -343,7 +376,6 @@ class Review(models.Model):
     def __str__(self):
         return f"{self.user.username} calificó a {self.product.name}"
     
-# Opciones de Estado para el Post
 POST_STATUS = (
     ("Published", "Publicado"),
     ("Draft", "Borrador"),
