@@ -98,24 +98,20 @@ class StoreSettings(models.Model):
     logo = models.ImageField(upload_to="settings/", verbose_name="Logo de la Tienda")
     favicon = models.ImageField(upload_to="settings/", verbose_name="Favicon (Ícono de pestaña)")
     
-    # Información de contacto
     address = models.TextField(verbose_name="Dirección")
     phone = models.CharField(max_length=20, verbose_name="Teléfono")
     email = models.EmailField(verbose_name="Correo Electrónico")
 
-    # Redes sociales
     facebook = models.URLField(blank=True, null=True, verbose_name="Facebook")
     instagram = models.URLField(blank=True, null=True, verbose_name="Instagram")
     twitter = models.URLField(blank=True, null=True, verbose_name="Twitter")
     youtube = models.URLField(blank=True, null=True, verbose_name="YouTube")
     linkedin = models.URLField(blank=True, null=True, verbose_name="LinkedIn")
 
-    # Configuración SEO
     seo_title = models.CharField(max_length=255, verbose_name="Título SEO")
     seo_description = models.TextField(verbose_name="Descripción SEO")
     seo_keywords = models.CharField(max_length=500, verbose_name="Palabras Clave SEO")
 
-    # Claves de pago
     STTRIPE_PUBLIC_KEY = models.CharField(max_length=255, blank=True, null=True, verbose_name="Stripe Public Key")
     STTRIPE_SECRET_KEY = models.CharField(max_length=255, blank=True, null=True, verbose_name="Stripe Secret Key")
 
@@ -128,7 +124,6 @@ class StoreSettings(models.Model):
     PAYSTTACK_PUBLIC_KEY = models.CharField(max_length=255, blank=True, null=True, verbose_name="Paystack Public Key")
     PAYSTTACK_PRIVATE_KEY = models.CharField(max_length=255, blank=True, null=True, verbose_name="Paystack Private Key")
 
-    # Configuración de correo
     MAILGUN_API_KEY = models.CharField(max_length=255, blank=True, null=True, verbose_name="Mailgun API Key")
     MAILGUN_SENDER_DOMAIN = models.CharField(max_length=255, blank=True, null=True, verbose_name="Mailgun Sender Domain")
 
@@ -137,7 +132,6 @@ class StoreSettings(models.Model):
     DEFAULT_FROM_EMAIL = models.EmailField(blank=True, null=True, verbose_name="Correo Predeterminado")
     SERVER_EMAIL = models.EmailField(blank=True, null=True, verbose_name="Correo del Servidor")
 
-    # Configuración reCAPTCHA
     DJANGO_RECAPTCHA_PUBLIC_KEY = models.CharField(max_length=255, blank=True, null=True, verbose_name="reCAPTCHA Public Key")
     DJANGO_RECAPTCHA_PRIVATE_KEY = models.CharField(max_length=255, blank=True, null=True, verbose_name="reCAPTCHA Private Key")
 

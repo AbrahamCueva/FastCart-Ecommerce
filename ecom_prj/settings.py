@@ -65,6 +65,7 @@ INSTALLED_APPS = [
     'anymail',
     'django_ckeditor_5',
     'captcha',
+    'import_export'
 ]
 
 MIDDLEWARE = [

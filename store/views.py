@@ -121,15 +121,17 @@ def category_list(request):
 
 def category_detail(request, slug):
     settings = store_models.StoreSettings.objects.first()
+    categories = store_models.Category.objects.all() 
     category = get_object_or_404(store_models.Category, slug=slug)  
     products_list = store_models.Product.objects.filter(category=category)  
-    products = paginate_queryset(request, products_list, 12)
+    products = paginate_queryset(request, products_list, 15)
     
     context = {
         "category": category,
         "products": products,
         "settings": settings,
         "products_list": products_list,
+        "categories": categories,
     }
     return render(request, "store/category_detail.html", context)
 
@@ -166,11 +168,12 @@ def blog(request):
 
 def blog_detail(request, slug):
     settings = store_models.StoreSettings.objects.first()
-    tags = store_models.Tag.objects.all()
     categories = store_models.Category.objects.all()
     category_post = store_models.CategoryPost.objects.first()
     post = get_object_or_404(store_models.BlogPost, slug=slug, status="Published")
     comments = post.comments.all().order_by("-created_at")
+
+    tags = post.tags.all() 
 
     if request.method == "POST":
         form = BlogCommentForm(request.POST)
@@ -179,7 +182,7 @@ def blog_detail(request, slug):
             comment.post = post
             comment.save()
             messages.success(request, "Tu comentario ha sido enviado correctamente.")
-            return redirect("store:blog_detail", slug=slug)  # Redirigir para evitar reenvíos
+            return redirect("store:blog_detail", slug=slug) 
     else:
         form = BlogCommentForm()
 
@@ -190,7 +193,7 @@ def blog_detail(request, slug):
         "category_post": category_post,
         "comments": comments,
         "form": form,
-        "tags": tags,
+        "tags": tags, 
     }
     return render(request, "store/blog_detail.html", context)
 
@@ -528,7 +531,7 @@ def stripe_payment(request, order_id):
         line_items = [
             {
                 'price_data': {
-                    'currency': "USD",
+                    'currency': "PEN",
                     'product_data': {
                         'name': order.address.full_name
                     },

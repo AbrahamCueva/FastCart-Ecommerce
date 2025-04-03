@@ -88,7 +88,7 @@ class StoreSettingsAdmin(admin.ModelAdmin):
                 "STTRIPE_PUBLIC_KEY", "STTRIPE_SECRET_KEY",
                 "PAYPPAL_CLIENT_ID", "PAYPPAL_SECRET_ID",
                 "FLUTTERWAVEE_PUBLIC_KEY", "FLUTTERWAVEE_PRIVATE_KEY",
-                "PAYSTTACK_PUBLIC_KEY", "PAYSTTACK_PRIVATE_KEY"
+                "PAYSTTACK_PUBLIC_KEY", "PAYSTTACK_PRIVATE_KEY",
             )
         }),
         ("Configuración de Correo", {
