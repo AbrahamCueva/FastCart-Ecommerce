@@ -34,15 +34,15 @@
                                             </div>
                                             <div class="card-body">
                                                 <div class="text-center d-flex justify-content-center align-items-center">
-                                                    <img id="imagePreview" src="" alt="" style="width: 100%; height: 500px; object-fit: cover; border-radius: 10px; display: none;">
+                                                    <img id="imagePreview" src="" alt="" style="width: 100%; height: 500px; object-fit: contain; border-radius: 10px; display: none;">
                                                 </div>
                                                 <div class="mb-3">
                                                     <label for="imageInput" class="form-label">Imágen del producto</label>
-                                                    <input type="file" name="image" id="imageInput" class="form-control rounded" accept="image/*" onchange="previewImage(event)">
+                                                    <input type="file" required name="image" id="imageInput" class="form-control rounded" accept="image/*" onchange="previewImage(event)">
                                                 </div>
                                                 <div class="mb-3">
                                                     <label for="productTitle" class="form-label">Nombre del producto</label>
-                                                    <input type="text" name="name"class="form-control rounded" placeholder="Nombre del producto">
+                                                    <input type="text" name="name"class="form-control rounded" required placeholder="Nombre del producto">
                                                 </div>
                                                 <div class="mb-3">
                                                     <label for="productTitle" class="form-label">Categoría del producto</label>
@@ -55,7 +55,7 @@
                                                 </div>
                                                 <div class="mb-3">
                                                     <label class="form-label">Descripción del producto</label>
-                                                    <textarea name="description" class="form-control rounded" cols="30"></textarea>
+                                                    <textarea name="description" required class="form-control rounded" cols="30"></textarea>
                                                 </div>                                            
                                                 <div class="mb-3">
                                                     <label for="productPrice" class="form-label">Precio regular del producto</label>
@@ -63,7 +63,7 @@
                                                 </div>
                                                 <div class="mb-3">
                                                     <label for="productPrice" class="form-label">Precio de venta del producto</label>
-                                                    <input type="text" name="price" class="form-control rounded" placeholder="Precio de venta del producto">
+                                                    <input type="text" name="price" required class="form-control rounded" placeholder="Precio de venta del producto">
                                                 </div>
                                                 <div class="mb-3">
                                                     <label for="productPrice" class="form-label">Costo de envío</label>
@@ -71,7 +71,7 @@
                                                 </div>
                                                 <div class="mb-3">
                                                     <label for="productPrice" class="form-label">Stock</label>
-                                                    <input type="text" name="stock" class="form-control rounded" placeholder="Stock">
+                                                    <input type="text" name="stock" required class="form-control rounded" placeholder="Stock">
                                                 </div>
                                             </div>
                                         </div>

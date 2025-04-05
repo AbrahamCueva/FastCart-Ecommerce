@@ -61,6 +61,11 @@
                                             <i class="fi-rs-heart"></i>
                                         </a>
                                     </div>
+                                    {% if p.get_discount_percent > 0 %}
+                                        <div class="product-badges product-badges-position product-badges-mrg">
+                                            <span class="new">- {{ p.get_discount_percent|floatformat:"0" }}%</span>
+                                        </div>
+                                    {% endif %}
                                 </div>
                                 <div class="product-content-wrap">
                                     <div class="product-category">
@@ -80,7 +85,10 @@
                                     <div class="product-card-bottom">
                                         <div class="product-price">
                                             <span>S/. {{p.price}}</span> <br>
-                                            <span class="old-price">S/. {{p.regular_price}}</span>
+                                            <span class="old-price"></span>
+                                            {% if p.regular_price %}
+                                                <span class="old-price">S/. {{p.regular_price}}</span>
+                                            {% endif %}
                                         </div>
                                         <div class="add-cart">
                                             <a class="add add_to_cart" href="#" data-id="{{ p.id }}">

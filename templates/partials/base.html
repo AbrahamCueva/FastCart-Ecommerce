@@ -377,11 +377,15 @@
     </div>
     <!--End header-->
 
-    {% for message in messages  %}
-            <div style="margin-top: 20px;" class="alert alert-{{message.tags}} mt-10">
-                <strong>{{message}}</strong>
-            </div>
-    {% endfor %}
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            {% for message in messages %}
+                <div style="margin-top: 20px;" class="alert alert-{{ message.tags }} mt-3">
+                    <strong>{{ message }}</strong>
+                </div>
+            {% endfor %}
+        </div>
+    </div>    
     
     {% block content %}
     {% endblock content %}

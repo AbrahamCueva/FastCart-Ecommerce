@@ -182,7 +182,7 @@ class Slider(models.Model):
 class Category(models.Model):
     title = models.CharField(max_length=255)
     image = models.ImageField(upload_to="images", blank=True, null=True)
-    slug = models.SlugField(unique=True)
+    slug = models.SlugField(max_length=200, unique=True)
     
     def __str__(self):
         return self.title
@@ -210,7 +210,7 @@ class Product(models.Model):
     vendor = models.ForeignKey(user_models.User, on_delete=models.SET_NULL, null=True, blank=True)
     
     sku = ShortUUIDField(unique=True, length=5, max_length=50, prefix="SKU", alphabet="1234567890")
-    slug = models.SlugField(null=True, blank=True)
+    slug = models.SlugField(max_length=500, null=True, blank=True)
     
     date = models.DateTimeField(default=timezone.now)
     
@@ -233,6 +233,12 @@ class Product(models.Model):
     
     def variants(self):
         return Variant.objects.filter(product=self)
+    
+    def get_discount_percent(self):
+        if self.regular_price and self.price and self.regular_price > self.price:
+            discount = ((self.regular_price - self.price) / self.regular_price) * 100
+            return round(discount, 2)
+        return 0
     
     def vendor_orders(self):
         return OrderItem.objects.filter(product=self, vendor=self.vendor)
@@ -378,7 +384,7 @@ POST_STATUS = (
 
 class CategoryPost(models.Model):
     title = models.CharField(max_length=255, verbose_name="Categoría")
-    slug = models.SlugField(unique=True)
+    slug = models.SlugField(max_length=500, unique=True)
     
     class Meta:
         verbose_name = "Categoría"
@@ -390,7 +396,7 @@ class CategoryPost(models.Model):
 
 class Tag(models.Model):
     name = models.CharField(max_length=255, verbose_name="Etiquetas")
-    slug = models.SlugField(unique=True)
+    slug = models.SlugField(max_length=500,unique=True)
     
     class Meta:
         verbose_name = "Etiqueta"
@@ -407,7 +413,7 @@ class BlogPost(models.Model):
     content = CKEditor5Field("Contenido", config_name="extends")
     category = models.ForeignKey(CategoryPost, on_delete=models.SET_NULL, null=True, blank=True)
     tags = models.ManyToManyField(Tag, related_name="blog_posts", blank=True)
-    slug = models.SlugField(unique=True, null=True, blank=True)
+    slug = models.SlugField(max_length=500, unique=True, null=True, blank=True)
     status = models.CharField(choices=POST_STATUS, max_length=10, default="Draft")
     author = models.ForeignKey('userauths.User', on_delete=models.SET_NULL, null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True, verbose_name="Fecha de Creación")

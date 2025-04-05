@@ -28,7 +28,7 @@ class Vendor(models.Model):
     country = models.CharField(max_length=100, null=True, blank=True)
     vendor_id = ShortUUIDField(max_length=20, unique=True, length=6, alphabet="1234567890")
     date = models.DateTimeField(auto_now_add=True)
-    slug = models.SlugField(null=True, blank=True)
+    slug = models.SlugField(max_length=500, null=True, blank=True)
     
     def __str__(self):
         return str(self.store_name)

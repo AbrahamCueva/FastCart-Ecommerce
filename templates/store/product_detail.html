@@ -131,10 +131,17 @@
                                     <div class="product-price primary-color float-left">
                                         <span class="current-price text-brand">S/. {{ product.price }}</span>
                                         <span>
-                                            <!-- <span class="save-price font-md color3 ml-15">26% Off</span> -->
-                                            <span class="old-price font-md ml-15">S/. {{ product.regular_price }}</span>
+                                            {% if product.get_discount_percent > 0 %}
+                                                <span class="save-price font-md color3 ml-15">- {{ product.get_discount_percent|floatformat:"0" }}% de descuento</span>    
+                                            {% endif %}
+                                            
+                                            {% if product.regular_price %}
+                                                <span class="old-price font-md ml-15">S/. {{ product.regular_price }}</span>
+                                                
+                                            {% endif %}
                                         </span>
                                     </div>
+                                    
                                 </div>
                                 <div class="list-group-item mb-10 mt-10">
                                     <label class="fw-900">Color: </label>
@@ -155,7 +162,7 @@
                                 </div>
                                 
                                 <div class="attr-detail attr-size mb-30">
-                                    <strong class="mr-10">Capacidad: </strong>
+                                    <strong class="mr-10 fw-900">Capacidad: </strong>
                                     <ul class="list-filter size-filter font-small">
                                         {% for variant in product.variants.all %}
                                             {% if variant.name == "Capacidad" %}
@@ -322,6 +329,11 @@
                                                     <div class="product-action-1">
                                                         <a aria-label="Agregar a favoritos" class="action-btn add_to_wishlist" data-product_id="{{p.id}}" href="#"><i class="fi-rs-heart"></i></a>
                                                     </div>
+                                                    {% if p.get_discount_percent > 0 %}
+                                                        <div class="product-badges product-badges-position product-badges-mrg">
+                                                            <span class="new">- {{ p.get_discount_percent|floatformat:"0" }}%</span>
+                                                        </div>
+                                                    {% endif %}
                                                 </div>
                                                 <div class="product-content-wrap">
                                                     <div class="product-category">
@@ -341,7 +353,10 @@
                                                     <div class="product-card-bottom">
                                                         <div class="product-price">
                                                             <span>S/. {{p.price}}</span> <br>
-                                                            <span class="old-price">S/. {{p.regular_price}}</span>
+                                                            <span class="old-price"></span>
+                                                            {% if p.regular_price %}
+                                                                <span class="old-price">S/. {{p.regular_price}}</span>
+                                                            {% endif %}
                                                         </div>
                                                         <div class="add-cart">
                                                             <a class="add add_to_cart" href="#" data-id="{{ p.id }}">

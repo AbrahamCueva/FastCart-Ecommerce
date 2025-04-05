@@ -1,4 +1,4 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from store import models as store_models
 from vendor import models as vendor_models
@@ -9,6 +9,7 @@ from django.contrib import messages
 from django.contrib.auth.hashers import check_password
 from django.http import JsonResponse
 from userauths.decorators import vendor_required
+from decimal import Decimal, InvalidOperation
 
 def get_monthly_sales():
     monthly_sales = (
@@ -295,62 +296,111 @@ def change_password(request):
     }
     return render(request, "vendor/change_password.html", context)
 
+# Función para convertir y validar decimales
+def parse_decimal(value):
+    try:
+        return Decimal(value) if value else None  # Permitir que sea None si no hay valor
+    except InvalidOperation:
+        return None
+
+# Función para convertir y validar enteros
+def parse_int(value):
+    try:
+        return int(value) if value else 0
+    except ValueError:
+        return 0
+
 @login_required
 @vendor_required
 def create_product(request):
     settings = store_models.StoreSettings.objects.first()
     categories = store_models.Category.objects.all()
-    categories = store_models.Category.objects.all()
     
     if request.method == "POST":
+        # Obtener datos del formulario
         image = request.FILES.get("image")
         name = request.POST.get("name")
         category_id = request.POST.get("category_id")
         description = request.POST.get("description")
-        price = request.POST.get("price")
-        shipping = request.POST.get("shipping")
-        regular_price = request.POST.get("regular_price")
-        stock = request.POST.get("stock")
+        price = parse_decimal(request.POST.get("price"))
+        shipping = parse_decimal(request.POST.get("shipping"))
+        regular_price = parse_decimal(request.POST.get("regular_price"))  # Permitir None
+        stock = parse_int(request.POST.get("stock"))
+
+        # Validar que no falten campos importantes
+        if not name or not category_id or price is None or stock < 0:
+            messages.error(request, "Por favor, complete todos los campos correctamente.")
+            return render(request, "vendor/create_product.html", {"settings": settings, "categories": categories})
+
+        try:
+            # Obtener la categoría
+            category = store_models.Category.objects.get(id=category_id)
+        except store_models.Category.DoesNotExist:
+            messages.error(request, "La categoría seleccionada no existe.")
+            return render(request, "vendor/create_product.html", {"settings": settings, "categories": categories})
         
-        category = store_models.Category.objects.get(id=category_id)
-        product = store_models.Product.objects.create(
-            image = image,
-            vendor = request.user,
-            name = name,
-            category = category,
-            description = description,
-            price = price,
-            regular_price = regular_price,
-            shipping = shipping,
-            stock = stock,
-        )
-        return redirect("vendor:update_product", product.id)
-    context = {
-        "settings": settings,
-        "categories": categories,
-        "categories": categories,
-    }
-    return render(request, "vendor/create_product.html", context)
+        # Crear el producto
+        try:
+            product = store_models.Product.objects.create(
+                image=image,
+                vendor=request.user,
+                name=name,
+                category=category,
+                description=description,
+                price=price,
+                regular_price=regular_price,  # Puede ser None
+                shipping=shipping,
+                stock=stock,
+            )
+            messages.success(request, "Producto creado exitosamente.")
+            return redirect("vendor:update_product", product.id)
+        except Exception as e:
+            messages.error(request, f"Error al crear el producto: {str(e)}")
+            return render(request, "vendor/create_product.html", {"settings": settings, "categories": categories})
+    
+    return render(request, "vendor/create_product.html", {"settings": settings, "categories": categories})
 
 @login_required
 @vendor_required
 def update_product(request, id):
     settings = store_models.StoreSettings.objects.first()
     categories = store_models.Category.objects.all()
-    product = store_models.Product.objects.get(vendor=request.user, id=id)
-    categories = store_models.Category.objects.all()
+    product = get_object_or_404(store_models.Product, vendor=request.user, id=id)
 
     if request.method == "POST":
         image = request.FILES.get("image")
         name = request.POST.get("name")
         category_id = request.POST.get("category_id")
         description = request.POST.get("description")
-        regular_price = request.POST.get('regular_price').replace(',', '.')
-        price = request.POST.get('price').replace(',', '.')
-        shipping = request.POST.get('shipping').replace(',', '.')
-        stock = request.POST.get("stock")
-        category = store_models.Category.objects.get(id=category_id)
-        
+        price = parse_decimal(request.POST.get("price").replace(',', '.'))
+        shipping = parse_decimal(request.POST.get("shipping").replace(',', '.'))
+        regular_price = parse_decimal(request.POST.get("regular_price").replace(',', '.'))
+        stock = parse_int(request.POST.get("stock"))
+
+        # Validar campos obligatorios
+        if not name or not category_id or price is None or stock < 0:
+            messages.error(request, "Por favor, complete todos los campos correctamente.")
+            return render(request, "vendor/update_product.html", {
+                "settings": settings,
+                "categories": categories,
+                "product": product,
+                "variants": store_models.Variant.objects.filter(product=product),
+                "gallery_images": store_models.Gallery.objects.filter(product=product),
+            })
+
+        try:
+            category = store_models.Category.objects.get(id=category_id)
+        except store_models.Category.DoesNotExist:
+            messages.error(request, "La categoría seleccionada no existe.")
+            return render(request, "vendor/update_product.html", {
+                "settings": settings,
+                "categories": categories,
+                "product": product,
+                "variants": store_models.Variant.objects.filter(product=product),
+                "gallery_images": store_models.Gallery.objects.filter(product=product),
+            })
+
+        # Actualizar campos
         product.name = name
         product.category = category
         product.description = description
@@ -358,90 +408,83 @@ def update_product(request, id):
         product.shipping = shipping
         product.regular_price = regular_price
         product.stock = stock
-        
+
         if image:
             product.image = image
-        
+
         product.save()
-        
+
+        # Actualizar variantes
         variant_ids = request.POST.getlist("variant_id[]")
         variant_titles = request.POST.getlist("variant_title[]")
 
         existing_variant_ids = set(store_models.Variant.objects.filter(product=product).values_list('id', flat=True))
         received_variant_ids = set(map(int, filter(None, variant_ids)))
 
-        # Eliminar variantes que ya no están en el formulario
+        # Eliminar variantes eliminadas
         variants_to_delete = existing_variant_ids - received_variant_ids
         store_models.Variant.objects.filter(id__in=variants_to_delete).delete()
 
-        if variant_titles:
-            for i in range(len(variant_titles)):
-                variant_id = variant_ids[i] if i < len(variant_ids) else None
-                variant_name = variant_titles[i]
+        for i in range(len(variant_titles)):
+            variant_id = variant_ids[i] if i < len(variant_ids) else None
+            variant_name = variant_titles[i]
 
-                variant = None  # Inicializa variant fuera del bloque if
+            variant = None
+            if variant_id:
+                variant = store_models.Variant.objects.filter(id=variant_id).first()
+                if variant:
+                    variant.name = variant_name
+                    variant.save()
+            else:
+                variant = store_models.Variant.objects.create(product=product, name=variant_name)
 
-                if variant_id:
-                    variant = store_models.Variant.objects.filter(id=variant_id).first()
-                    if variant:
-                        variant.name = variant_name
-                        variant.save()
-                    else:
-                        # La variante existente no se encontró (esto debería ser raro)
-                        pass  # O podrías loggear un error aquí
-                else:
-                    variant = store_models.Variant.objects.create(product=product, name=variant_name)
-
-                # Manejo de ítems de variantes
+            # Actualizar ítems de variantes
+            if variant:
                 item_ids = request.POST.getlist(f"item_id_{i}[]")
                 item_titles = request.POST.getlist(f"item_title_{i}[]")
                 item_descriptions = request.POST.getlist(f"item_description_{i}[]")
 
-                # Solo acceder a variant_items si variant no es None
-                if variant:
-                    existing_item_ids = set(variant.variant_items.values_list('id', flat=True))
-                    received_item_ids = set(map(int, filter(None, item_ids)))
+                existing_item_ids = set(variant.variant_items.values_list('id', flat=True))
+                received_item_ids = set(map(int, filter(None, item_ids)))
+                items_to_delete = existing_item_ids - received_item_ids
+                store_models.VariantItem.objects.filter(id__in=items_to_delete).delete()
 
-                    # Eliminar ítems no presentes
-                    items_to_delete = existing_item_ids - received_item_ids
-                    store_models.VariantItem.objects.filter(id__in=items_to_delete).delete()
+                for j in range(len(item_titles)):
+                    item_id = item_ids[j] if j < len(item_ids) else None
+                    item_title = item_titles[j]
+                    item_description = item_descriptions[j]
 
-                    if item_titles:
-                        for j in range(len(item_titles)):
-                            item_id = item_ids[j] if j < len(item_ids) else None
-                            item_title = item_titles[j]
-                            item_description = item_descriptions[j]
+                    if item_id:
+                        variant_item = store_models.VariantItem.objects.filter(id=item_id).first()
+                        if variant_item:
+                            variant_item.title = item_title
+                            variant_item.content = item_description
+                            variant_item.save()
+                    else:
+                        store_models.VariantItem.objects.create(
+                            variant=variant,
+                            title=item_title,
+                            content=item_description,
+                        )
 
-                            if item_id:
-                                variant_item = store_models.VariantItem.objects.filter(id=item_id).first()
-                                if variant_item:
-                                    variant_item.title = item_title
-                                    variant_item.content = item_description
-                                    variant_item.save()
-                            else:
-                                store_models.VariantItem.objects.create(
-                                    variant=variant,
-                                    title=item_title,
-                                    content=item_description,
-                                )
-
+        # Subir imágenes adicionales al gallery
         for file_key, image_file in request.FILES.items():
             if file_key.startswith("image_"):
                 store_models.Gallery.objects.create(product=product, image=image_file)
 
-        messages.success(request, "Producto actualizado")
+        messages.success(request, "Producto actualizado correctamente.")
         return redirect("vendor:update_product", product.id)
 
     context = {
         "settings": settings,
         "categories": categories,
         "product": product,
-        "categories": categories,
         "variants": store_models.Variant.objects.filter(product=product),
         "gallery_images": store_models.Gallery.objects.filter(product=product),
     }
 
     return render(request, "vendor/update_product.html", context)
+
 
 @login_required
 @vendor_required

@@ -137,7 +137,7 @@ def category_detail(request, slug):
 
 def product_detail(request, slug):
     product = store_models.Product.objects.get(status="Published", slug=slug)
-    related_products = store_models.Product.objects.filter(category=product.category, status="Published").exclude(id=product.id) 
+    related_products = store_models.Product.objects.filter(category=product.category, status="Published").exclude(id=product.id)[:5]
     settings = store_models.StoreSettings.objects.first()
     categories = store_models.Category.objects.all()
     product_stock_range = range(1, product.stock + 1)
