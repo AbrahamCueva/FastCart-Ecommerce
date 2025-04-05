@@ -34,4 +34,6 @@ urlpatterns = [
     path("category_detail/<slug>/", views.category_detail, name="category_detail"),
     
     path("subscribe/", views.subscribe, name="subscribe"),
+    
+    path("privacy_policy/", views.polity_policy, name="polity_policy"),
 ]

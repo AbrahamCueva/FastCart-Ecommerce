@@ -732,3 +732,14 @@ def shop(request):
         "new_products": new_products,
     }
     return render(request, "store/shop.html", context)
+
+def polity_policy(request):
+    settings = store_models.StoreSettings.objects.first()
+    categories = store_models.Category.objects.all()
+    privacy_policies = store_models.PrivacyPolicy.objects.get()
+    context = {
+        "settings": settings,
+        "categories": categories,
+        "privacy_policies": privacy_policies,
+    }
+    return render(request, "store/privacy_policy.html", context)

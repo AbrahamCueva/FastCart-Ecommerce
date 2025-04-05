@@ -37,6 +37,12 @@ ORDER_STATUS = (
     ("Cancelled", "Cancelado"),
 )
 
+POST_STATUS = (
+    ("Published", "Publicado"),
+    ("Draft", "Borrador"),
+    ("Archived", "Archivado"),
+)
+
 SHIPPING_SERVICE = (
     ("DHL", "DHL"),
     ("FedEx", "FedEx"),
@@ -375,12 +381,6 @@ class Review(models.Model):
     
     def __str__(self):
         return f"{self.user.username} calificó a {self.product.name}"
-    
-POST_STATUS = (
-    ("Published", "Publicado"),
-    ("Draft", "Borrador"),
-    ("Archived", "Archivado"),
-)
 
 class CategoryPost(models.Model):
     title = models.CharField(max_length=255, verbose_name="Categoría")
@@ -393,7 +393,6 @@ class CategoryPost(models.Model):
     def __str__(self):
         return self.title
 
-
 class Tag(models.Model):
     name = models.CharField(max_length=255, verbose_name="Etiquetas")
     slug = models.SlugField(max_length=500,unique=True)
@@ -404,7 +403,6 @@ class Tag(models.Model):
     
     def __str__(self):
         return self.name
-
 
 class BlogPost(models.Model):
     image = models.ImageField(upload_to="blog_images/", verbose_name="Imagen Destacada", null=True, blank=True)
@@ -432,7 +430,6 @@ class BlogPost(models.Model):
             self.slug = slugify(self.title) + "-" + str(shortuuid.uuid().lower()[:6])
         super(BlogPost, self).save(*args, **kwargs)
 
-
 class BlogComment(models.Model):
     post = models.ForeignKey(BlogPost, on_delete=models.CASCADE, related_name="comments")
     author = models.CharField(max_length=255, verbose_name="Nombre")
@@ -447,3 +444,24 @@ class BlogComment(models.Model):
     def __str__(self):
         return f"Comentario de {self.author} en {self.post.title}"
 
+class PrivacyPolicy(models.Model):
+    title = models.CharField(max_length=255, verbose_name="Título", default="Privacy Policy")
+    content = CKEditor5Field("Contenido", config_name="extends")
+    author = models.ForeignKey('userauths.User', on_delete=models.SET_NULL, null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True, verbose_name="Fecha de Creación")
+    updated_at = models.DateTimeField(auto_now=True, verbose_name="Última Actualización")
+    read_time = models.PositiveIntegerField(verbose_name="Tiempo de lectura (minutos)", default=5)
+
+    class Meta:
+        verbose_name = "Política de Privacidad"
+        verbose_name_plural = "Políticas de Privacidad"
+        ordering = ["-created_at"]
+
+    def __str__(self):
+        return self.title
+
+    def save(self, *args, **kwargs):
+        if not self.pk:  # Si es un nuevo objeto, calcular tiempo de lectura
+            word_count = len(self.content.split())
+            self.read_time = max(1, word_count // 200)  # Asumiendo 200 palabras por minuto
+        super().save(*args, **kwargs)
