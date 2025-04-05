@@ -188,10 +188,10 @@
                                         </select>
                                     </div>
                                     <div class="product-extra-link2">
-                                        <a class="action-btn hover-up add_to_cart" data-id="{{ product.id }}" href="#">
+                                        <a class="action-btn hover-up add_to_cart" data-id="{{ product.id }}" href="javascript:void(0);">
                                             <i class="fi-rs-shopping-cart"></i>
                                         </a>
-                                        <a aria-label="Agregar a favoritos" class="action-btn hover-up add_to_wishlist" data-product_id="{{product.id}}" href="#">
+                                        <a aria-label="Agregar a favoritos" class="action-btn hover-up add_to_wishlist" data-product_id="{{product.id}}" href="javascript:void(0);">
                                             <i class="fi-rs-heart"></i>
                                         </a>
                                     </div>
@@ -327,7 +327,7 @@
                                                         </a>
                                                     </div>
                                                     <div class="product-action-1">
-                                                        <a aria-label="Agregar a favoritos" class="action-btn add_to_wishlist" data-product_id="{{p.id}}" href="#"><i class="fi-rs-heart"></i></a>
+                                                        <a aria-label="Agregar a favoritos" class="action-btn add_to_wishlist" data-product_id="{{p.id}}" href="javascript:void(0);"><i class="fi-rs-heart"></i></a>
                                                     </div>
                                                     {% if p.get_discount_percent > 0 %}
                                                         <div class="product-badges product-badges-position product-badges-mrg">
@@ -359,7 +359,7 @@
                                                             {% endif %}
                                                         </div>
                                                         <div class="add-cart">
-                                                            <a class="add add_to_cart" href="#" data-id="{{ p.id }}">
+                                                            <a class="add add_to_cart" href="javascript:void(0);" data-id="{{ p.id }}">
                                                                 <i class="fi-rs-shopping-cart mr-5"></i>
                                                             </a>
                                                         </div>

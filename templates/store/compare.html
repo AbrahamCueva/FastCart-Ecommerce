@@ -1,0 +1,20 @@
+{% extends 'partials/base.html' %}
+{% block title %}Comparar productos - {{ settings.store_name }}{% endblock %}
+{% load static %}
+{% block content %}
+<main class="main">
+    <div class="page-header breadcrumb-wrap">
+        <div class="container">
+            <div class="breadcrumb">
+                <a href="{% url 'store:index' %}" rel="nofollow"><i class="fi-rs-home mr-5"></i>Inicio</a>
+                <span></span> Comparar productos
+            </div>
+        </div>
+    </div>
+    <div class="container mb-80 mt-50">
+        <div class="row">
+            <div class="col-xl-10 col-lg-12 m-auto"></div>
+        </div>
+    </div>
+</main>
+{% endblock content %}

@@ -159,7 +159,7 @@ $(document).ready(function() {
                 $('.item_div_' + item_id).remove();
             },
         })
-    })
+    });
 
     $(document).on("click", ".add_to_wishlist", function() {
         const button = $(this)
@@ -189,7 +189,7 @@ $(document).ready(function() {
                 button.html("<i class='fi-rs-heart'></i>")
             }
         })
-    })
+    });
 });
 
 
