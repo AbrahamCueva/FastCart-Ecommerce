@@ -84,6 +84,7 @@
                                                 </div>
                                             </div>                                                                                     
                                             <!--Comment form-->
+                                            {% if request.user.is_authenticated %}
                                             <div class="comment-form">
                                                 <div class="row">
                                                     <div class="col-lg-9 col-md-12">
@@ -141,6 +142,9 @@
                                                     </div>
                                                 </div>
                                             </div>
+                                            {% else %}
+                                                <p>Debes <a href="{% url 'userauths:sign-in' %}">iniciar sesión</a> para agregar una consulta o comentario.</p>
+                                            {% endif %}
                                         </div>
                                     </div>
                                 </div>
