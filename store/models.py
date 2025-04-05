@@ -465,3 +465,25 @@ class PrivacyPolicy(models.Model):
             word_count = len(self.content.split())
             self.read_time = max(1, word_count // 200)  # Asumiendo 200 palabras por minuto
         super().save(*args, **kwargs)
+        
+class TermsOfService(models.Model):
+    title = models.CharField(max_length=255, verbose_name="Título", default="Términos y Condiciones")
+    content = CKEditor5Field("Contenido", config_name="extends")
+    author = models.ForeignKey('userauths.User', on_delete=models.SET_NULL, null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True, verbose_name="Fecha de Creación")
+    updated_at = models.DateTimeField(auto_now=True, verbose_name="Última Actualización")
+    read_time = models.PositiveIntegerField(verbose_name="Tiempo de lectura (minutos)", default=5)
+
+    class Meta:
+        verbose_name = "Términos y Condiciones"
+        verbose_name_plural = "Términos y Condiciones"
+        ordering = ["-created_at"]
+    
+    def __str__(self):
+        return self.title
+
+    def save(self, *args, **kwargs):
+        if not self.pk:  # Si es un nuevo objeto, calcular tiempo de lectura
+            word_count = len(self.content.split())
+            self.read_time = max(1, word_count // 200)  # Asumiendo 200 palabras por minuto
+        super().save(*args, **kwargs)

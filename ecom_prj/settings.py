@@ -260,8 +260,8 @@ JAZZMIN_SETTINGS = {
         "store.BlogPost": "fas fa-newspaper",  
         "store.BlogComment": "fas fa-comments",  
         "store.Subscriber": "fas fa-check-circle", 
-        "store.PrivacyPolicy": "fas fa-building-shield",
-
+        "store.PrivacyPolicy": "fas fa-file-signature",
+        "store.TermsOfService": "fas fa-file-signature",
         
         "customer.Address": "fas fa-location-arrow",
         "customer.Wishlist": "fas fa-heart",

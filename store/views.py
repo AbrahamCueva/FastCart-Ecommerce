@@ -743,3 +743,14 @@ def polity_policy(request):
         "privacy_policies": privacy_policies,
     }
     return render(request, "store/privacy_policy.html", context)
+
+def terms_of_service(request):
+    settings = store_models.StoreSettings.objects.first()
+    categories = store_models.Category.objects.all()
+    terms_of_service = store_models.TermsOfService.objects.get()
+    context = {
+        "settings": settings,
+        "categories": categories,
+        "terms_of_service": terms_of_service,
+    }
+    return render(request, "store/terms_of_service.html", context)

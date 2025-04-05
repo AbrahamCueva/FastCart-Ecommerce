@@ -138,6 +138,11 @@ class PrivacyPolicyAdmin(admin.ModelAdmin):
     list_display = ("title", "author", "created_at", "read_time")
     search_fields = ("title", "author__username")
     readonly_fields = ("created_at", "updated_at", "read_time")
+    
+class TermsOfServiceAdmin(admin.ModelAdmin):
+    list_display = ("title", "author", "created_at", "read_time")
+    search_fields = ("title", "author__username")
+    readonly_fields = ("created_at", "updated_at", "read_time")
 
 admin.site.register(store_models.Category, CategoryAdmin)
 admin.site.register(store_models.Product, ProductAdmin)
@@ -163,3 +168,4 @@ admin.site.register(store_models.BlogComment, BlogCommentAdmin)
 admin.site.register(store_models.Subscriber, SubscriberAdmin)
 
 admin.site.register(store_models.PrivacyPolicy, PrivacyPolicyAdmin)
+admin.site.register(store_models.TermsOfService, TermsOfServiceAdmin)

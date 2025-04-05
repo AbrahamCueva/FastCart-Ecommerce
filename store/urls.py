@@ -36,4 +36,5 @@ urlpatterns = [
     path("subscribe/", views.subscribe, name="subscribe"),
     
     path("privacy_policy/", views.polity_policy, name="polity_policy"),
+    path("terms_of_service/", views.terms_of_service, name="terms_of_service"),
 ]
