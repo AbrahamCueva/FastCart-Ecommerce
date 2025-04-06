@@ -37,4 +37,9 @@ urlpatterns = [
     
     path("privacy_policy/", views.polity_policy, name="polity_policy"),
     path("terms_of_service/", views.terms_of_service, name="terms_of_service"),
+    
+    path("compare/", views.compare_view, name="compare"),
+    path("compare/add/<id>/", views.add_to_compare, name="add_to_compare"),
+    path("compare/remove/<id>/", views.remove_from_compare, name="remove_from_compare"),
+    path('compare/count/', views.get_compare_item_count, name='compare_item_count'),
 ]

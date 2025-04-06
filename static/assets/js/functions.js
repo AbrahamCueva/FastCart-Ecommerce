@@ -190,6 +190,60 @@ $(document).ready(function() {
             }
         })
     });
+
+    $(document).on("click", ".add_to_compare", function() {
+        const button = $(this);
+        const product_id = button.attr("data-product_id");
+        console.log("Comparar producto ID:", product_id);
+    
+        $.ajax({
+            url: `/compare/add/${product_id}/`,
+            beforeSend: function() {
+                button.html("<i class='fa-solid fa-spinner fa-spin ms-2'></i>");
+            },
+            success: function(response) {
+                button.html("<i class='fi-rs-shuffle'></i>"); // ícono personalizado
+                Toast.fire({
+                    icon: "success",
+                    title: response.message
+                });
+            },
+            error: function(xhr) {
+                button.html("<i class='fi-rs-shuffle'></i>");
+                const errorMessage = xhr.responseJSON?.message || "Error al agregar a comparar";
+                Toast.fire({
+                    icon: "warning",
+                    title: errorMessage
+                });
+            }
+        });
+    });
+    
+    $(document).on("click", ".remove-from-compare", function() {
+        const button = $(this);
+        const product_id = button.attr("data-product_id");
+    
+        $.ajax({
+            url: `/compare/remove/${product_id}/`,
+            success: function(response) {
+                Toast.fire({
+                    icon: "success",
+                    title: response.message,
+                });
+    
+                // Espera 1 segundo (1000ms) antes de recargar la página
+                setTimeout(() => {
+                    location.reload(); // Recarga la página después de 1 segundo
+                }, 1000);
+            },
+            error: function() {
+                Toast.fire({
+                    icon: "error",
+                    title: "Error al eliminar producto"
+                });
+            }
+        });
+    });       
 });
 
 

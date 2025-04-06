@@ -71,7 +71,13 @@
                         </div>
                         
                         <div class="header-action-right">
-                            <div class="header-action-2">                               
+                            <div class="header-action-2">      
+                                <div class="header-action-icon-2">
+                                    <a href="{% url 'store:compare' %}">
+                                        <img class="svgInject" alt="Nest" src="{% static 'assets/imgs/theme/icons/icon-compare.svg' %}">
+                                    </a>
+                                    <a href="{% url 'store:compare' %}"><span class="lable ml-0">Comparar</span></a>
+                                </div>                                                       
                                 <div class="header-action-icon-2">
                                     <a class="mini-cart-icon" href="{% url 'store:cart' %}">
                                         <img alt="Nest" src="{% static 'assets/imgs/theme/icons/icon-cart.svg' %}" />
@@ -272,30 +278,6 @@
                 </div>
             </div>
             <div class="mobile-header-content-area">
-                <div class="mobile-search search-style-3 mobile-header-border">
-                    <form action="{% url 'store:search' %}" method="GET" class="mobile-search-form" onsubmit="return validateSearchForm()">
-                        <div class="d-flex">
-                            <!-- Select para Categorías -->
-                            <select name="category" class="form-select me-2" aria-label="Seleccionar Categoría">
-                                <option value="">Categorías</option>
-                                {% for category in categories %}
-                                    <option value="{{ category.id }}" {% if category.id|stringformat:"s" == request.GET.category %}selected{% endif %}>
-                                        {{ category.title }}
-                                    </option>
-                                {% endfor %}
-                            </select>
-                    
-                            <!-- Campo de texto para la búsqueda de productos -->
-                            <input type="text" name="q" placeholder="Buscar productos..." class="form-control" value="{{ request.GET.q }}" required />
-                    
-                            <!-- Botón de búsqueda -->
-                            <button type="submit" class="btn btn-success ms-2">
-                                <i class="fas fa-search"></i>
-                            </button>
-                        </div>
-                    </form>
-                    
-                </div>
                 <div class="mobile-menu-wrap mobile-header-border">
                     <nav>
                         <ul class="mobile-menu font-heading">
@@ -537,8 +519,10 @@
                                     <strong>Horario:</strong>
                                     <span>10:00 - 18:00, Lunes - Sábado</span>
                                 </li>
+                            </ul> <br>
+                            <ul class="footer-list mb-sm-5 mb-md-0">
                                 <li>
-                                    <a href="{% url 'store:polity_policy' %}">Política de Privacidad</a> <br>
+                                    <a href="{% url 'store:polity_policy' %}">Política de Privacidad</a> 
                                     <a href="{% url 'store:terms_of_service' %}">Términos y Condiciones</a>
                                 </li>
                             </ul>

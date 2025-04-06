@@ -328,6 +328,12 @@
                                                     </div>
                                                     <div class="product-action-1">
                                                         <a aria-label="Agregar a favoritos" class="action-btn add_to_wishlist" data-product_id="{{p.id}}" href="javascript:void(0);"><i class="fi-rs-heart"></i></a>
+                                                        <a aria-label="Comparar"
+                                                            class="action-btn add_to_compare"
+                                                            href="javascript:void(0);"
+                                                            data-product_id="{{ p.id }}">
+                                                            <i class="fi-rs-shuffle"></i>
+                                                        </a>
                                                     </div>
                                                     {% if p.get_discount_percent > 0 %}
                                                         <div class="product-badges product-badges-position product-badges-mrg">

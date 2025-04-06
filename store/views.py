@@ -90,11 +90,10 @@ def about_us(request):
     return render(request, 'store/about-us.html', context)
 
 def index(request):
-    products = list(store_models.Product.objects.filter(status="Published"))  # Convertir a lista
-    random.shuffle(products)  # Mezclar aleatoriamente
-    products = products[:10]  # Seleccionar solo 10 productos aleatorios
-
-    categories = store_models.Category.objects.all()[:5]
+    products = list(store_models.Product.objects.filter(status="Published"))
+    random.shuffle(products) 
+    products = products[:10]  
+    categories = store_models.Category.objects.all() 
     sliders = store_models.Slider.objects.filter(status="Active").order_by("-created_at")
     settings = store_models.StoreSettings.objects.first()
 
@@ -312,7 +311,69 @@ def delete_cart_item(request):
         "total_cart_items": total_cart_items.count(),
         "cart_sub_total": "{:,.2f}".format(cart_sub_total) if cart_sub_total else 0.00
     })
+
+def add_to_compare(request, id):
+    product = store_models.Product.objects.filter(id=id).first()
+    if not product:
+        return JsonResponse({"message": "Producto no encontrado"}, status=404)
+
+    compare_list = request.session.get("compare", [])
+
+    # Limitar a solo 4 productos
+    if len(compare_list) >= 3:
+        return JsonResponse({
+            "message": "Solo puedes comparar hasta 3 productos",
+            "compare_count": len(compare_list)
+        }, status=400)
+
+    if id not in compare_list:
+        compare_list.append(id)
+        request.session["compare"] = compare_list
+
+    return JsonResponse({
+        "message": "Producto agregado a comparar",
+        "compare_count": len(compare_list)
+    })
+
+
+def remove_from_compare(request, id):
+    compare_list = request.session.get("compare", [])
+
+    if id in compare_list:
+        compare_list.remove(id)
+        request.session["compare"] = compare_list
+
+    return JsonResponse({
+        "message": "Producto eliminado de comparar",
+        "compare_count": len(compare_list)
+    })
+
+def compare_view(request):
+    compare_list = request.session.get("compare", [])
+    products = store_models.Product.objects.filter(id__in=compare_list)
+    settings = store_models.StoreSettings.objects.first()
+    categories = store_models.Category.objects.all()
+
+    context = {
+        "products": products,
+        "settings": settings,
+        "categories": categories
+    }
+
+    return render(request, "store/compare.html", context)
+
+from django.http import JsonResponse
+
+def get_compare_item_count(request):
+    # Obtener los productos de la comparación desde la sesión
+    compare_items = request.session.get("compare", [])
+    compare_item_count = len(compare_items)
     
+    return JsonResponse({
+        "compare_item_count": compare_item_count
+    })
+
+
 def create_order(request):
     if request.method == "POST":
         address_id = request.POST.get("address")

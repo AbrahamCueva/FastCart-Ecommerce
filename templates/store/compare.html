@@ -2,18 +2,102 @@
 {% block title %}Comparar productos - {{ settings.store_name }}{% endblock %}
 {% load static %}
 {% block content %}
+<style>
+    .multiline-name {
+        max-width: 200px;
+        word-wrap: break-word;
+        white-space: normal;
+        line-height: 1.4;
+    }
+</style>
 <main class="main">
     <div class="page-header breadcrumb-wrap">
         <div class="container">
             <div class="breadcrumb">
                 <a href="{% url 'store:index' %}" rel="nofollow"><i class="fi-rs-home mr-5"></i>Inicio</a>
-                <span></span> Comparar productos
+                <span></span> Comparar
             </div>
         </div>
     </div>
     <div class="container mb-80 mt-50">
         <div class="row">
-            <div class="col-xl-10 col-lg-12 m-auto"></div>
+            <div class="col-xl-10 col-lg-12 m-auto">
+                <h1 class="heading-2 mb-10">Comparación de productos</h1>
+                {% if products %}
+                <div class="table-responsive">
+                    <table class="table text-center table-compare">
+                        <tbody>
+                            <tr class="pr_image">
+                                <td class="text-muted font-sm fw-600 font-heading mw-200">Imagen</td>
+                                {% for product in products %}
+                                <td class="row_img">
+                                    <img src="{{ product.image.url }}" style="width: 364px; height: 364px; object-fit: contain;" alt="{{ product.title }}" width="100">
+                                </td>
+                                {% endfor %}
+                            </tr>
+                            <tr class="pr_title">
+                                <td class="text-muted font-sm fw-600 font-heading">Nombre</td>
+                                {% for product in products %}
+                                <td class="product_name" style="max-width: 200px; word-wrap: break-word; white-space: normal;">
+                                    <h6 class="m-0" style="line-height: 1.4;">
+                                        <a href="{% url 'store:product_detail' product.slug %}" class="text-heading">
+                                            {{ product.name }}
+                                        </a>
+                                    </h6>
+                                </td>
+                                {% endfor %}
+                            </tr>                            
+                            <tr class="pr_price">
+                                <td class="text-muted font-sm fw-600 font-heading">Precio</td>
+                                {% for product in products %}
+                                <td class="product_price">
+                                    <h4 class="price text-brand">S/ {{ product.price }}</h4>
+                                </td>
+                                {% endfor %}
+                            </tr>
+                            <tr class="pr_rating">
+                                <td class="text-muted font-sm fw-600 font-heading">Rating</td>
+                                {% for product in products %}
+                                <td>
+                                    <div class="rating_wrap">
+                                        <div class="product-rate d-inline-block">
+                                            {% if product.average_rating is not None %}
+                                                <div class="product-rating" style="width: {% widthratio product.average_rating 5 100 %}%"></div>
+                                            {% else %}
+                                                <div class="product-rating" style="width: 0%"></div>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                </td>
+                                {% endfor %}
+                            </tr>
+                            <tr class="pr_add_to_cart">
+                                <td class="text-muted font-sm fw-600 font-heading">Comprar</td>
+                                {% for product in products %}
+                                <td class="row_btn">
+                                    <a href="javascript:void(0);" class="btn btn-sm add_to_cart" data-id="{{ product.id }}">
+                                        <i class="fi-rs-shopping-bag mr-5"></i>Agregar al cesto
+                                    </a>
+                                </td>
+                                {% endfor %}
+                            </tr>
+                            <tr class="pr_remove text-muted">
+                                <td class="text-muted font-md fw-600">Eliminar</td>
+                                {% for product in products %}
+                                <td class="row_remove">
+                                    <a href="javascript:void(0);" class="text-muted remove-from-compare" data-product_id="{{ product.id }}">
+                                        <i class="fi-rs-trash mr-5"></i><span>Eliminar</span>
+                                    </a>
+                                </td>
+                                {% endfor %}
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <p>No hay productos en la comparación.</p>
+                {% endif %}
+            </div>
         </div>
     </div>
 </main>

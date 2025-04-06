@@ -47,11 +47,7 @@
                                 <div class="single-content">
                                     <div class="row">
                                         <div class="col-xl-10 col-lg-12 m-auto">
-                                            <blockquote>
-                                                <p>
-                                                    {{post.content|safe}}
-                                                </p>
-                                            </blockquote>
+                                            <p>{{post.content|safe}}</p>
                                             <div class="entry-bottom mt-50 mb-30">
                                                 <div class="tags w-50 w-sm-100">
                                                     {% for tag in tags %}
@@ -63,8 +59,7 @@
                                                     {% endfor %}
 
                                                 </div>
-                                            </div>                                            
-                                            <!--Author box-->
+                                            </div>
                                             <div class="author-bio p-30 mt-50 border-radius-15 bg-white">
                                                 <div class="author-image mb-30">
                                                     <a href="javascript:;">
@@ -82,8 +77,7 @@
                                                         </p>
                                                     </div>
                                                 </div>
-                                            </div>                                                                                     
-                                            <!--Comment form-->
+                                            </div> 
                                             {% if request.user.is_authenticated %}
                                             <div class="comment-form">
                                                 <div class="row">
