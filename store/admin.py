@@ -119,8 +119,8 @@ class TagAdmin(admin.ModelAdmin):
     
 class BlogCommentInline(admin.TabularInline):
     model = store_models.BlogComment
-    extra = 1  # Número de formularios vacíos a mostrar por defecto (puedes ajustarlo según sea necesario)
-    fields = ('author', 'email', 'comment', 'created_at')  # Campos que quieres mostrar
+    extra = 1 
+    fields = ('author', 'email', 'comment', 'created_at')  
     readonly_fields = ('created_at',)
 
 class BlogPostAdmin(admin.ModelAdmin):
@@ -128,7 +128,7 @@ class BlogPostAdmin(admin.ModelAdmin):
     list_filter = ('status', 'category', 'author')
     search_fields = ('title', 'category__title', 'author__username')
     prepopulated_fields = {'slug': ('title',)}
-    inlines = [BlogCommentInline]  # Si deseas agregar inlines, puedes hacerlo aquí
+    inlines = [BlogCommentInline] 
 
 class BlogCommentAdmin(admin.ModelAdmin):
     list_display = ('author', 'email', 'post', 'created_at')

@@ -202,7 +202,7 @@ $(document).ready(function() {
                 button.html("<i class='fa-solid fa-spinner fa-spin ms-2'></i>");
             },
             success: function(response) {
-                button.html("<i class='fi-rs-shuffle'></i>"); // ícono personalizado
+                button.html("<i class='fi-rs-shuffle'></i>"); 
                 Toast.fire({
                     icon: "success",
                     title: response.message
@@ -231,9 +231,8 @@ $(document).ready(function() {
                     title: response.message,
                 });
     
-                // Espera 1 segundo (1000ms) antes de recargar la página
                 setTimeout(() => {
-                    location.reload(); // Recarga la página después de 1 segundo
+                    location.reload(); 
                 }, 1000);
             },
             error: function() {

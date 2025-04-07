@@ -161,19 +161,6 @@
     </div>
 </main>
 <script src="{% static 'assets/js/vendor/jquery-3.6.0.min.js' %}"></script>
-<!-- <script>
-    function previewImage(event) {
-        const imageInput = event.target.files[0];
-        if (!imageInput) return; 
-        const reader = new FileReader();
-        reader.onload = function () {
-            const preview = document.getElementById("imagePreview");
-            preview.src = reader.result; 
-            preview.style.display = "block"; 
-        };
-        reader.readAsDataURL(imageInput);
-    }
-</script> -->
 <script>
     let variant_index = "{{variants|length}}";
     let variant_template = (variant_index) => `

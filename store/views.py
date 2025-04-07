@@ -50,15 +50,12 @@ def subscribe(request):
     return JsonResponse({"error": "Método de solicitud no permitido."}, status=405)
 
 def search_view(request):
-    query = request.GET.get("q", "").strip()  # Elimina espacios al principio y al final
+    query = request.GET.get("q", "").strip()  
     category_query = request.GET.get("category", "").strip()
     settings = store_models.StoreSettings.objects.first()
     categories = store_models.Category.objects.all()
 
-    # Validación: Si el término de búsqueda está vacío, redirigimos o mostramos un mensaje
     if not query:
-        # Puedes redirigir a una página de inicio o mostrar un mensaje específico
-        # En este caso, redirigimos a la página principal
         return redirect('store:index')
 
     products = store_models.Product.objects.filter(status="Published")
@@ -319,7 +316,6 @@ def add_to_compare(request, id):
 
     compare_list = request.session.get("compare", [])
 
-    # Limitar a solo 4 productos
     if len(compare_list) >= 3:
         return JsonResponse({
             "message": "Solo puedes comparar hasta 3 productos",
@@ -365,7 +361,6 @@ def compare_view(request):
 from django.http import JsonResponse
 
 def get_compare_item_count(request):
-    # Obtener los productos de la comparación desde la sesión
     compare_items = request.session.get("compare", [])
     compare_item_count = len(compare_items)
     
@@ -619,8 +614,6 @@ def stripe_payment_verify(request, order_id):
             order.payment_method = "Stripe"
             order.save()
             clear_cart_items(request)
-            
-            # Send Email to Customer
             customer_merge_data = {
                 'order': order,
                 'order_items': order.order_items()
@@ -670,14 +663,7 @@ def paystack_payment_verify(request, order_id):
                     order.payment_status = "Paid"
                     order.payment_method = "Paystack"
                     order.save()
-                    clear_cart_items(request)
-                    
-                    # Send Email to Customer
-                    
-                    # Send InApp Notification
-                    
-                    #Send email to vendor
-                    
+                    clear_cart_items(request)                    
                     return redirect(f"/payment_status/{order.order_id}/?payment_status=paid")
         return redirect(f"/payment_status/{order.order_id}/?payment_status=failed")
 
@@ -734,8 +720,6 @@ def add_review(request, product_id):
         )
         messages.success(request, "Tu comentario ha sido enviado.")
         return redirect("store:product_detail", slug=product.slug)
-
-    # Si no es POST, podrías renderizar un formulario de reseña (opcional)
     context = {
         'product': product,
     }
@@ -748,8 +732,6 @@ def contacto(request):
         form = FormularioContacto(request.POST)
         if form.is_valid():
             mensaje = form.save()
-
-            # Enviar correo al administrador
             send_mail(
                 subject=f"Nuevo Mensaje de Contacto: {mensaje.asunto}",
                 message=f"Nombre: {mensaje.nombre}\n"
@@ -757,7 +739,7 @@ def contacto(request):
                         f"Teléfono: {mensaje.telefono}\n"
                         f"Mensaje:\n{mensaje.mensaje}",
                 from_email="no-reply@tuempresa.com",
-                recipient_list=["abrahamrico546@gmail.com"],  # Cambia esto al correo del administrador
+                recipient_list=["abrahamrico546@gmail.com"],
                 fail_silently=False,
             )
 

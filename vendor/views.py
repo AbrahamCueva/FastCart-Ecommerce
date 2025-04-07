@@ -296,14 +296,12 @@ def change_password(request):
     }
     return render(request, "vendor/change_password.html", context)
 
-# Función para convertir y validar decimales
 def parse_decimal(value):
     try:
-        return Decimal(value) if value else None  # Permitir que sea None si no hay valor
+        return Decimal(value) if value else None  
     except InvalidOperation:
         return None
 
-# Función para convertir y validar enteros
 def parse_int(value):
     try:
         return int(value) if value else 0
@@ -317,29 +315,25 @@ def create_product(request):
     categories = store_models.Category.objects.all()
     
     if request.method == "POST":
-        # Obtener datos del formulario
         image = request.FILES.get("image")
         name = request.POST.get("name")
         category_id = request.POST.get("category_id")
         description = request.POST.get("description")
         price = parse_decimal(request.POST.get("price"))
         shipping = parse_decimal(request.POST.get("shipping"))
-        regular_price = parse_decimal(request.POST.get("regular_price"))  # Permitir None
+        regular_price = parse_decimal(request.POST.get("regular_price")) 
         stock = parse_int(request.POST.get("stock"))
 
-        # Validar que no falten campos importantes
         if not name or not category_id or price is None or stock < 0:
             messages.error(request, "Por favor, complete todos los campos correctamente.")
             return render(request, "vendor/create_product.html", {"settings": settings, "categories": categories})
 
         try:
-            # Obtener la categoría
             category = store_models.Category.objects.get(id=category_id)
         except store_models.Category.DoesNotExist:
             messages.error(request, "La categoría seleccionada no existe.")
             return render(request, "vendor/create_product.html", {"settings": settings, "categories": categories})
         
-        # Crear el producto
         try:
             product = store_models.Product.objects.create(
                 image=image,
@@ -348,7 +342,7 @@ def create_product(request):
                 category=category,
                 description=description,
                 price=price,
-                regular_price=regular_price,  # Puede ser None
+                regular_price=regular_price, 
                 shipping=shipping,
                 stock=stock,
             )
@@ -377,7 +371,6 @@ def update_product(request, id):
         regular_price = parse_decimal(request.POST.get("regular_price").replace(',', '.'))
         stock = parse_int(request.POST.get("stock"))
 
-        # Validar campos obligatorios
         if not name or not category_id or price is None or stock < 0:
             messages.error(request, "Por favor, complete todos los campos correctamente.")
             return render(request, "vendor/update_product.html", {
@@ -400,7 +393,6 @@ def update_product(request, id):
                 "gallery_images": store_models.Gallery.objects.filter(product=product),
             })
 
-        # Actualizar campos
         product.name = name
         product.category = category
         product.description = description
@@ -414,14 +406,12 @@ def update_product(request, id):
 
         product.save()
 
-        # Actualizar variantes
         variant_ids = request.POST.getlist("variant_id[]")
         variant_titles = request.POST.getlist("variant_title[]")
 
         existing_variant_ids = set(store_models.Variant.objects.filter(product=product).values_list('id', flat=True))
         received_variant_ids = set(map(int, filter(None, variant_ids)))
 
-        # Eliminar variantes eliminadas
         variants_to_delete = existing_variant_ids - received_variant_ids
         store_models.Variant.objects.filter(id__in=variants_to_delete).delete()
 
@@ -438,7 +428,6 @@ def update_product(request, id):
             else:
                 variant = store_models.Variant.objects.create(product=product, name=variant_name)
 
-            # Actualizar ítems de variantes
             if variant:
                 item_ids = request.POST.getlist(f"item_id_{i}[]")
                 item_titles = request.POST.getlist(f"item_title_{i}[]")
@@ -467,7 +456,6 @@ def update_product(request, id):
                             content=item_description,
                         )
 
-        # Subir imágenes adicionales al gallery
         for file_key, image_file in request.FILES.items():
             if file_key.startswith("image_"):
                 store_models.Gallery.objects.create(product=product, image=image_file)

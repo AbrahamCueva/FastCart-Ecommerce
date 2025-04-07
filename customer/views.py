@@ -195,7 +195,7 @@ def address_create(request):
     context = {
         "settings": settings,
         "categories": categories,
-    } # Contex
+    }
     return render(request, "customer/address_create.html", context)
 
 @login_required

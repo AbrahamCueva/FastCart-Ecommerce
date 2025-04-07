@@ -96,8 +96,6 @@ def logout_view(request):
     messages.success(request, "Has cerrado tu sesión")
     return redirect("userauths:sign-in")
 
-# Añade esta función a tu archivo views.py existente
-
 def access_denied(request):
     settings = store_models.StoreSettings.objects.first()
     categories = store_models.Category.objects.all()
@@ -120,12 +118,10 @@ def forgot_password_view(request):
         try:
             user = get_user_model().objects.get(email=email)
             token = default_token_generator.make_token(user)
-            uid = urlsafe_base64_encode(force_bytes(user.pk))  # 👈 CORREGIDO
+            uid = urlsafe_base64_encode(force_bytes(user.pk))  
 
-            # Construimos la URL absoluta directamente
             reset_url = request.build_absolute_uri(f'/user/reset-password/{uid}/{token}/')
 
-            # Render del template del email
             subject = "Recuperación de contraseña"
             message = render_to_string('userauths/mails/password_reset_email.html', {
                 'reset_url': reset_url,
@@ -133,10 +129,10 @@ def forgot_password_view(request):
             })
             send_mail(
                 subject,
-                '',  # Puedes poner un texto plano como respaldo si deseas
+                '',  
                 settings.DEFAULT_FROM_EMAIL,
                 [email],
-                html_message=message  # 👉 Esta es la clave para el HTML bonito
+                html_message=message 
             )
             messages.success(request, "Te hemos enviado un enlace para restablecer tu contraseña")
         except get_user_model().DoesNotExist:
@@ -154,7 +150,7 @@ from django.contrib.auth.forms import SetPasswordForm
 from django.utils.http import urlsafe_base64_decode
 from django.shortcuts import render, redirect
 from django.contrib import messages
-from store import models as store_models  # Ajusta según tu estructura
+from store import models as store_models 
 
 def reset_password_view(request, uidb64, token):
     settings = store_models.StoreSettings.objects.first()
@@ -187,15 +183,3 @@ def reset_password_view(request, uidb64, token):
         "form": form,
     }
     return render(request, "userauths/reset-password.html", context)
-
-
-# Ejemplo de cómo usar los decoradores en tus vistas:
-# from .decorators import vendor_required, customer_required
-#
-# @vendor_required
-# def vendor_dashboard(request):
-#     return render(request, 'vendor/dashboard.html')
-#
-# @customer_required
-# def customer_dashboard(request):
-#     return render(request, 'customer/dashboard.html')

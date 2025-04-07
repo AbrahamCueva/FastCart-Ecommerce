@@ -174,11 +174,9 @@ class Slider(models.Model):
         return self.title
 
     def save(self, *args, **kwargs):
-        # Generar un slider_id si no existe
         if not self.slider_id:
             self.slider_id = slugify(self.title)[:6] + str(timezone.now().timestamp())[-4:]
-
-        # Si `has_button` es False, limpiar los valores de button_text y button_link
+            
         if not self.has_button:
             self.button_text = None
             self.button_link = None
@@ -461,9 +459,9 @@ class PrivacyPolicy(models.Model):
         return self.title
 
     def save(self, *args, **kwargs):
-        if not self.pk:  # Si es un nuevo objeto, calcular tiempo de lectura
+        if not self.pk: 
             word_count = len(self.content.split())
-            self.read_time = max(1, word_count // 200)  # Asumiendo 200 palabras por minuto
+            self.read_time = max(1, word_count // 200)  
         super().save(*args, **kwargs)
         
 class TermsOfService(models.Model):
@@ -483,7 +481,7 @@ class TermsOfService(models.Model):
         return self.title
 
     def save(self, *args, **kwargs):
-        if not self.pk:  # Si es un nuevo objeto, calcular tiempo de lectura
+        if not self.pk: 
             word_count = len(self.content.split())
-            self.read_time = max(1, word_count // 200)  # Asumiendo 200 palabras por minuto
+            self.read_time = max(1, word_count // 200) 
         super().save(*args, **kwargs)

@@ -49,17 +49,11 @@
 
 <body>
     <div class="content">
-
-        <!-- Encabezado -->
         <div class="header">
             <h2>¡Nueva Orden!</h2>
         </div>
-
-        <!-- Saludo -->
         <p><strong>¡Hola, {{ item.vendor.username }}!</strong></p>
         <p>Gracias por confiar en Desphius.<br>El ID de tu orden es <strong>#{{ order.order_id }}</strong>.</p>
-
-        <!-- Artículos de la Orden -->
         <table class="table table-bordered mt-4">
             <thead class="table-light">
                 <tr>
@@ -78,8 +72,6 @@
                 {% endfor %}
             </tbody>
         </table>
-
-        <!-- Resumen de la Orden -->
         <table class="table table-bordered summary-table">
             <tbody>
                 <tr>
@@ -100,8 +92,6 @@
                 </tr>
             </tbody>
         </table>
-
-        <!-- Datos del Cliente -->
         <div class="bio-data mt-4">
             <h4>Datos del Cliente</h4>
             <p><strong>Nombre Completo:</strong> {{ order.address.full_name }}</p>
@@ -112,12 +102,9 @@
             <p><strong>Estado:</strong> {{ order.address.state }}</p>
             <p><strong>País:</strong> {{ order.address.country }}</p>
         </div>
-
-        <!-- Pie de Página -->
         <div class="footer">
             <p>No dudes en contactarnos si tienes alguna pregunta.<br>Atentamente,<br><strong>Equipo Desphius</strong></p>
         </div>
-
     </div>
 </body>
 
