@@ -78,7 +78,7 @@ def search_view(request):
 def about_us(request):
     about = store_models.AboutUs.objects.first()
     settings = store_models.StoreSettings.objects.first()
-    categories = store_models.Category.objects.all()
+    categories = store_models.Category.objects.all()[:15]
     context = {
         "settings": settings,
         "categories": categories,
@@ -90,7 +90,7 @@ def index(request):
     products = list(store_models.Product.objects.filter(status="Published"))
     random.shuffle(products) 
     products = products[:10]  
-    categories = store_models.Category.objects.all() 
+    categories = store_models.Category.objects.all()[:15]
     sliders = store_models.Slider.objects.filter(status="Active").order_by("-created_at")
     settings = store_models.StoreSettings.objects.first()
 
@@ -117,7 +117,7 @@ def category_list(request):
 
 def category_detail(request, slug):
     settings = store_models.StoreSettings.objects.first()
-    categories = store_models.Category.objects.all() 
+    categories = store_models.Category.objects.all()[:15]
     category = get_object_or_404(store_models.Category, slug=slug)  
     products_list = store_models.Product.objects.filter(category=category)  
     products = paginate_queryset(request, products_list, 15)
@@ -135,7 +135,7 @@ def product_detail(request, slug):
     product = store_models.Product.objects.get(status="Published", slug=slug)
     related_products = store_models.Product.objects.filter(category=product.category, status="Published").exclude(id=product.id)[:5]
     settings = store_models.StoreSettings.objects.first()
-    categories = store_models.Category.objects.all()
+    categories = store_models.Category.objects.all()[:15]
     product_stock_range = range(1, product.stock + 1)
     context = {
         "product": product,
@@ -149,7 +149,7 @@ def product_detail(request, slug):
 
 def blog(request):
     settings = store_models.StoreSettings.objects.first()
-    categories = store_models.Category.objects.all()
+    categories = store_models.Category.objects.all()[:15]
     posts_list = store_models.BlogPost.objects.filter(status="Published")
     tags = store_models.Tag.objects.all()
     posts = paginate_queryset(request, posts_list, 10)
@@ -164,7 +164,7 @@ def blog(request):
 
 def blog_detail(request, slug):
     settings = store_models.StoreSettings.objects.first()
-    categories = store_models.Category.objects.all()
+    categories = store_models.Category.objects.all()[:15]
     category_post = store_models.CategoryPost.objects.first()
     post = get_object_or_404(store_models.BlogPost, slug=slug, status="Published")
     comments = post.comments.all().order_by("-created_at")
@@ -261,7 +261,7 @@ def cart(request):
         
     items = store_models.Cart.objects.filter(Q(cart_id=cart_id) | Q(user=request.user) if request.user.is_authenticated else Q(cart_id=cart_id))
     settings = store_models.StoreSettings.objects.first()
-    categories = store_models.Category.objects.all()
+    categories = store_models.Category.objects.all()[:15]
     cart_sub_total = store_models.Cart.objects.filter(Q(cart_id=cart_id) | Q(user=request.user) if request.user.is_authenticated else Q(cart_id=cart_id)).aggregate(sub_total = Sum("sub_total"))['sub_total']
     try:
         addresses = customer_models.Address.objects.filter(user=request.user)
@@ -348,7 +348,7 @@ def compare_view(request):
     compare_list = request.session.get("compare", [])
     products = store_models.Product.objects.filter(id__in=compare_list)
     settings = store_models.StoreSettings.objects.first()
-    categories = store_models.Category.objects.all()
+    categories = store_models.Category.objects.all()[:15]
 
     context = {
         "products": products,
@@ -416,7 +416,7 @@ def create_order(request):
 def checkout(request, order_id):
     order = store_models.Order.objects.get(order_id=order_id)
     settings = store_models.StoreSettings.objects.first()
-    categories = store_models.Category.objects.all()
+    categories = store_models.Category.objects.all()[:15]
     amount_in_inr = convert_usd_inr(order.total)
     amount_in_kobo = convert_usd_to_kobo(order.total)
     amount_in_ngn = convert_usd_to_ngn(order.total)
@@ -566,7 +566,7 @@ def paypal_payment_verify(request, order_id):
     
 def payment_status(request, order_id):
     settings = store_models.StoreSettings.objects.first()
-    categories = store_models.Category.objects.all()
+    categories = store_models.Category.objects.all()[:15]
     order = store_models.Order.objects.get(order_id=order_id)
     payment_status = request.GET.get("payment_status")
     context = {
@@ -727,7 +727,7 @@ def add_review(request, product_id):
 
 def contacto(request):
     settings = store_models.StoreSettings.objects.first()
-    categories = store_models.Category.objects.all()
+    categories = store_models.Category.objects.all()[:15]
     if request.method == "POST":
         form = FormularioContacto(request.POST)
         if form.is_valid():
@@ -761,7 +761,7 @@ def custom_404(request, exception):
 
 def shop(request):
     products_list = store_models.Product.objects.filter(status="Published")
-    categories = store_models.Category.objects.all()[:5]
+    categories = store_models.Category.objects.all()[:15]
     sliders = store_models.Slider.objects.filter(status="Active").order_by("-created_at")
     new_products = store_models.Product.objects.filter(status="Published").order_by("-id")[:3]
     settings = store_models.StoreSettings.objects.first()
@@ -778,7 +778,7 @@ def shop(request):
 
 def polity_policy(request):
     settings = store_models.StoreSettings.objects.first()
-    categories = store_models.Category.objects.all()
+    categories = store_models.Category.objects.all()[:15]
     privacy_policies = store_models.PrivacyPolicy.objects.get()
     context = {
         "settings": settings,
@@ -789,7 +789,7 @@ def polity_policy(request):
 
 def terms_of_service(request):
     settings = store_models.StoreSettings.objects.first()
-    categories = store_models.Category.objects.all()
+    categories = store_models.Category.objects.all()[:15]
     terms_of_service = store_models.TermsOfService.objects.get()
     context = {
         "settings": settings,

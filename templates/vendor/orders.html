@@ -44,10 +44,10 @@
                                                             <small>Vendor: {{ item.product.vendor.username|title }}</small><br>
                                                             
                                                             {% if item.color %}
-                                                                <small>Color: {{ item.color }}</small><br>
+                                                                <small>Color: {{ item.color|default:"Sin color" }}</small><br>
                                                             {% endif %}
                                                             {% if item.size %}
-                                                                <small>Tamaño: {{ item.size }}</small><br>
+                                                                <small>Tamaño: {{ item.size|default:"Sin capacidad" }}</small><br>
                                                             {% endif %}
                                                             <strong>S/. {{ item.product.price|intcomma }}</strong>
                                                             <hr>

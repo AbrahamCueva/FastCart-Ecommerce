@@ -120,10 +120,11 @@
                                                                     <a href="{% url 'store:product_detail' p.slug %}" target="_blank" class="btn btn-sm btn-outline-primary">
                                                                         <i class="fas fa-eye me-1"></i>
                                                                     </a>
-                                                                    <a href="#" class="btn btn-sm btn-outline-secondary ms-2">
+                                                                    <a href="{% url 'vendor:update_product' p.id %}" class="btn btn-sm btn-outline-secondary ms-2">
                                                                         <i class="fas fa-edit me-1"></i>
                                                                     </a>
-                                                                    <a href="#" class="btn btn-sm btn-outline-danger ms-2">
+                                                                    <a href="#" class="btn btn-sm btn-outline-danger ms-2 delete-product-btn"
+                                                                        data-product-id="{{ p.id }}">
                                                                         <i class="fas fa-trash-alt me-1"></i>
                                                                     </a>
                                                                 </div>
@@ -147,6 +148,61 @@
         </div>
     </div>
 </main>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const deleteProductButtons = document.querySelectorAll('.delete-product-btn');
+
+        deleteProductButtons.forEach(button => {
+            button.addEventListener('click', function(event) {
+                event.preventDefault(); // Prevent default link behavior
+
+                const productId = this.dataset.productId;
+                const deleteUrl = `/vendor/delete_product/${productId}/`; // Construct the URL manually
+
+                Swal.fire({
+                    title: '¿Estás seguro de eliminar este producto?',
+                    text: "No podrás revertir esto.",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#d33',
+                    cancelButtonColor: '#3085d6',
+                    confirmButtonText: 'Sí, eliminar',
+                    cancelButtonText: 'Cancelar'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        // Proceed with deletion, e.g., redirect or AJAX
+                        window.location.href = deleteUrl; // Simple redirect
+                        // Or use AJAX for a smoother experience:
+                        /*
+                        fetch(deleteUrl, {
+                            method: 'GET', // Or 'DELETE' depending on your view
+                        })
+                        .then(response => {
+                            if (response.ok) {
+                                Swal.fire(
+                                    '¡Eliminado!',
+                                    'El producto ha sido eliminado.',
+                                    'success'
+                                ).then(() => {
+                                    // Optionally remove the product from the list in the DOM
+                                    // or reload the page
+                                    window.location.reload();
+                                });
+                            } else {
+                                Swal.fire(
+                                    'Error',
+                                    'Hubo un problema al eliminar el producto.',
+                                    'error'
+                                );
+                            }
+                        });
+                        */
+                    }
+                });
+            });
+        });
+    });
+</script>
 {% endblock content %}
 
 <style>

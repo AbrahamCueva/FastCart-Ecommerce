@@ -143,29 +143,29 @@
                                     </div>
                                     
                                 </div>
-                                <div class="list-group-item mb-10 mt-10">
-                                    <label class="fw-900">Color: </label>
-                                    <div class="custome-checkbox">
-                                        {% with product.variants.all as variants %}
-                                            {% for variant in variants %}
-                                                {% if variant.name == "Color" %}
+                                {% with product.variants.all as variants %}
+                                    {% for variant in variants %}
+                                        {% if variant.name == "Color" %}
+                                            <div class="list-group-item mb-10 mt-10">
+                                                <label class="fw-900">Color: </label>
+                                                <div class="custome-checkbox">
                                                     {% for c in variant.items.all %}
                                                         <input class="form-check-input color-radio" value="{{ c.title }}" type="radio" name="color" id="color-{{ forloop.counter }}">
                                                         <label class="form-option-label color-label" for="color-{{ forloop.counter }}" style="background-color: {{ c.content }};">
                                                             <span class="sr-only">{{ c.title }}</span>
                                                         </label>
                                                     {% endfor %}
-                                                {% endif %}
-                                            {% endfor %}
-                                        {% endwith %}
-                                    </div>
-                                </div>
+                                                </div>
+                                            </div>
+                                        {% endif %}
+                                    {% endfor %}
+                                {% endwith %}
                                 
-                                <div class="attr-detail attr-size mb-30">
-                                    <strong class="mr-10 fw-900">Capacidad: </strong>
-                                    <ul class="list-filter size-filter font-small">
-                                        {% for variant in product.variants.all %}
-                                            {% if variant.name == "Capacidad" %}
+                                {% for variant in product.variants.all %}
+                                    {% if variant.name == "Capacidad" %}
+                                        <div class="attr-detail attr-size mb-30">
+                                            <strong class="mr-10 fw-900">Capacidad: </strong>
+                                            <ul class="list-filter size-filter font-small">
                                                 {% for s in variant.items.all %}
                                                     <li>
                                                         <input type="radio" id="capacidad-{{ forloop.counter }}" name="size" value="{{ s.title }}" class="capacity-radio">
@@ -174,10 +174,10 @@
                                                         </label>
                                                     </li>
                                                 {% endfor %}
-                                            {% endif %}
-                                        {% endfor %}
-                                    </ul>
-                                </div>
+                                            </ul>
+                                        </div>
+                                    {% endif %}
+                                {% endfor %}
                                 
                                 <div class="detail-extralink mb-50">
                                     <div class="action-btn hover-up" style="margin-right: 10px;">

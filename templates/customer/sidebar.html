@@ -8,6 +8,7 @@
     </div>
 
     <div class="dashboard-menu">
+        <ul class="nav flex-column">
             <li class="nav-item">
                 <a class="nav-link {% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}" href="{% url 'customer:dashboard' %}">
                     <i class="fi-rs-home mr-10"></i>
